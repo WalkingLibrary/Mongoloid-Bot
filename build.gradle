@@ -68,7 +68,7 @@ print "Build Version: ${versionInfo.major}.${versionInfo.minor}.${versionInfo.co
 jar {
     manifest {
         attributes(
-                "Main-Class": "com.jumbodinosaurs.webserver.Main",
+                "Main-Class": "com.jumbodinosaurs.mongoloidbot.Main",
                 "Mongoloid-Bot": version
         )
     }
