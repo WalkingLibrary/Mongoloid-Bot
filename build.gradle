@@ -40,6 +40,10 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+
+
+    //Discord Lib
+    compile 'com.github.DV8FromTheWorld:JDA:v4.3.0'
 }
 
 
@@ -56,6 +60,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        jcenter()
     }
 
 
