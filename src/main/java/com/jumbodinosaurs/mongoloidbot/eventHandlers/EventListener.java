@@ -1,15 +1,55 @@
 package com.jumbodinosaurs.mongoloidbot.eventHandlers;
 
+import com.jumbodinosaurs.devlib.commands.CommandManager;
+import com.jumbodinosaurs.devlib.commands.MessageResponse;
+import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class EventListener extends ListenerAdapter
 {
+    private static final String allowedChannelName = "bot-1og";
+    private static Guild guild;
+    
+    
+    public static Guild getGuild()
+    {
+        return guild;
+    }
+    
+    public static void setGuild(Guild guild)
+    {
+        EventListener.guild = guild;
+    }
+    
+    @Override
+    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
+    {
+        if(event.getChannel().getName().equals(allowedChannelName))
+        {
+            try
+            {
+                System.out.println("Command: " + event.getMessage().getContentRaw());
+                setGuild(event.getGuild());
+                MessageResponse response = CommandManager.filter(event.getMessage().getContentRaw(), true);
+                if(response != null)
+                {
+                    event.getChannel().sendMessage(response.getMessage()).complete();
+                }
+            }
+            catch(WaveringParametersException e)
+            {
+                event.getChannel().sendMessage(e.getMessage()).complete();
+            }
+        }
+    }
     
     
     @Override

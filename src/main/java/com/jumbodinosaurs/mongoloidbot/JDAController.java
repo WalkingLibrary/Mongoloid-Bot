@@ -1,7 +1,11 @@
 package com.jumbodinosaurs.mongoloidbot;
 
+import com.jumbodinosaurs.devlib.commands.CommandManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 
 public class JDAController
@@ -12,7 +16,12 @@ public class JDAController
     {
         try
         {
-            this.jda = JDABuilder.createDefault(token).build();
+            CommandManager.refreshCommands();
+            this.jda = JDABuilder.createDefault(token)
+                                 .setChunkingFilter(ChunkingFilter.ALL) // enable member chunking for all guilds
+                                 .setMemberCachePolicy(MemberCachePolicy.ALL) // ignored if chunking enabled
+                                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                                 .build();
             jda.awaitReady();
         }
         catch(Exception e)
