@@ -1,12 +1,14 @@
-package com.jumbodinosaurs.mongoloidbot.commands;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.nicknames;
 
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
-import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
@@ -14,9 +16,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SetNickNames extends CommandWithParameters
+public class SetNickNames extends CommandWithParameters implements IDiscordChatEventable,
+                                                                           IAdminCommand
 {
     private static final File nickNamesDir = GeneralUtil.checkFor(GeneralUtil.userDir, "NickNameLists", true);
+    private GuildMessageReceivedEvent event;
     
     public static String getRandomNickname(ArrayList<String> nickNames)
     {
@@ -42,7 +46,7 @@ public class SetNickNames extends CommandWithParameters
                 String nickNamesList = GeneralUtil.scanFileContents(file);
                 String[] nickNamesArray = nickNamesList.split("\n");
                 ArrayList<String> nickNames = (new ArrayList<String>(Arrays.asList(nickNamesArray)));
-                Guild guild = EventListener.getGuild();
+                Guild guild = event.getGuild();
                 
                 if(guild == null)
                 {
@@ -99,14 +103,26 @@ public class SetNickNames extends CommandWithParameters
     public String getHelpMessage()
     {
         String helpMessage = "Usage: ~SetNickNames [nicknameList]\n";
-        
+    
         helpMessage += "Nick Name Lists:\n";
-        
+    
         for(File file : GeneralUtil.listFilesRecursive(nickNamesDir))
         {
             helpMessage += file.getName() + "\n";
         }
-        
+    
         return helpMessage;
+    }
+    
+    @Override
+    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    {
+        return event;
+    }
+    
+    @Override
+    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    {
+        this.event = event;
     }
 }

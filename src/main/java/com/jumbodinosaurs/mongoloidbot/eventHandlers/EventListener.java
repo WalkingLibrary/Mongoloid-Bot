@@ -1,9 +1,12 @@
 package com.jumbodinosaurs.mongoloidbot.eventHandlers;
 
+import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.CommandManager;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import net.dv8tion.jda.api.entities.Guild;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
@@ -15,19 +18,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class EventListener extends ListenerAdapter
 {
-    private static final String allowedChannelName = "bot-1og";
-    private static Guild guild;
+    private static final String allowedChannelName = "mongoloid-bot";
     
     
-    public static Guild getGuild()
-    {
-        return guild;
-    }
-    
-    public static void setGuild(Guild guild)
-    {
-        EventListener.guild = guild;
-    }
     
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
@@ -37,8 +30,31 @@ public class EventListener extends ListenerAdapter
             try
             {
                 System.out.println("Command: " + event.getMessage().getContentRaw());
-                setGuild(event.getGuild());
-                MessageResponse response = CommandManager.filter(event.getMessage().getContentRaw(), true);
+                Command command = CommandManager.filterCommand(event.getMessage().getContentRaw(), true);
+    
+                if(command == null)
+                {
+                    return;
+                }
+    
+                if(command instanceof IDiscordChatEventable)
+                {
+                    ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);
+                }
+    
+                if(command instanceof IAdminCommand)
+                {
+                    if(!event.getMember().hasPermission(Permission.ADMINISTRATOR))
+                    {
+                        event.getChannel()
+                             .sendMessage("You Don't Have the needed Permissions for that Command")
+                             .complete();
+                        return;
+                    }
+                }
+    
+    
+                MessageResponse response = command.getExecutedMessage();
                 if(response != null)
                 {
                     event.getChannel().sendMessage(response.getMessage()).complete();

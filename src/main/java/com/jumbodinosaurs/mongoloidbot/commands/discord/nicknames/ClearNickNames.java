@@ -1,29 +1,27 @@
-package com.jumbodinosaurs.mongoloidbot.commands;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.nicknames;
 
-import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
+import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
-public class SetNickNamesPreFix extends CommandWithParameters
+public class ClearNickNames extends Command implements IDiscordChatEventable,
+                                                               IAdminCommand
 {
+    private GuildMessageReceivedEvent event;
+    
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        if(getParameters() == null || getParameters().size() <= 0)
-        {
-            throw new WaveringParametersException("No List Given");
-        }
         
-        String prefix = getParameters().get(0).getParameter();
-        
-        
-        Guild guild = EventListener.getGuild();
+        Guild guild = event.getGuild();
         if(guild == null)
         {
             return new MessageResponse("Error No Guild Given");
@@ -31,18 +29,9 @@ public class SetNickNamesPreFix extends CommandWithParameters
         
         for(Member guildMember : guild.getMemberCache().asList())
         {
-            String nickName = prefix + " ";
-            
-            nickName += guildMember.getNickname() == null ? guildMember.getUser().getName() : guildMember.getNickname();
-            
-            int maxNicknameSize = Math.min(31, nickName.length());
-            nickName = nickName.substring(0, maxNicknameSize);
-            setMemberNickName(guildMember, nickName);
+            setMemberNickName(guildMember, guildMember.getUser().getName());
         }
-        
-        return new MessageResponse("Nick Names Prefixed With: " + prefix);
-        
-        
+        return new MessageResponse("Nick Names Cleared!");
     }
     
     public void setMemberNickName(Member member, String nickName)
@@ -81,6 +70,18 @@ public class SetNickNamesPreFix extends CommandWithParameters
     @Override
     public String getHelpMessage()
     {
-        return "Usage: ~SetNickNamesPreFix [PreFix]";
+        return "Usage: ~ClearNickNames";
+    }
+    
+    @Override
+    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    {
+        return event;
+    }
+    
+    @Override
+    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    {
+        this.event = event;
     }
 }
