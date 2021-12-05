@@ -6,7 +6,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
-import com.jumbodinosaurs.mongoloidbot.coin.tasks.Lottery;
+import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
-public class BuyLotteryTicket extends CommandWithParameters implements IDiscordChatEventable
+public class Lottery extends CommandWithParameters implements IDiscordChatEventable
 {
     
     private GuildMessageReceivedEvent event;
@@ -49,18 +49,18 @@ public class BuyLotteryTicket extends CommandWithParameters implements IDiscordC
                 return new MessageResponse("You Don't have Enough to buy That Many Tickets. Tickets Cost " +
                                            lotteryTicketCost);
             }
-            
+    
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(amountToSpend));
-            
+    
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
                                             accountToUpdate,
                                             accountToUpdate.getId());
-            
-            
-            Lottery.pot = Lottery.pot.add(amountToSpend);
-            Lottery.addTickets(accountToUpdate, amountToBuy);
-            
-            
+    
+    
+            LotteryTask.pot = LotteryTask.pot.add(amountToSpend);
+            LotteryTask.addTickets(accountToUpdate, amountToBuy);
+    
+    
             return new MessageResponse("You've been added to the Pot -> New Balance: " + accountToUpdate.getBalance());
         }
         catch(SQLException e)

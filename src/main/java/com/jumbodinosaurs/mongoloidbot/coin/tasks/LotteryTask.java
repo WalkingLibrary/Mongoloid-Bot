@@ -14,12 +14,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class Lottery extends ScheduledTask
+public class LotteryTask extends ScheduledTask
 {
     public static BigDecimal pot = new BigDecimal("0");
     public static CopyOnWriteArrayList<UserAccount> accountsInThePot = new CopyOnWriteArrayList<UserAccount>();
     
-    public Lottery(ScheduledThreadPoolExecutor executor)
+    public LotteryTask(ScheduledThreadPoolExecutor executor)
     {
         super(executor);
     }
