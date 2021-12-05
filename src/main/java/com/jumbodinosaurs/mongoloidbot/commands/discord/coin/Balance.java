@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.sql.SQLException;
 import java.util.Base64;
 
-public class CheckBalance extends Command implements IDiscordChatEventable
+public class Balance extends Command implements IDiscordChatEventable
 {
     
     private GuildMessageReceivedEvent event;

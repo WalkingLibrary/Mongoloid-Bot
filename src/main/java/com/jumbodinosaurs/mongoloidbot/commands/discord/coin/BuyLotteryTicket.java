@@ -44,9 +44,10 @@ public class BuyLotteryTicket extends CommandWithParameters implements IDiscordC
         {
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
             
-            if(accountToUpdate.getBalance().subtract(lotteryTicketCost).signum() <= -1)
+            if(accountToUpdate.getBalance().subtract(amountToSpend).signum() <= -1)
             {
-                return new MessageResponse("You Don't have Enough to buy a Ticket. Tickets Cost " + lotteryTicketCost);
+                return new MessageResponse("You Don't have Enough to buy That Many Tickets. Tickets Cost " +
+                                           lotteryTicketCost);
             }
             
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(amountToSpend));
