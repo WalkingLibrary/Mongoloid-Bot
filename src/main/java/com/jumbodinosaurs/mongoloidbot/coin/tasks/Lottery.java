@@ -57,7 +57,6 @@ public class Lottery extends ScheduledTask
                 int randomAmount = (int) (1000 * Math.random());
                 BigDecimal amountToAdd = new BigDecimal(randomAmount + "");
                 pot = pot.add(amountToAdd);
-                EventListener.sendMessage("No One Played The Lottery... Adding to the Pot -> Pot Now: " + pot);
                 return;
             }
             
@@ -145,13 +144,13 @@ public class Lottery extends ScheduledTask
     @Override
     public int getPeriod()
     {
-        return 5;
+        return 1;
     }
     
     @Override
     public TimeUnit getTimeUnit()
     {
-        return TimeUnit.MINUTES;
+        return TimeUnit.HOURS;
     }
     
 }
