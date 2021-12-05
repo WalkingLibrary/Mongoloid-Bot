@@ -67,17 +67,24 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
                                            userToPay.getBalance().toString() +
                                            event.getGuild().getEmoteById("916589679518838794").getAsMention());
             }
-            
-            
+    
+            if(amountToPay.signum() <= -1)
+            {
+                return new MessageResponse("You Cannot Steal Peoples Money");
+            }
+    
+    
             ///Pay the Money to the Specified Account
             List<Member> mentionedMembers = event.getMessage().getMentionedMembers();
             if(mentionedMembers.size() <= 0)
             {
                 return new MessageResponse("You Didn't Tell me Who To Pay");
             }
-            
+    
             Member memberToBePaid = mentionedMembers.get(0);
             UserAccount userToBePaid;
+    
+    
             try
             {
                 userToBePaid = UserAccount.getUser(memberToBePaid);
@@ -86,14 +93,19 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
             {
                 userToBePaid = new UserAccount();
             }
-            
+    
+            if(userToPay.getId() == userToBePaid.getId())
+            {
+                return new MessageResponse("You Cannot Pay yourself.");
+            }
+    
             userToBePaid.setBalance(userToBePaid.getBalance().add(amountToPay));
-            
-            
+    
+    
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
                                             userToBePaid,
                                             userToBePaid.getId());
-            
+    
             //Remove the Amount paid from the Users Account
             userToPay.setBalance(userToPay.getBalance().subtract(amountToPay));
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, userToPay, userToPay.getId());
