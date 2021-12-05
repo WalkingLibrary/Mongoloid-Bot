@@ -4,6 +4,7 @@ import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.CommandManager;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.Permission;
@@ -20,7 +21,14 @@ public class EventListener extends ListenerAdapter
 {
     private static final String allowedChannelName = "mongoloid-bot";
     
-    
+    public static void sendMessage(String message)
+    {
+        Main.jdaController.getJda()
+                          .getGuildById("472944533089550397")
+                          .getTextChannelById("916766127793782804")
+                          .sendMessage(message)
+                          .complete();
+    }
     
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
@@ -29,14 +37,21 @@ public class EventListener extends ListenerAdapter
         {
             try
             {
-                System.out.println("Command: " + event.getMessage().getContentRaw());
+                String message = event.getMessage().getContentRaw();
+                System.out.println("Command: " + message);
+                
+                if(message == null || message.length() <= 0)
+                {
+                    return;
+                }
+                
                 Command command = CommandManager.filterCommand(event.getMessage().getContentRaw(), true);
-    
+                
                 if(command == null)
                 {
                     return;
                 }
-    
+                
                 if(command instanceof IDiscordChatEventable)
                 {
                     ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);

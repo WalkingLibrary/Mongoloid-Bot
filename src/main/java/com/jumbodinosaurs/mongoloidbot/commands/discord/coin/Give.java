@@ -6,6 +6,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
@@ -15,8 +16,10 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Pay extends CommandWithParameters implements IDiscordChatEventable
+public class Give extends CommandWithParameters implements IDiscordChatEventable,
+                                                                   IAdminCommand
 {
+    
     private GuildMessageReceivedEvent event;
     
     @Override
@@ -44,9 +47,9 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
         {
             //Get the Amount To Pay
             String amountString = getParameters().get(0).getParameter();
-    
+            
             //Validate Number Passed
-    
+            
             BigDecimal amountToPay;
             try
             {
@@ -56,19 +59,8 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
             {
                 return new MessageResponse("Amount Told To Pay is Not Valid");
             }
-    
+            
             // Check the Amount of Money in the Users Account
-            Member memberToPay = event.getMember();
-            UserAccount userToPay = UserAccount.getUser(memberToPay);
-    
-            if(userToPay.getBalance().subtract(amountToPay).signum() <= -1)
-            {
-                return new MessageResponse("You Don't Have enough Money for that\nCurrent Balance: " +
-                                           userToPay.getBalance().toString() +
-                                           event.getGuild().getEmoteById("916589679518838794").getAsMention());
-            }
-            
-            
             ///Pay the Money to the Specified Account
             List<Member> mentionedMembers = event.getMessage().getMentionedMembers();
             if(mentionedMembers.size() <= 0)
@@ -94,9 +86,6 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
                                             userToBePaid,
                                             userToBePaid.getId());
             
-            //Remove the Amount paid from the Users Account
-            userToPay.setBalance(userToPay.getBalance().subtract(amountToPay));
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, userToPay, userToPay.getId());
             
             return new MessageResponse("Paid " +
                                        amountToPay +
@@ -108,11 +97,6 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
         {
             e.printStackTrace();
             return new MessageResponse("Error Checking Database");
-        }
-        catch(UserQueryException e)
-        {
-            e.printStackTrace();
-            return new MessageResponse("Account Error");
         }
         
     }

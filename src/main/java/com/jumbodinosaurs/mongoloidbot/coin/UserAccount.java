@@ -10,18 +10,21 @@ import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class UserAccount implements SQLStoreObject,
                                             Identifiable
 {
     private transient int id;
     private String usernameBase64;
-    private BigInteger balance;
+    private BigDecimal balance;
+    private transient Member member;
+    private transient BigDecimal ticketsBought;
     
-    public UserAccount(String usernameBase64, BigInteger balance)
+    public UserAccount(String usernameBase64, BigDecimal balance)
     {
         this.usernameBase64 = usernameBase64;
         this.balance = balance;
@@ -39,27 +42,30 @@ public class UserAccount implements SQLStoreObject,
     public static UserAccount getUser(Member member)
             throws SQLException, UserQueryException
     {
-        String uniqueID = getUniqueIdentifier(member);
-        System.out.println(uniqueID);
+    
+        String uniqueID = Base64.getEncoder().encodeToString(getUniqueIdentifier(member).getBytes());
         JsonExtractLimiter limiter = new JsonExtractLimiter("usernameBase64", uniqueID);
         ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(SetupDatabaseConnection.mogoloidDatabase,
                                                                                              UserAccount.class,
                                                                                              limiter);
-        
+    
         if(loadedObjects.size() > 1)
         {
             throw new UserQueryException("More than One User for " + uniqueID);
         }
-        
+    
         if(loadedObjects.size() == 0)
         {
-            UserAccount newAccount = new UserAccount(uniqueID, new BigInteger("0"));
+            UserAccount newAccount = new UserAccount(uniqueID, new BigDecimal("0"));
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newAccount, 0);
-            return newAccount;
+            return getUser(member);
         }
-        
+    
+    
+        System.out.println(getUniqueIdentifier(member));
         UserAccount account = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), UserAccount.class);
         account.setId(loadedObjects.get(0).getId());
+        account.setMember(member);
         return account;
     }
     
@@ -73,12 +79,12 @@ public class UserAccount implements SQLStoreObject,
         this.usernameBase64 = usernameBase64;
     }
     
-    public BigInteger getBalance()
+    public BigDecimal getBalance()
     {
         return balance;
     }
     
-    public void setBalance(BigInteger balance)
+    public void setBalance(BigDecimal balance)
     {
         this.balance = balance;
     }
@@ -93,5 +99,25 @@ public class UserAccount implements SQLStoreObject,
     public void setId(int id)
     {
         this.id = id;
+    }
+    
+    public Member getMember()
+    {
+        return member;
+    }
+    
+    public void setMember(Member member)
+    {
+        this.member = member;
+    }
+    
+    public BigDecimal getTicketsBought()
+    {
+        return ticketsBought;
+    }
+    
+    public void setTicketsBought(BigDecimal ticketsBought)
+    {
+        this.ticketsBought = ticketsBought;
     }
 }
