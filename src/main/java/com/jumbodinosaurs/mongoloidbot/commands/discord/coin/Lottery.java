@@ -37,13 +37,18 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
                 return new MessageResponse("Enter a Valid Number");
             }
         }
-        
+    
+        if(amountToBuy.signum() <= -1)
+        {
+            return new MessageResponse("You Cannot Steal from the Pot");
+        }
+    
         BigDecimal lotteryTicketCost = new BigDecimal(String.valueOf(1000));
         BigDecimal amountToSpend = lotteryTicketCost.multiply(amountToBuy);
         try
         {
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
-            
+        
             if(accountToUpdate.getBalance().subtract(amountToSpend).signum() <= -1)
             {
                 return new MessageResponse("You Don't have Enough to buy That Many Tickets. Tickets Cost " +
