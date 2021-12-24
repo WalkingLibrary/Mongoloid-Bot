@@ -56,10 +56,18 @@ public class Top extends Command
                 SQLDataBaseObjectHolder current = topTen.get(i);
                 UserAccount currentAccount = new Gson().fromJson(current.getJsonObject(), UserAccount.class);
                 currentAccount.setId(current.getId());
-                
+    
                 String bytes = new String(Base64.getDecoder().decode(currentAccount.getUsernameBase64()));
                 System.out.println(bytes);
-                String discordName = Main.jdaController.getJda().getUserById(bytes).getName();
+                String discordName;
+                try
+                {
+                    discordName = Main.jdaController.getJda().getUserById(bytes).getName();
+                }
+                catch(NullPointerException e)
+                {
+                    discordName = "A Lost Nomad";
+                }
                 topTenOutPut += (i + 1) + ": " + discordName + " " + currentAccount.getBalance() + "\n";
             }
             return new MessageResponse(topTenOutPut);
