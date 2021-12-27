@@ -88,11 +88,10 @@ public class EventListener extends ListenerAdapter
     {
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
         System.out.println("Voice Channel Joined: " + voiceChannelJoined.getName());
-        if(voiceChannelJoined.getName().equals("cigar lounge"))
-        {
-            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-            event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-        }
+    
+        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
+        event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
+    
         super.onGuildVoiceJoin(event);
     }
     
@@ -102,11 +101,10 @@ public class EventListener extends ListenerAdapter
     {
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
         System.out.println("Voice Channel Left: " + voiceChannelLeft.getName());
-        if(voiceChannelLeft.getName().equals("cigar lounge"))
-        {
-            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-            event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
-        }
+    
+        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
+        event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
+    
         super.onGuildVoiceLeave(event);
     }
     
@@ -116,18 +114,10 @@ public class EventListener extends ListenerAdapter
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
         System.out.println("User Moved from " + voiceChannelLeft.getName() + " to " + voiceChannelJoined.getName());
-        
-        if(voiceChannelLeft.getName().equals("cigar lounge"))
-        {
-            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-            event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
-        }
-        
-        if(voiceChannelJoined.getName().equals("cigar lounge"))
-        {
-            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-            event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-        }
+    
+        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
+        event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
+    
         super.onGuildVoiceMove(event);
     }
     
