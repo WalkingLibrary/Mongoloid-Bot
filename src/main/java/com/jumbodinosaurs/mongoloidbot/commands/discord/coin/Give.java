@@ -104,7 +104,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
     @Override
     public String getHelpMessage()
     {
-        return "Allows you to Pay a Mentioned Member.\nUsage:\n~pay 1000 @Mac_Tonight";
+        return "Allows you to Pay a Mentioned Member.\nUsage:\n~" + getClass().getSimpleName() + " 1000 @Mac_Tonight";
     }
     
     @Override
