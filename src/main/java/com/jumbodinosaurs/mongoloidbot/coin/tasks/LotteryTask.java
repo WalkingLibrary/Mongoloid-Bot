@@ -31,7 +31,7 @@ public class LotteryTask extends ScheduledTask
     public LotteryTask(ScheduledThreadPoolExecutor executor)
     {
         super(executor);
-        loadPot();
+    
     }
     
     public static void addTickets(UserAccount account, BigDecimal amount)
@@ -94,6 +94,10 @@ public class LotteryTask extends ScheduledTask
     @Override
     public void run()
     {
+        if(currentInstance == null)
+        {
+            loadPot();
+        }
         System.out.println("Spinning the Wheel");
         try
         {
@@ -101,7 +105,7 @@ public class LotteryTask extends ScheduledTask
             synchronized(accountsInThePot)
             {
                 int amountOfAccounts = accountsInThePot.size();
-                
+            
                 if(amountOfAccounts <= 0)
                 {
                     //House Wins
