@@ -141,9 +141,13 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                 case 6:
                     comboValue = comboValue.multiply(new BigDecimal("0.5"));
                     break;
-                //8: Add 8 Dollars To Winnings
+                //8: Add 8 Dollars To Winnings and force negative combo value
                 case 7:
                     winnings = winnings.add(new BigDecimal("8"));
+                    if(comboValue.signum() >= 0)
+                    {
+                        comboValue = comboValue.multiply(new BigDecimal("-1"));
+                    }
                     break;
             }
         }
@@ -166,10 +170,10 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
     
         BigDecimal totalWinnings = winnings.multiply(comboValue);
     
-        //Stop Loosing More than you have. Only add what you have to the Pot
-        if(accountToUpdate.getBalance().add(totalWinnings).signum() <= -1)
+        //Stop Loosing More than you gambled Only lose what you have gambled
+        if(amountToGamble.add(totalWinnings).signum() <= -1)
         {
-            totalWinnings = accountToUpdate.getBalance().multiply(new BigDecimal("-1"));
+            totalWinnings = amountToGamble.multiply(new BigDecimal("-1"));
         }
     
         accountToUpdate.setBalance(accountToUpdate.getBalance().add(totalWinnings));

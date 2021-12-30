@@ -33,7 +33,7 @@ public class LotteryTask extends ScheduledTask
     private static final File savedInstanceFile = GeneralUtil.checkFor(JDAController.optionsFolder,
                                                                        "savedLotteryInstance" + ".json");
     private static LotteryInstance currentInstance;
-    private final boolean firstInit = true;
+    private boolean firstInit = true;
     
     public LotteryTask(ScheduledThreadPoolExecutor executor)
     {
@@ -138,11 +138,11 @@ public class LotteryTask extends ScheduledTask
     
     
         System.out.println("Spinning the Wheel");
-        //        if(firstInit)
-        //        {
-        //            firstInit = false;
-        //            return;
-        //        }
+        if(firstInit)
+        {
+            firstInit = false;
+            return;
+        }
         try
         {
             List<UserAccount> accountsInThePot = Collections.synchronizedList(currentInstance.getAccountsInThePot());
