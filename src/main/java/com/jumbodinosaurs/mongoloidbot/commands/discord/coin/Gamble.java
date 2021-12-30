@@ -93,7 +93,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
         BigDecimal winnings = new BigDecimal(amountToGamble + "");
         BigDecimal comboValue = new BigDecimal("1");
         
-        String[] emojies = {":100:", ":P2W:", ":poultry_leg:", ":eye:", ":ring:", ":lizard:", ":TM:", ":mouse:"};
+        String[] emojies = {":100:", ":watch:", ":poultry_leg:", ":eye:", ":ring:", ":lizard:", ":monkey:", ":mouse:"};
         
         int roll1, roll2, roll3;
         
@@ -179,7 +179,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             
             if(totalWinnings.signum() <= -1)
             {
-                LotteryTask.pot = LotteryTask.pot.add(totalWinnings);
+                LotteryTask.pot = LotteryTask.pot.add(totalWinnings.abs());
             }
         }
         catch(SQLException e)
