@@ -74,6 +74,8 @@ public class LotteryTask extends ScheduledTask
         }
         catch(JsonParseException e)
         {
+            currentInstance = new LotteryInstance(new BigDecimal("0"), new ArrayList<UserAccount>());
+            savePot();
             EventListener.sendMessage("No Lottery Loaded");
         }
     }
