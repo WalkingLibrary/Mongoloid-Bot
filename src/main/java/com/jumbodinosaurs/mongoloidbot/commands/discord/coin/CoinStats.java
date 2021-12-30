@@ -30,7 +30,7 @@ public class CoinStats extends Command implements IDiscordChatEventable
         
         try
         {
-            String selectAllAccounts = "Select * from %s";
+            String selectAllAccounts = "Select * from %s;";
             
             selectAllAccounts = String.format(selectAllAccounts, UserAccount.class.getSimpleName());
             
@@ -50,13 +50,12 @@ public class CoinStats extends Command implements IDiscordChatEventable
             topTenQuery.getStatementObject().getConnection().close();
             
             BigDecimal totalMongolCoinInCirculation = new BigDecimal("0");
-            
-            for(int i = 0; i < allAccounts.size(); i++)
+    
+            for(SQLDataBaseObjectHolder objectUtil : allAccounts)
             {
-                SQLDataBaseObjectHolder current = allAccounts.get(i);
-                UserAccount currentAccount = new Gson().fromJson(current.getJsonObject(), UserAccount.class);
-                currentAccount.setId(current.getId());
-                totalMongolCoinInCirculation.add(currentAccount.getBalance());
+                UserAccount currentAccount = new Gson().fromJson(objectUtil.getJsonObject(), UserAccount.class);
+                currentAccount.setId(objectUtil.getId());
+                totalMongolCoinInCirculation = totalMongolCoinInCirculation.add(currentAccount.getBalance());
             }
             
             String output = "Total Mongoloid Coin in Circulation: " + totalMongolCoinInCirculation;
