@@ -54,6 +54,7 @@ public class LotteryTask extends ScheduledTask
                 account.setTicketsBought(amount);
                 currentInstance.getAccountsInThePot().add(account);
             }
+            savePot();
         }
     }
     
@@ -189,6 +190,7 @@ public class LotteryTask extends ScheduledTask
     public void resetThePot()
     {
         currentInstance = new LotteryInstance(new BigDecimal("0"), new ArrayList<>());
+        savePot();
     }
     
     @Override
