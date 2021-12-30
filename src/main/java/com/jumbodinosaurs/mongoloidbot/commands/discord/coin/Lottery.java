@@ -45,6 +45,12 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
     
         BigDecimal lotteryTicketCost = new BigDecimal(String.valueOf(1000));
         BigDecimal amountToSpend = lotteryTicketCost.multiply(amountToBuy);
+    
+        if(amountToSpend.subtract(lotteryTicketCost).signum() <= -1)
+        {
+            return new MessageResponse("You cannot buy Partial Tickets");
+        }
+    
         try
         {
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
