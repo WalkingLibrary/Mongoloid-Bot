@@ -4,8 +4,7 @@
 ![Sauce](https://img.shields.io/badge/100%25-Spaghetti%20Code-orange)
 ![Build Status](https://img.shields.io/badge/Build-Passing-green)
 
-#TODOS
- - add Cigar Lounge Chat
+
 
 License
 ----
