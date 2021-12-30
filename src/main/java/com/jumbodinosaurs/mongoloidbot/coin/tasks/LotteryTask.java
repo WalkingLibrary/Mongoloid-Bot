@@ -2,20 +2,26 @@ package com.jumbodinosaurs.mongoloidbot.coin.tasks;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.JDAController;
+import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.io.File;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -27,11 +33,12 @@ public class LotteryTask extends ScheduledTask
     private static final File savedInstanceFile = GeneralUtil.checkFor(JDAController.optionsFolder,
                                                                        "savedLotteryInstance" + ".json");
     private static LotteryInstance currentInstance;
+    private final boolean firstInit = true;
     
     public LotteryTask(ScheduledThreadPoolExecutor executor)
     {
         super(executor);
-    
+        loadPot();
     }
     
     public static void addTickets(UserAccount account, BigDecimal amount)
@@ -69,20 +76,54 @@ public class LotteryTask extends ScheduledTask
         try
         {
             String previouslySavedInstance = GeneralUtil.scanFileContents(savedInstanceFile);
-            LotteryInstance newInstance = new Gson().fromJson(previouslySavedInstance, LotteryInstance.class);
+            Gson transientIgnorableGson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.VOLATILE).create();
+            LotteryInstance newInstance = transientIgnorableGson.fromJson(previouslySavedInstance,
+                                                                          LotteryInstance.class);
             currentInstance = newInstance;
         }
         catch(JsonParseException e)
         {
+    
+            EventListener.sendMessage("No Lottery Loaded");
+        }
+    
+        if(currentInstance == null)
+        {
             currentInstance = new LotteryInstance(new BigDecimal("0"), new ArrayList<UserAccount>());
             savePot();
-            EventListener.sendMessage("No Lottery Loaded");
+        }
+    
+        for(UserAccount userAccount : currentInstance.getAccountsInThePot())
+        {
+            Member linkedMember = null;
+            String decodedUserAccount = new String(Base64.getDecoder().decode(userAccount.getUsernameBase64()));
+            for(Guild guild : Main.jdaController.getJda().getGuilds())
+            {
+                for(Member member : guild.getMembers())
+                {
+                    if(UserAccount.getUniqueIdentifier(member).equals(decodedUserAccount))
+                    {
+                        linkedMember = member;
+                        break;
+                    }
+                }
+            
+                if(linkedMember != null)
+                {
+                    break;
+                }
+            
+            }
+        
+            userAccount.setMember(linkedMember);
         }
     }
     
     private static void savePot()
     {
-        String savedInstance = new Gson().toJson(currentInstance);
+        Gson transientIgnorableGson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.PROTECTED).create();
+        String savedInstance = transientIgnorableGson.toJson(currentInstance);
+    
         GeneralUtil.writeContents(savedInstanceFile, savedInstance, false);
     }
     
@@ -94,11 +135,14 @@ public class LotteryTask extends ScheduledTask
     @Override
     public void run()
     {
-        if(currentInstance == null)
-        {
-            loadPot();
-        }
+    
+    
         System.out.println("Spinning the Wheel");
+        //        if(firstInit)
+        //        {
+        //            firstInit = false;
+        //            return;
+        //        }
         try
         {
             List<UserAccount> accountsInThePot = Collections.synchronizedList(currentInstance.getAccountsInThePot());
@@ -118,6 +162,7 @@ public class LotteryTask extends ScheduledTask
                 BigDecimal amountOfTicketsBought = new BigDecimal("0");
                 for(UserAccount userAccount : accountsInThePot)
                 {
+                    System.out.println(userAccount.toString());
                     amountOfTicketsBought = amountOfTicketsBought.add(userAccount.getTicketsBought());
                 }
                 BigDecimal winningNumber = amountOfTicketsBought.multiply(new BigDecimal(Math.random()));
@@ -168,7 +213,16 @@ public class LotteryTask extends ScheduledTask
                 {
                     //Get the Most up-to-date balance of the winner
                     UserAccount updatedAccount = UserAccount.getUser(winningAccount.getMember());
-                    
+    
+                    //If they are a Lost nomad Just reset the pot and add the value back
+                    if(updatedAccount.getMember() == null)
+                    {
+                        BigDecimal lastPot = getPot();
+                        resetThePot();
+                        addToPot(lastPot);
+                        return;
+                    }
+    
                     updatedAccount.setBalance(updatedAccount.getBalance().add(currentInstance.getPot()));
                     SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
                                                     updatedAccount,

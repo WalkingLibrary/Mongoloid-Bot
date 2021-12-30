@@ -21,7 +21,8 @@ public class UserAccount implements SQLStoreObject,
     private transient int id;
     private String usernameBase64;
     private BigDecimal balance;
-    private transient Member member;
+    //This is Set to protect to avoid gson serialization during persistent Pot Procedures
+    protected transient Member member;
     private transient BigDecimal ticketsBought;
     
     public UserAccount(String usernameBase64, BigDecimal balance)
@@ -119,5 +120,23 @@ public class UserAccount implements SQLStoreObject,
     public void setTicketsBought(BigDecimal ticketsBought)
     {
         this.ticketsBought = ticketsBought;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "UserAccount{" +
+               "id=" +
+               id +
+               ", usernameBase64='" +
+               usernameBase64 +
+               '\'' +
+               ", balance=" +
+               balance +
+               ", member=" +
+               member +
+               ", ticketsBought=" +
+               ticketsBought +
+               '}';
     }
 }
