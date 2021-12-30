@@ -68,7 +68,7 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
                                             accountToUpdate.getId());
     
     
-            LotteryTask.pot = LotteryTask.pot.add(amountToSpend);
+            LotteryTask.addToPot(amountToSpend);
             LotteryTask.addTickets(accountToUpdate, amountToBuy);
     
     

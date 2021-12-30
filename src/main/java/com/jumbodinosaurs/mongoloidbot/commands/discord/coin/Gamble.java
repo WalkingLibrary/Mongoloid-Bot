@@ -185,7 +185,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             
             if(totalWinnings.signum() <= -1)
             {
-                LotteryTask.pot = LotteryTask.pot.add(totalWinnings.abs());
+                LotteryTask.addToPot(totalWinnings.abs());
             }
         }
         catch(SQLException e)

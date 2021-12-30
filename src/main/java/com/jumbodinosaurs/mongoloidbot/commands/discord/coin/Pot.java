@@ -11,7 +11,7 @@ public class Pot extends Command
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        return new MessageResponse("Lottery Pot: " + LotteryTask.pot.toString());
+        return new MessageResponse("Lottery Pot: " + LotteryTask.getPot().toString());
     }
     
     @Override
