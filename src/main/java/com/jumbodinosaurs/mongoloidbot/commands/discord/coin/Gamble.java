@@ -163,19 +163,24 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                 comboValue = comboValue.multiply(new BigDecimal("-1"));
             }
         }
-        
+    
         BigDecimal totalWinnings = winnings.multiply(comboValue);
-        
+    
+        //Stop Loosing More than you have. Only add what you have to the Pot
+        if(accountToUpdate.getBalance().add(totalWinnings).signum() <= -1)
+        {
+            totalWinnings = accountToUpdate.getBalance().multiply(new BigDecimal("-1"));
+        }
+    
         accountToUpdate.setBalance(accountToUpdate.getBalance().add(totalWinnings));
-        
-        
+    
+    
         String finalMessage = "%s: -> %s\nNew Balance: %s";
         finalMessage = String.format(finalMessage, displayMessage, totalWinnings, accountToUpdate.getBalance());
-        
+    
         try
         {
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                                            accountToUpdate,
+            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, accountToUpdate,
                                             accountToUpdate.getId());
             
             if(totalWinnings.signum() <= -1)
