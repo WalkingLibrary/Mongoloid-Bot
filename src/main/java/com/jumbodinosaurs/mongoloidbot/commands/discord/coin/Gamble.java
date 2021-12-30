@@ -124,9 +124,10 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                 case 2:
                     comboValue = comboValue.multiply(new BigDecimal("-1"));
                     break;
-                //4: Add 4 Dollars To Winnings
+                //4: Add 4 Dollars To Winnings and negates ComboValue
                 case 3:
                     winnings = winnings.add(new BigDecimal("4"));
+                    comboValue = comboValue.multiply(new BigDecimal("-1"));
                     break;
                 //5: Negates Combo Value
                 case 4:
