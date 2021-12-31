@@ -78,14 +78,17 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
          * 1: Add a Dollar To Winnings
          * 2: Double Combo Value
          * 3: Negates Combo Value
-         * 4: Add 4 Dollars To Winnings
+         * 4: Add 4 Dollars To Winnings and negates ComboValue
          * 5: Negates Combo Value
          * 6: Quadruples Combo Value
          * 7: Half s the Combo Value
-         * 8: Add 8 Dollars To Winnings
+         * 8: Add 8 Dollars To Winnings and force negative combo value
          *
          *
          *  If Two of a Kind Rolled Half s your Winnings
+         *
+         *  If you Roll a 6 and not three of a kind. Guaranteed loss
+         *
          *  If Three of a Kind Jack Pot and guaranteed Positive Combo Score
          *
          *  */
@@ -151,14 +154,24 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                     break;
             }
         }
-        
+    
         //If Two of a Kind Rolled Half s your Winnings
         if((roll1 == roll2 || roll1 == roll3 || roll2 == roll3) && !(roll1 == roll2 && roll3 == roll2))
         {
             winnings = winnings.multiply(new BigDecimal(".5"));
         }
-        
-        
+    
+    
+        //If you Roll a 6 and not three of a kind. Guaranteed loss
+        if(roll1 == 5 || roll2 == 5 || roll3 == 5)
+        {
+            if(comboValue.signum() >= 0)
+            {
+                comboValue = comboValue.multiply(new BigDecimal("-1"));
+            }
+        }
+    
+    
         // If Three of a Kind Jack Pot and guaranteed Positive Combo Score
         if(roll1 == roll2 && roll3 == roll2)
         {
