@@ -24,7 +24,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             throws WaveringParametersException
     {
         
-        BigDecimal amountToGamble = new BigDecimal(String.valueOf(1));
+        BigDecimal amountToGamble = new BigDecimal("1");
         
         if(getParameters() != null && getParameters().size() >= 1)
         {
@@ -92,8 +92,8 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
          *  If Three of a Kind Jack Pot and guaranteed Positive Combo Score
          *
          *  */
-        
-        BigDecimal winnings = new BigDecimal(amountToGamble + "");
+    
+        BigDecimal amountToGambleTemp = new BigDecimal(amountToGamble + "");
         BigDecimal comboValue = new BigDecimal("1");
         
         String[] emojies = {":100:", ":watch:", ":poultry_leg:", ":eye:", ":ring:", ":lizard:", ":monkey:", ":mouse:"};
@@ -116,7 +116,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             {
                 // 1: Add a Dollar To Winnings
                 case 0:
-                    winnings = winnings.add(new BigDecimal("1"));
+                    amountToGambleTemp = amountToGambleTemp.add(new BigDecimal("1"));
                     
                     break;
                 //2: Double Combo Value
@@ -129,7 +129,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                     break;
                 //4: Add 4 Dollars To Winnings and negates ComboValue
                 case 3:
-                    winnings = winnings.add(new BigDecimal("4"));
+                    amountToGambleTemp = amountToGambleTemp.add(new BigDecimal("4"));
                     comboValue = comboValue.multiply(new BigDecimal("-1"));
                     break;
                 //5: Negates Combo Value
@@ -146,7 +146,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                     break;
                 //8: Add 8 Dollars To Winnings and force negative combo value
                 case 7:
-                    winnings = winnings.add(new BigDecimal("8"));
+                    amountToGambleTemp = amountToGambleTemp.add(new BigDecimal("8"));
                     if(comboValue.signum() >= 0)
                     {
                         comboValue = comboValue.multiply(new BigDecimal("-1"));
@@ -158,7 +158,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
         //If Two of a Kind Rolled Half s your Winnings
         if((roll1 == roll2 || roll1 == roll3 || roll2 == roll3) && !(roll1 == roll2 && roll3 == roll2))
         {
-            winnings = winnings.multiply(new BigDecimal(".5"));
+            amountToGambleTemp = amountToGambleTemp.multiply(new BigDecimal(".5"));
         }
     
     
@@ -181,12 +181,19 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             }
         }
     
-        BigDecimal totalWinnings = winnings.multiply(comboValue);
+        BigDecimal totalWinnings = amountToGambleTemp.multiply(comboValue);
     
         //Stop Loosing More than you gambled Only lose what you have gambled
         if(amountToGamble.add(totalWinnings).signum() <= -1)
         {
             totalWinnings = amountToGamble.multiply(new BigDecimal("-1"));
+        }
+    
+        //Actually Remove Gambled Winnings if you won. This way you may not lose entirely
+        // but loose what you gambled
+        if(totalWinnings.signum() >= 0)
+        {
+            accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(amountToGamble));
         }
     
         accountToUpdate.setBalance(accountToUpdate.getBalance().add(totalWinnings));
