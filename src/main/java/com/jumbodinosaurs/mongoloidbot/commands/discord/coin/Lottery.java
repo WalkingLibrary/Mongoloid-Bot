@@ -72,7 +72,10 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
             LotteryTask.addTickets(accountToUpdate, amountToBuy);
     
     
-            return new MessageResponse("You've been added to the Pot -> New Balance: " + accountToUpdate.getBalance());
+            return new MessageResponse("You've been added to the Pot -> New Balance: " +
+                                       accountToUpdate.getBalance() +
+                                       "\nNew Pot: " +
+                                       LotteryTask.getPot());
         }
         catch(SQLException e)
         {
