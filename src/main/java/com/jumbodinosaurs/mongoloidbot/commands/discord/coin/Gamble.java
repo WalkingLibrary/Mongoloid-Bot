@@ -38,7 +38,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             }
         }
         
-        if(amountToGamble.signum() <= -1)
+        if(amountToGamble.signum() <= 0)
         {
             return new MessageResponse("You Cannot Steal from the House");
         }
