@@ -55,7 +55,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
             {
                 if(member.getRoles().contains(captainRole))
                 {
-                    event.getGuild().addRoleToMember(member, captainRole).complete();
+                    event.getGuild().removeRoleFromMember(member, captainRole).complete();
                     
                 }
             }
