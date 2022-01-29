@@ -61,7 +61,7 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
             String nickNameToSet = "";
             for(int i = 0; i < getParameters().size() - 1; i++)
             {
-                nickNameToSet += getParameters().get(0).getParameter() + " ";
+                nickNameToSet += getParameters().get(i).getParameter() + " ";
             }
     
     
