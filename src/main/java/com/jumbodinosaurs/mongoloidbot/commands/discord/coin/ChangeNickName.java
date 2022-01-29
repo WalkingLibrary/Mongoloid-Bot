@@ -47,7 +47,8 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
             //1. Check their Money
             if(accountToUpdate.getBalance().subtract(nickNameChangeCost).signum() <= -1)
             {
-                return new MessageResponse("You Don't have Enough to be the Captain of the Might Ship");
+                return new MessageResponse("You Don't have Enough to change their Nick Name it costs " +
+                                           nickNameChangeCost);
             }
             
             //2. Sanitize Nick Name input
@@ -132,7 +133,11 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
     @Override
     public String getHelpMessage()
     {
-        return "Allows you to Change the Name of another Member\nCost: " + nickNameChangeCost.toString();
+        return "Allows you to Change the Name of another Member\nCost: " +
+               nickNameChangeCost +
+               "Usage: ~" +
+               getClass().getSimpleName() +
+               " funnyName @Mac_tnoghit";
     }
     
     @Override
