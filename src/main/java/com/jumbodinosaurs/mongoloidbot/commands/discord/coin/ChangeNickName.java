@@ -50,22 +50,26 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
                 return new MessageResponse("You Don't have Enough to change their Nick Name it costs " +
                                            nickNameChangeCost);
             }
-            
+    
             //2. Sanitize Nick Name input
             //Length
-            
+    
             if(getParameters() == null || getParameters().size() < 1)
             {
                 throw new WaveringParametersException("You didn't Give enough Information");
             }
-            
-            String nickNameToSet = getParameters().get(0).getParameter();
-            
+            String nickNameToSet = "";
+            for(int i = 0; i < getParameters().size() - 1; i++)
+            {
+                nickNameToSet += getParameters().get(0).getParameter() + " ";
+            }
+    
+    
             if(nickNameToSet.length() > 32)
             {
                 return new MessageResponse("The Nick Name you Entered was to long");
             }
-            
+    
             if(nickNameToSet.length() <= 0)
             {
                 return new MessageResponse("The Nick Name you Entered was to short");
