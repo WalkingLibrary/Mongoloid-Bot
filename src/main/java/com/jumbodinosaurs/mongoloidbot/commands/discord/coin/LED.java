@@ -82,7 +82,8 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
                     {
                         listOfLights += light.name() + "\n";
                     }
-                    throw new WaveringParametersException("Sorry Could Find that Light.\nHere at the Lights:\n" +
+                    throw new WaveringParametersException("Sorry, I Couldn't Find that Light.\nHere at the Lights " +
+                                                          "Available:\n" +
                                                           listOfLights);
             }
             
@@ -161,7 +162,7 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
     @Override
     public String getHelpMessage()
     {
-        return "You are the Captain Now";
+        return "Toggles a LED in Jumbos Room on or off.\nUsage: !LED green";
     }
     
     @Override

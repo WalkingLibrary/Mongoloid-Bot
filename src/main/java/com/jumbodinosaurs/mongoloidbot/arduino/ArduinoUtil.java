@@ -270,7 +270,6 @@ public class ArduinoUtil
                         imageBytes = new ByteArrayOutputStream();
                         photoPhase = true;
                         outputStream.reset();
-                        System.out.println(currentMessage);
                         continue;
                     }
                     
@@ -314,10 +313,6 @@ public class ArduinoUtil
                         imageBytes.write(currentBytes);
                     }
                     
-                    if(!photoPhase)
-                    {
-                        System.out.println(currentMessage);
-                    }
                     outputStream.reset();
                 }
             }
