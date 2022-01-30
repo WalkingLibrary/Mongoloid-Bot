@@ -250,6 +250,7 @@ public class ArduinoUtil
         ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
         boolean photoPhase = false;
         LocalDateTime deadLine = LocalDateTime.now().plusSeconds(10);
+        String overallMessage = "";
         while(LocalDateTime.now().isBefore(deadLine))
         {
             try
@@ -263,18 +264,19 @@ public class ArduinoUtil
                 {
                     byte[] currentBytes = outputStream.toByteArray();
                     String currentMessage = new String(currentBytes);
-                    
-                    if(currentMessage.contains("STARTSTART"))
+                    overallMessage += currentMessage;
+                    if(currentMessage.contains("STARTSTART") || overallMessage.contains("STARTSTART"))
                     {
                         System.out.println("Starting Photo Transfer");
                         imageBytes = new ByteArrayOutputStream();
                         photoPhase = true;
                         outputStream.reset();
+                        System.out.println(currentMessage);
                         continue;
                     }
-                    
-                    
-                    if(currentMessage.contains("ENDEND"))
+    
+    
+                    if(currentMessage.contains("ENDEND") || overallMessage.contains("ENDEND"))
                     {
                         try
                         {
@@ -305,14 +307,18 @@ public class ArduinoUtil
                         fileOutputStreamPhoto.close();
                         
                          */
-                        
+        
                     }
-                    
+    
                     if(photoPhase)
                     {
                         imageBytes.write(currentBytes);
                     }
-                    
+    
+                    if(!photoPhase)
+                    {
+                        System.out.println(currentMessage);
+                    }
                     outputStream.reset();
                 }
             }
