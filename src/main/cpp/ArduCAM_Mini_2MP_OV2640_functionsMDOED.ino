@@ -39,7 +39,8 @@ String pcSync = "";
 
   Wire.begin();
   Serial.begin(115200);
-  Serial.println("Connected");
+
+  Serial.println("Conntected");
   boolean pcConnected = false;
   while(!pcConnected)
   {
@@ -47,7 +48,7 @@ String pcSync = "";
     {
         pcSync = Serial.readString();
         Serial.println("Temp: " + pcSync);
-        
+
         if(pcSync.equals("SYN"))
         {
           Serial.println("ACK");
@@ -57,11 +58,11 @@ String pcSync = "";
         {
           pcConnected = true;
         }
-        
-        
+
+
     }
   }
-  
+
     pinMode(7, OUTPUT);
     pinMode(6, OUTPUT);
     pinMode(5, OUTPUT);
@@ -81,7 +82,7 @@ delay(100);
   Serial.println(F("\nI2C PINS"));
   Serial.print(F("\tSDA = ")); Serial.println(SDA);
   Serial.print(F("\tSCL = ")); Serial.println(SCL);
-  
+
 while(1){
   //Check if the ArduCAM SPI bus is OK
   myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
@@ -106,7 +107,7 @@ while(1){
     }
     else{
       Serial.println(F("ACK CMD OV2640 detected. END"));break;
-    } 
+    }
   }
 #else
   while(1){
@@ -120,7 +121,7 @@ while(1){
     }
     else{
       Serial.println(F("ACK CMD OV5642 detected. END"));break;
-    } 
+    }
   }
 #endif
 //Change to JPEG capture mode and initialize the OV5642 module
@@ -177,7 +178,7 @@ if (Serial.available())
 {
   temp = Serial.parseInt();
   //Serial.println("Read: " + temp);
- 
+
   switch (temp)
   {
     case 0:
@@ -190,7 +191,7 @@ if (Serial.available())
       Serial.println(F("ACK CMD switch to OV2640_176x144 END"));
     temp = 0xff;
     break;
-    case 2: 
+    case 2:
       myCAM.OV2640_set_JPEG_size(OV2640_320x240);delay(1000);
       Serial.println(F("ACK CMD switch to OV2640_320x240 END"));
     temp = 0xff;
@@ -231,7 +232,7 @@ if (Serial.available())
     start_capture = 1;
     Serial.println(F("ACK CMD CAM start single shoot. END"));
     break;
-    case 0x11: 
+    case 0x11:
     temp = 0xff;
     myCAM.set_format(JPEG);
     myCAM.InitCAM();
@@ -255,7 +256,7 @@ if (Serial.available())
     temp = 0xff;
     myCAM.set_format(BMP);
     myCAM.InitCAM();
-    #if !(defined (OV2640_MINI_2MP))        
+    #if !(defined (OV2640_MINI_2MP))
     myCAM.clear_bit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
     #endif
     myCAM.wrSensorReg16_8(0x3818, 0x81);
@@ -290,7 +291,7 @@ if (Serial.available())
      Serial.println(F("ACK CMD Set to Saturation-1 END"));break;
     case 0x54:
      myCAM.OV2640_set_Color_Saturation(Saturation_2); temp = 0xff;
-     Serial.println(F("ACK CMD Set to Saturation-2 END"));break; 
+     Serial.println(F("ACK CMD Set to Saturation-2 END"));break;
    case 0x60:
     myCAM.OV2640_set_Brightness(Brightness2); temp = 0xff;
      Serial.println(F("ACK CMD Set to Brightness+2 END"));break;
@@ -305,10 +306,10 @@ if (Serial.available())
      Serial.println(F("ACK CMD Set to Brightness-1 END"));break;
     case 0x64:
      myCAM.OV2640_set_Brightness(Brightness_2); temp = 0xff;
-     Serial.println(F("ACK CMD Set to Brightness-2 END"));break; 
+     Serial.println(F("ACK CMD Set to Brightness-2 END"));break;
     case 0x70:
       myCAM.OV2640_set_Contrast(Contrast2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Contrast+2 END"));break; 
+     Serial.println(F("ACK CMD Set to Contrast+2 END"));break;
     case 0x71:
       myCAM.OV2640_set_Contrast(Contrast1);temp = 0xff;
      Serial.println(F("ACK CMD Set to Contrast+1 END"));break;
@@ -329,62 +330,62 @@ if (Serial.available())
     Serial.println(F("ACK CMD Set to Bluish END"));break;
    case 0x82:
     myCAM.OV2640_set_Special_effects(Greenish);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Greenish END"));break;  
+    Serial.println(F("ACK CMD Set to Greenish END"));break;
    case 0x83:
     myCAM.OV2640_set_Special_effects(Reddish);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Reddish END"));break;  
+    Serial.println(F("ACK CMD Set to Reddish END"));break;
    case 0x84:
     myCAM.OV2640_set_Special_effects(BW);temp = 0xff;
-    Serial.println(F("ACK CMD Set to BW END"));break; 
+    Serial.println(F("ACK CMD Set to BW END"));break;
   case 0x85:
     myCAM.OV2640_set_Special_effects(Negative);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Negative END"));break; 
+    Serial.println(F("ACK CMD Set to Negative END"));break;
   case 0x86:
     myCAM.OV2640_set_Special_effects(BWnegative);temp = 0xff;
-    Serial.println(F("ACK CMD Set to BWnegative END"));break;   
+    Serial.println(F("ACK CMD Set to BWnegative END"));break;
    case 0x87:
     myCAM.OV2640_set_Special_effects(Normal);temp = 0xff;
     Serial.println(F("ACK CMD Set to Normal END"));
-    break; 
+    break;
 
-    
+
     case 0x88://136 Red
         seven_High = true;
         Serial.print("High");
         break;
-       
-    case 0x89://137    
+
+    case 0x89://137
         seven_High = false;
         Serial.print("Low");
         break;
 
-        
+
     case 0x90://144 Blue
         six_High = true;
         Serial.print("High");
         break;
-    case 0x91://145    
+    case 0x91://145
         six_High = false;
         Serial.print("Low");
         break;
 
-        
+
     case 0x92://146 Green
         five_High = true;
         Serial.print("High");
         break;
-    case 0x93://147    
+    case 0x93://147
         five_High = false;
         Serial.print("Low");
         break;
 
-        
-    case 0x94://148    
+
+    case 0x94://148
         Serial.print("ARDUINO");
         break;
   }
 
-  
+
 }
 
 
@@ -454,7 +455,7 @@ else if (mode == 2)
      Serial.println(F("ACK CMD Set to Saturation-1 END"));break;
     case 0x54:
      myCAM.OV2640_set_Color_Saturation(Saturation_2); temp = 0xff;
-     Serial.println(F("ACK CMD Set to Saturation-2 END"));break; 
+     Serial.println(F("ACK CMD Set to Saturation-2 END"));break;
    case 0x60:
     myCAM.OV2640_set_Brightness(Brightness2); temp = 0xff;
      Serial.println(F("ACK CMD Set to Brightness+2 END"));break;
@@ -469,10 +470,10 @@ else if (mode == 2)
      Serial.println(F("ACK CMD Set to Brightness-1 END"));break;
     case 0x64:
      myCAM.OV2640_set_Brightness(Brightness_2); temp = 0xff;
-     Serial.println(F("ACK CMD Set to Brightness-2 END"));break; 
+     Serial.println(F("ACK CMD Set to Brightness-2 END"));break;
     case 0x70:
       myCAM.OV2640_set_Contrast(Contrast2);temp = 0xff;
-     Serial.println(F("ACK CMD Set to Contrast+2 END"));break; 
+     Serial.println(F("ACK CMD Set to Contrast+2 END"));break;
     case 0x71:
       myCAM.OV2640_set_Contrast(Contrast1);temp = 0xff;
      Serial.println(F("ACK CMD Set to Contrast+1 END"));break;
@@ -493,22 +494,22 @@ else if (mode == 2)
     Serial.println(F("ACK CMD Set to Bluish END"));break;
    case 0x82:
     myCAM.OV2640_set_Special_effects(Greenish);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Greenish END"));break;  
+    Serial.println(F("ACK CMD Set to Greenish END"));break;
    case 0x83:
     myCAM.OV2640_set_Special_effects(Reddish);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Reddish END"));break;  
+    Serial.println(F("ACK CMD Set to Reddish END"));break;
    case 0x84:
     myCAM.OV2640_set_Special_effects(BW);temp = 0xff;
-    Serial.println(F("ACK CMD Set to BW END"));break; 
+    Serial.println(F("ACK CMD Set to BW END"));break;
   case 0x85:
     myCAM.OV2640_set_Special_effects(Negative);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Negative END"));break; 
+    Serial.println(F("ACK CMD Set to Negative END"));break;
   case 0x86:
     myCAM.OV2640_set_Special_effects(BWnegative);temp = 0xff;
-    Serial.println(F("ACK CMD Set to BWnegative END"));break;   
+    Serial.println(F("ACK CMD Set to BWnegative END"));break;
    case 0x87:
     myCAM.OV2640_set_Special_effects(Normal);temp = 0xff;
-    Serial.println(F("ACK CMD Set to Normal END"));break;     
+    Serial.println(F("ACK CMD Set to Normal END"));break;
   }
     if (start_capture == 2)
     {
@@ -573,11 +574,11 @@ else if (mode == 3)
   {
     Serial.println(F("ACK CMD CAM Capture Done. END"));
     delay(50);
-   
+
     uint8_t temp, temp_last;
     uint32_t length = 0;
     length = myCAM.read_fifo_length();
-    if (length >= MAX_FIFO_SIZE ) 
+    if (length >= MAX_FIFO_SIZE )
     {
       Serial.println(F("ACK CMD Over size. END"));
       myCAM.clear_fifo_flag();
@@ -591,7 +592,7 @@ else if (mode == 3)
     }
     myCAM.CS_LOW();
     myCAM.set_fifo_burst();//Set fifo burst mode
-    
+
     Serial.write(0xFF);
     Serial.write(0xAA);
     for (temp = 0; temp < BMPIMAGEOFFSET; temp++)
@@ -627,7 +628,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   uint8_t temp = 0, temp_last = 0;
   uint32_t length = 0;
   length = myCAM.read_fifo_length();
-  Serial.println("STARTSTART");
+  Serial.println("STRSTR");
   Serial.println(length, DEC);
   Serial.flush();
   delay(50);
@@ -667,6 +668,6 @@ uint8_t read_fifo_burst(ArduCAM myCAM)
   is_header = false;
   Serial.flush();
 
-  
+
   return 1;
 }

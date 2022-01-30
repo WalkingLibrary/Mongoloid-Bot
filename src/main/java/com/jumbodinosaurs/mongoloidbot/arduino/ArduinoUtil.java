@@ -265,7 +265,7 @@ public class ArduinoUtil
                     byte[] currentBytes = outputStream.toByteArray();
                     String currentMessage = new String(currentBytes);
                     overallMessage += currentMessage;
-                    if(currentMessage.contains("STARTSTART") || overallMessage.contains("STARTSTART"))
+                    if(currentMessage.contains("STRSTR"))
                     {
                         overallMessage = "";
                         System.out.println("Starting Photo Transfer");
@@ -277,7 +277,7 @@ public class ArduinoUtil
                     }
     
     
-                    if(currentMessage.contains("ENDEND") || overallMessage.contains("ENDEND"))
+                    if(currentMessage.contains("ENDEND"))
                     {
                         try
                         {
