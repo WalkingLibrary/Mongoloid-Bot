@@ -17,6 +17,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class EventListener extends ListenerAdapter
 {
     private static final String allowedChannelName = "mongoloid-bot";
@@ -70,9 +72,29 @@ public class EventListener extends ListenerAdapter
     
     
                 MessageResponse response = command.getExecutedMessage();
+    
+    
                 if(response != null)
                 {
                     event.getChannel().sendMessage(response.getMessage()).complete();
+                }
+    
+                //check file size
+                if(response.getAttachments() != null)
+                {
+                    for(File file : response.getAttachments())
+                    {
+                        if(file.length() < 8000000)
+                        {
+                            event.getChannel().sendFile(file).complete();
+                        }
+                        else
+                        {
+                            event.getChannel()
+                                 .sendMessage(" File: " + file.getName() + " was to large To Send.")
+                                 .complete();
+                        }
+                    }
                 }
             }
             catch(WaveringParametersException e)
