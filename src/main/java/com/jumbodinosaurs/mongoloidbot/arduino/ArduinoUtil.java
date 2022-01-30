@@ -267,6 +267,7 @@ public class ArduinoUtil
                     overallMessage += currentMessage;
                     if(currentMessage.contains("STARTSTART") || overallMessage.contains("STARTSTART"))
                     {
+                        overallMessage = "";
                         System.out.println("Starting Photo Transfer");
                         imageBytes = new ByteArrayOutputStream();
                         photoPhase = true;
