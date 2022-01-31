@@ -95,7 +95,8 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
             }
             catch(IOException e)
             {
-                return new MessageResponse("Sorry there was Error Toggling that Light");
+                e.printStackTrace();
+                return new MessageResponse("Sorry here was Error Toggling that Light");
             }
             
             //Take Photo

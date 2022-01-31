@@ -248,79 +248,75 @@ public class ArduinoUtil
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         InputStream scanner = arduinoCamPort.getInputStream();
         ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
-        boolean photoPhase = false;
+    
         LocalDateTime deadLine = LocalDateTime.now().plusSeconds(10);
-        String overallMessage = "";
+    
+    
+        int startByteOne, startByteTwo, endByteOne, endByteTwo;
+        startByteOne = 255;//0xFF
+        startByteTwo = 216;//0xD8
+        endByteOne = 255;//0xFF
+        endByteTwo = 217;//0xD9
+    
+    
+        int previousByte = -2;
+        int currentByte = -2;
+        boolean photoPhase = false;
+        int bytesSize = 0;
         while(LocalDateTime.now().isBefore(deadLine))
         {
             try
             {
                 while(scanner.available() >= 1)
                 {
-                    outputStream.write(scanner.read());
-                }
-                
-                if(outputStream.size() > 0)
-                {
-                    byte[] currentBytes = outputStream.toByteArray();
-                    String currentMessage = new String(currentBytes);
-                    overallMessage += currentMessage;
-                    if(currentMessage.contains("STRSTR"))
+                    if(previousByte == -2)
                     {
-                        overallMessage = "";
-                        System.out.println("Starting Photo Transfer");
-                        imageBytes = new ByteArrayOutputStream();
-                        photoPhase = true;
-                        outputStream.reset();
-                        System.out.println(currentMessage);
+                        previousByte = scanner.read();
+                        currentByte = previousByte;
                         continue;
                     }
-    
-    
-                    if(currentMessage.contains("ENDEND"))
+                
+                    previousByte = currentByte;
+                    currentByte = scanner.read();
+                
+                    if(currentByte == startByteTwo && previousByte == startByteOne)
                     {
-                        try
-                        {
-                            BufferedImage preImage = ImageIO.read(new ByteArrayInputStream(imageBytes.toByteArray()));
-                            photoPhase = false;
-                            outputStream.reset();
-                            System.out.println("Photo Done Transferring");
-                            return preImage;
-                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                            if(photoAttempts < 2)
-                            {
-                                return takePhoto(photoAttempts++);
-                            }
-                        }
-                        /* Writing Photo to A File
-                        LocalDateTime localDateTime = LocalDateTime.now();
-                        String fileName = localDateTime.toString().replaceAll(":", "-");
-                        System.out.println(fileName);
-                        File jpg = GeneralUtil.checkFor(JDAController.optionsFolder, "" + fileName + ".jpeg");
-                        FileOutputStream fileOutputStreamPhoto = new FileOutputStream(jpg);
-                        
-                        
-                        System.out.println("Amount Read: " + imageBytes.toByteArray().length);
-                        fileOutputStreamPhoto.write(imageBytes.toByteArray());
-                        fileOutputStreamPhoto.close();
-                        
-                         */
-        
+                        System.out.println("Starting Photo Transfer");
+                        photoPhase = true;
+                        imageBytes.write(previousByte);
+                        imageBytes.write(currentByte);
+                        continue;
                     }
-    
+                
                     if(photoPhase)
                     {
-                        imageBytes.write(currentBytes);
+                        imageBytes.write(currentByte);
+                    
+                        if(currentByte == endByteTwo && previousByte == endByteOne)
+                        {
+                        
+                            imageBytes.write(previousByte);
+                            imageBytes.write(currentByte);
+                            try
+                            {
+                                System.out.println("Photo Done Transferring");
+                                BufferedImage preImage = ImageIO.read(new ByteArrayInputStream(imageBytes.toByteArray()));
+                                photoPhase = false;
+                                outputStream.reset();
+                                return preImage;
+                            }
+                            catch(Exception e)
+                            {
+                                e.printStackTrace();
+                                if(photoAttempts < 2)
+                                {
+                                    return takePhoto(photoAttempts++);
+                                }
+                            }
+                        }
                     }
-    
-                    if(!photoPhase)
-                    {
-                        System.out.println(currentMessage);
-                    }
-                    outputStream.reset();
+                
+                
                 }
             }
             catch(SerialPortTimeoutException e)
