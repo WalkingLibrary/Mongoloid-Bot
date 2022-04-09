@@ -12,6 +12,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -70,7 +71,14 @@ public class DeleteMessage extends CommandWithParameters implements IDiscordChat
             //Delete Message
             for (TextChannel textChannel : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getTextChannels())
             {
-                textChannel.deleteMessageById(messageToDelete).complete();
+                try
+                {
+                    textChannel.deleteMessageById(messageToDelete).complete();
+                }
+                catch (ErrorResponseException e)
+                {
+                    //Do nothing
+                }
             }
 
 
