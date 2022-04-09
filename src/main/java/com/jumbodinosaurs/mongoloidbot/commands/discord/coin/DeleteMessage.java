@@ -8,6 +8,7 @@ import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -18,7 +19,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class DeleteMessage extends CommandWithParameters implements IDiscordChatEventable
+public class DeleteMessage extends CommandWithParameters implements IDiscordChatEventable, IAdminCommand
 {
 
     private GuildMessageReceivedEvent event;
@@ -26,7 +27,6 @@ public class DeleteMessage extends CommandWithParameters implements IDiscordChat
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
-
 
         /*
          * Process for Deleting another Users Message
