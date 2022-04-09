@@ -26,8 +26,8 @@ public class EventListener extends ListenerAdapter
     public static void sendMessage(String message)
     {
         Main.jdaController.getJda()
-                          .getGuildById("472944533089550397")
-                          .getTextChannelById("916766127793782804")
+                .getGuildById(Main.GUILD_ID)
+                .getTextChannelById(Main.BOT_CHANNEL_ID)
                           .sendMessage(message)
                           .complete();
     }

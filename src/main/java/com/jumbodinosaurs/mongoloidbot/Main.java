@@ -14,14 +14,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class Main
 {
     public static JDAController jdaController;
+    public static final String GUILD_ID = "472944533089550397";
+    public static final String BOT_CHANNEL_ID = "916766127793782804";
     private static final ScheduledThreadPoolExecutor threadScheduler = new ScheduledThreadPoolExecutor(4);
-    
-    
+
+
     public static void main(String[] args)
     {
-    
-    
-        if(args.length <= 0)
+
+
+        if (args.length <= 0)
         {
             System.out.println("Usage: Java -jar jarName.jar discordToken");
             System.exit(1);
