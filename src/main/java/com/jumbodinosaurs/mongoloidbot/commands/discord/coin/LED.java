@@ -64,7 +64,7 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
             
             
             String lightToToggleString = getParameters().get(0).getParameter();
-            ArduinoUtil.Light lightToToggle = null;
+            ArduinoUtil.Light lightToToggle;
             switch(lightToToggleString.toLowerCase())
             {
                 case "blue":
@@ -96,7 +96,7 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
             catch(IOException e)
             {
                 e.printStackTrace();
-                return new MessageResponse("Sorry here was Error Toggling that Light");
+                return new MessageResponse("Sorry there was Error Toggling that Light");
             }
             
             //Take Photo
@@ -133,7 +133,7 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
             
             
             // Return Photo message
-            ArrayList<File> attachments = new ArrayList<File>();
+            ArrayList<File> attachments = new ArrayList<>();
             File streamToFile = null;
             try
             {
