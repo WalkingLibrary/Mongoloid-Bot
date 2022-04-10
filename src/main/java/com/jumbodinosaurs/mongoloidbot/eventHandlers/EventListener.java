@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -33,16 +32,16 @@ public class EventListener extends ListenerAdapter
     }
     
     @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event)
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
-        if(event.getChannel().getName().equals(allowedChannelName))
+        if (event.getChannel().getName().equals(allowedChannelName))
         {
             try
             {
                 String message = event.getMessage().getContentRaw();
                 System.out.println("Command: " + message);
-                
-                if(message == null || message.length() <= 0)
+
+                if (message == null || message.length() <= 0)
                 {
                     return;
                 }
@@ -103,43 +102,43 @@ public class EventListener extends ListenerAdapter
             }
         }
     }
-    
-    
+
+
     @Override
-    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event)
+    public void onGuildVoiceJoin(GuildVoiceJoinEvent event)
     {
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
         System.out.println("Voice Channel Joined: " + voiceChannelJoined.getName());
-    
+
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-    
+
         super.onGuildVoiceJoin(event);
     }
-    
-    
+
+
     @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event)
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event)
     {
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
         System.out.println("Voice Channel Left: " + voiceChannelLeft.getName());
-    
+
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
-    
+
         super.onGuildVoiceLeave(event);
     }
-    
+
     @Override
-    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event)
+    public void onGuildVoiceMove(GuildVoiceMoveEvent event)
     {
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
         System.out.println("User Moved from " + voiceChannelLeft.getName() + " to " + voiceChannelJoined.getName());
-    
+
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-    
+
         super.onGuildVoiceMove(event);
     }
     

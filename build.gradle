@@ -1,14 +1,15 @@
 /*Build ShadowJar for working jar*/
 buildscript {
     repositories {
-        jcenter()
+        gradlePluginPortal()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
 
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        //https://plugins.gradle.org/plugin/com.github.johnrengelman.plugin-shadow
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
         //https://plugins.gradle.org/plugin/com.dmdirc.git-version
         classpath "gradle.plugin.com.zoltu.gradle.plugin:git-versioning:3.0.3"
     }
@@ -22,29 +23,29 @@ configurations.all {
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
 }
-
-apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 apply plugin: 'idea'
 
 dependencies {
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'
-    compile 'com.google.code.gson:gson:2.8.5'
+    implementation group: 'junit', name: 'junit', version: '4.12'
+    implementation 'com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'
+    implementation 'com.google.code.gson:gson:2.8.5'
     // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
-    compile 'com.sun.mail:javax.mail:1.6.1'
+    implementation 'com.sun.mail:javax.mail:1.6.1'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    compile 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 
     //https://mvnrepository.com/artifact/com.fazecast/jSerialComm/2.7.0
-    compile group: 'com.fazecast', name: 'jSerialComm', version: '2.7.0'
+    implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.7.0'
+
     //Discord Lib
-    compile 'com.github.DV8FromTheWorld:JDA:v4.3.0'
+    implementation "net.dv8tion:JDA:4.4.0_350"
 }
 
 
