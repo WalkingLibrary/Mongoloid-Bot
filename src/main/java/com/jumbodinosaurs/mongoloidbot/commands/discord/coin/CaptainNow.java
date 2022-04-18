@@ -72,7 +72,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
             
             
             //5. Add Money to Pot
-            LotteryTask.addToPot(costOfCaptainRank);
+            LotteryTask.addToPot(costOfCaptainRank.divide(new BigDecimal("4")));
             
             
             return new MessageResponse("You are the Captain Now");
