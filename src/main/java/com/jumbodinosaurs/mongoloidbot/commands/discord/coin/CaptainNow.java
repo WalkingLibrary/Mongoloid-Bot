@@ -3,13 +3,11 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -66,9 +64,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
             //4. Remove money for their account
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(costOfCaptainRank));
             
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                                            accountToUpdate,
-                                            accountToUpdate.getId());
+            UserAccount.updateUser(accountToUpdate);
             
             
             //5. Add Money to Pot

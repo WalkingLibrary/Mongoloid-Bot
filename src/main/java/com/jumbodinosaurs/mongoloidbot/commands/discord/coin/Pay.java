@@ -3,11 +3,9 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -83,38 +81,37 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
     
             Member memberToBePaid = mentionedMembers.get(0);
             UserAccount userToBePaid;
-    
-    
+
+
             try
             {
                 userToBePaid = UserAccount.getUser(memberToBePaid);
             }
-            catch(UserQueryException e)
+            catch (UserQueryException e)
             {
                 userToBePaid = new UserAccount();
             }
-    
-            if(userToPay.getId() == userToBePaid.getId())
+
+            if (userToPay.getId() == userToBePaid.getId())
             {
                 return new MessageResponse("You Cannot Pay yourself.");
             }
-    
+
             userToBePaid.setBalance(userToBePaid.getBalance().add(amountToPay));
-    
-    
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                                            userToBePaid,
-                                            userToBePaid.getId());
-    
+
+
+            UserAccount.updateUser(userToBePaid);
+
             //Remove the Amount paid from the Users Account
             userToPay.setBalance(userToPay.getBalance().subtract(amountToPay));
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, userToPay, userToPay.getId());
-            
+
+            UserAccount.updateUser(userToPay);
+
             return new MessageResponse("Paid " +
-                                       amountToPay +
-                                       event.getGuild().getEmoteById("916589679518838794").getAsMention() +
-                                       " to " +
-                                       memberToBePaid.getUser().getName());
+                    amountToPay +
+                    event.getGuild().getEmoteById("916589679518838794").getAsMention() +
+                    " to " +
+                    memberToBePaid.getUser().getName());
         }
         catch(SQLException e)
         {

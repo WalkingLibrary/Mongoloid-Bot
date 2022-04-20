@@ -3,14 +3,12 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -85,10 +83,7 @@ public class DeleteMessage extends CommandWithParameters implements IDiscordChat
             // Remove money for their account
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(costToToggleLight));
 
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                    accountToUpdate,
-                    accountToUpdate.getId());
-
+            UserAccount.updateUser(accountToUpdate);
 
             // Add Money to Pot
             LotteryTask.addToPot(costToToggleLight);

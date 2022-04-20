@@ -3,14 +3,12 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.arduino.ArduinoUtil;
 import com.jumbodinosaurs.mongoloidbot.arduino.exception.PhotoTimeoutException;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import javax.imageio.ImageIO;
@@ -102,36 +100,35 @@ public class LED extends CommandWithParameters implements IDiscordChatEventable
             //Take Photo
             
             BufferedImage photoOfLight = null;
-            
-            
+
+
             try
             {
                 photoOfLight = ArduinoUtil.takePhoto();
             }
-            catch(IOException | PhotoTimeoutException e)
+            catch (IOException | PhotoTimeoutException e)
             {
                 e.printStackTrace();
             }
-            
-            if(photoOfLight == null)
+
+            if (photoOfLight == null)
             {
                 return new MessageResponse("The Light was toggled But there was an error Taking a Photo of it. Sorry " +
-                                           ":(");
+                        ":(");
             }
-            
-            
+
+
             // Remove money for their account
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(costToToggleLight));
-            
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                                            accountToUpdate,
-                                            accountToUpdate.getId());
-            
-            
+
+
+            UserAccount.updateUser(accountToUpdate);
+
+
             // Add Money to Pot
             LotteryTask.addToPot(costToToggleLight);
-            
-            
+
+
             // Return Photo message
             ArrayList<File> attachments = new ArrayList<>();
             File streamToFile = null;

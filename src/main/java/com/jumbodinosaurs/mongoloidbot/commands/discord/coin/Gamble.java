@@ -3,12 +3,10 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.math.BigDecimal;
@@ -204,10 +202,10 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
     
         try
         {
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, accountToUpdate,
-                                            accountToUpdate.getId());
-            
-            if(totalWinnings.signum() <= -1)
+
+            UserAccount.updateUser(accountToUpdate);
+
+            if (totalWinnings.signum() <= -1)
             {
                 LotteryTask.addToPot(totalWinnings.abs());
             }

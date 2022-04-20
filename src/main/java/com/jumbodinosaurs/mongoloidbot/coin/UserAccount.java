@@ -6,6 +6,7 @@ import com.jumbodinosaurs.devlib.database.objectHolder.JsonExtractLimiter;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLStoreObject;
+import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,38 +44,66 @@ public class UserAccount implements SQLStoreObject,
     public static UserAccount getUser(Member member)
             throws SQLException, UserQueryException
     {
-    
+        /*
+         * Process for Getting User
+         * 1. Get Unique ID From Member
+         * 2. Craft Limiter
+         * 3. Query For User
+         * 4. Error For Edge Cases
+         * 5. Create Account if Missing -> Recursive Call For User Return
+         * 6. Return Crafted User
+         *  */
+
+        //1. Get Unique ID From Member
         String uniqueID = Base64.getEncoder().encodeToString(getUniqueIdentifier(member).getBytes());
-        JsonExtractLimiter limiter = new JsonExtractLimiter("usernameBase64", uniqueID);
-        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(SetupDatabaseConnection.mogoloidDatabase,
-                                                                                             UserAccount.class,
-                                                                                             limiter);
-    
-        if(loadedObjects.size() > 1)
+
+        //2. Craft Limiter
+        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
+
+        JsonExtractLimiter limiter = new JsonExtractLimiter("usernameBase64", idToSearchFor);
+
+        //3. Query For User
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                UserAccount.class,
+                limiter);
+
+        //4. Error For Edge Cases
+        if (loadedObjects.size() > 1)
         {
             throw new UserQueryException("More than One User for " + uniqueID);
         }
-    
-        if(loadedObjects.size() == 0)
+
+
+        // 5. Create Account if Missing -> Recursive Call For User Return
+        if (loadedObjects.size() == 0)
         {
             UserAccount newAccount = new UserAccount(uniqueID, new BigDecimal("0"));
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newAccount, 0);
             return getUser(member);
         }
-    
-    
-        System.out.println(getUniqueIdentifier(member));
+
+        //6. Return Crafted User
         UserAccount account = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), UserAccount.class);
         account.setId(loadedObjects.get(0).getId());
         account.setMember(member);
         return account;
     }
-    
+
+    public static void updateUser(UserAccount account) throws SQLException
+    {
+
+        SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
+                account,
+                account.getId());
+    }
+
+
     public String getUsernameBase64()
     {
         return usernameBase64;
     }
-    
+
     public void setUsernameBase64(String usernameBase64)
     {
         this.usernameBase64 = usernameBase64;

@@ -3,12 +3,10 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
-import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.math.BigDecimal;
@@ -54,28 +52,27 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
         try
         {
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
-        
-            if(accountToUpdate.getBalance().subtract(amountToSpend).signum() <= -1)
+
+            if (accountToUpdate.getBalance().subtract(amountToSpend).signum() <= -1)
             {
                 return new MessageResponse("You Don't have Enough to buy That Many Tickets. Tickets Cost " +
-                                           lotteryTicketCost);
+                        lotteryTicketCost);
             }
-    
+
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(amountToSpend));
-    
-            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
-                                            accountToUpdate,
-                                            accountToUpdate.getId());
-    
-    
+
+
+            UserAccount.updateUser(accountToUpdate);
+
+
             LotteryTask.addToPot(amountToSpend);
             LotteryTask.addTickets(accountToUpdate, amountToBuy);
-    
-    
+
+
             return new MessageResponse("You've been added to the Pot -> New Balance: " +
-                                       accountToUpdate.getBalance() +
-                                       "\nNew Pot: " +
-                                       LotteryTask.getPot());
+                    accountToUpdate.getBalance() +
+                    "\nNew Pot: " +
+                    LotteryTask.getPot());
         }
         catch(SQLException e)
         {
