@@ -7,6 +7,7 @@ import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class Give extends CommandWithParameters implements IDiscordChatEventable,
-                                                                   IAdminCommand
+        IAdminCommand, IOwnerCommand
 {
     
     private GuildMessageReceivedEvent event;

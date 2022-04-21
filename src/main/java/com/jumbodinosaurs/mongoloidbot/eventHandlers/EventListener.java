@@ -7,6 +7,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -45,45 +46,62 @@ public class EventListener extends ListenerAdapter
                 {
                     return;
                 }
-                
+
                 Command command = CommandManager.filterCommand(event.getMessage().getContentRaw(), true);
-                
-                if(command == null)
+
+                if (command == null)
                 {
                     return;
                 }
-                
-                if(command instanceof IDiscordChatEventable)
+
+                if (command instanceof IDiscordChatEventable)
                 {
                     ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);
                 }
-    
-                if(command instanceof IAdminCommand)
+
+                if (event.getMember() == null)
                 {
-                    if(!event.getMember().hasPermission(Permission.ADMINISTRATOR))
+                    return;
+                }
+
+                if (command instanceof IAdminCommand)
+                {
+                    if (!event.getMember().hasPermission(Permission.ADMINISTRATOR))
                     {
                         event.getChannel()
-                             .sendMessage("You Don't Have the needed Permissions for that Command")
-                             .complete();
+                                .sendMessage("You Don't Have the needed Permissions for that Command")
+                                .complete();
                         return;
                     }
                 }
-    
-    
+
+
+                if (command instanceof IOwnerCommand)
+                {
+                    if (!event.getMember().getId().equals("230481636565843969"))
+                    {
+                        event.getChannel()
+                                .sendMessage("You Don't Have the needed Permissions for that Command")
+                                .complete();
+                        return;
+                    }
+                }
+
+
                 MessageResponse response = command.getExecutedMessage();
-    
-    
-                if(response != null)
+
+
+                if (response != null)
                 {
                     event.getChannel().sendMessage(response.getMessage()).complete();
                 }
-    
+
                 //check file size
-                if(response.getAttachments() != null)
+                if (response.getAttachments() != null)
                 {
-                    for(File file : response.getAttachments())
+                    for (File file : response.getAttachments())
                     {
-                        if(file.length() < 8000000)
+                        if (file.length() < 8000000)
                         {
                             event.getChannel().sendFile(file).complete();
                         }
