@@ -50,7 +50,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
 
             //2. Remove Rank From everyone else
             Role captainRole = event.getGuild().getRoleById(captainID);
-            for (Member member : Main.jdaController.getJda().getGuildById(captainID).getMembers())
+            for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
             {
                 if (member.getRoles().contains(captainRole))
                 {

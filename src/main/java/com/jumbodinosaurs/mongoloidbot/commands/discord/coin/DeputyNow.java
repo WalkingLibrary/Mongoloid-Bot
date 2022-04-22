@@ -64,7 +64,7 @@ public class DeputyNow extends Command implements IDiscordChatEventable
             //4. Remove Rank From everyone else
 
             Role deputyCaptainRole = event.getGuild().getRoleById(deputyID);
-            for (Member member : Main.jdaController.getJda().getGuildById(deputyID).getMembers())
+            for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
             {
                 if (member.getRoles().contains(deputyCaptainRole))
                 {
