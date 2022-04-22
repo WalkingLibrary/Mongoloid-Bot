@@ -17,14 +17,15 @@ import java.sql.SQLException;
 
 public class CaptainNow extends Command implements IDiscordChatEventable
 {
-    
+
     private GuildMessageReceivedEvent event;
-    
+    public static final String captainID = "820504481153286145";
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         /*
          * Process for setting Captain
          * 1. Check their Money
@@ -42,22 +43,22 @@ public class CaptainNow extends Command implements IDiscordChatEventable
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
             BigDecimal costOfCaptainRank = new BigDecimal("1000000");
             //1. Check their Money
-            if(accountToUpdate.getBalance().subtract(costOfCaptainRank).signum() <= -1)
+            if (accountToUpdate.getBalance().subtract(costOfCaptainRank).signum() <= -1)
             {
                 return new MessageResponse("You Don't have Enough to be the Captain of the Might Ship");
             }
-            
+
             //2. Remove Rank From everyone else
-            Role captainRole = event.getGuild().getRoleById("820504481153286145");
-            for(Member member : Main.jdaController.getJda().getGuildById("472944533089550397").getMembers())
+            Role captainRole = event.getGuild().getRoleById(captainID);
+            for (Member member : Main.jdaController.getJda().getGuildById(captainID).getMembers())
             {
-                if(member.getRoles().contains(captainRole))
+                if (member.getRoles().contains(captainRole))
                 {
                     event.getGuild().removeRoleFromMember(member, captainRole).complete();
-                    
+
                 }
             }
-            
+
             //3. Add Rank to them
             event.getGuild().addRoleToMember(event.getMember(), captainRole).complete();
             
