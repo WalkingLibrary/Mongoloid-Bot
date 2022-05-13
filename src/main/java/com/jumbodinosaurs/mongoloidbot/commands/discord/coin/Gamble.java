@@ -89,6 +89,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
          *
          *  If Three of a Kind Jack Pot and guaranteed Positive Combo Score
          *
+         *  If you pass the one in a million chance you get 1 mil added on if you gambled more than 1 thousand
          *  */
     
         BigDecimal amountToGambleTemp = new BigDecimal(amountToGamble + "");
@@ -168,28 +169,42 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
                 comboValue = comboValue.multiply(new BigDecimal("-1"));
             }
         }
-    
-    
+
+
         // If Three of a Kind Jack Pot and guaranteed Positive Combo Score
-        if(roll1 == roll2 && roll3 == roll2)
+        if (roll1 == roll2 && roll3 == roll2)
         {
-            if(comboValue.signum() <= -1)
+            if (comboValue.signum() <= -1)
             {
                 comboValue = comboValue.multiply(new BigDecimal("-1"));
             }
         }
-    
+
         BigDecimal totalWinnings = amountToGambleTemp.multiply(comboValue);
-    
+
+
+        //If you pass the one in a million chance you get 1 mil added on if you gambled more than 1 thousand
+        if (amountToGamble.subtract(new BigDecimal(1000)).signum() >= 0)
+        {
+            int winningNumber = 1;
+            int rolledNumber = (int) (1000000 * Math.random());
+
+
+            if (rolledNumber == winningNumber)
+            {
+                totalWinnings = totalWinnings.add(new BigDecimal(1000000));
+            }
+        }
+
         //Stop Loosing More than you gambled Only lose what you have gambled
-        if(amountToGamble.add(totalWinnings).signum() <= -1)
+        if (amountToGamble.add(totalWinnings).signum() <= -1)
         {
             totalWinnings = amountToGamble.multiply(new BigDecimal("-1"));
         }
-    
+
         //Actually Remove Gambled Winnings if you won. This way you may not lose entirely
         // but loose what you gambled
-        if(totalWinnings.signum() >= 0)
+        if (totalWinnings.signum() >= 0)
         {
             accountToUpdate.setBalance(accountToUpdate.getBalance().subtract(amountToGamble));
         }
