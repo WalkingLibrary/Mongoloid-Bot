@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.entities.Member;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -123,6 +123,7 @@ public class LotteryTask extends ScheduledTask
     private static void savePot()
     {
         Gson transientIgnorableGson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.PROTECTED).create();
+        currentInstance.setPot(getPot());
         String savedInstance = transientIgnorableGson.toJson(currentInstance);
     
         GeneralUtil.writeContents(savedInstanceFile, savedInstance, false);
@@ -130,7 +131,7 @@ public class LotteryTask extends ScheduledTask
     
     public static BigDecimal getPot()
     {
-        return currentInstance.getPot().round(new MathContext(5));
+        return currentInstance.getPot().setScale(5, RoundingMode.UP);
     }
     
     @Override
