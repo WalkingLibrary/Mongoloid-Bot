@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Member;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -129,7 +130,7 @@ public class LotteryTask extends ScheduledTask
     
     public static BigDecimal getPot()
     {
-        return currentInstance.getPot();
+        return currentInstance.getPot().round(new MathContext(5));
     }
     
     @Override
