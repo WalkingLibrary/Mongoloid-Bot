@@ -3,7 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
+import com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery.LotteryTask;
 
 public class Pot extends Command
 {
@@ -11,7 +11,7 @@ public class Pot extends Command
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        return new MessageResponse("Lottery Pot: " + LotteryTask.getPot().toString());
+        return new MessageResponse("Lottery Pot: " + LotteryTask.getPot());
     }
     
     @Override

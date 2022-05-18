@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks;
+package com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery;
 
 
 import com.google.gson.Gson;

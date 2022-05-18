@@ -6,7 +6,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
-import com.jumbodinosaurs.mongoloidbot.coin.tasks.LotteryTask;
+import com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks;
+package com.jumbodinosaurs.mongoloidbot.coin.tasks.coingenerator;
 
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
