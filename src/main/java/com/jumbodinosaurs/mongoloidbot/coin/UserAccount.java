@@ -8,6 +8,7 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLStoreObject;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -90,9 +91,63 @@ public class UserAccount implements SQLStoreObject,
         return account;
     }
 
+    public static void updatePlayer(Player player) throws SQLException
+    {
+        SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
+                player,
+                player.getId());
+    }
+
+    public Player getPlayer(Member member) throws SQLException, UserQueryException
+    {
+        /*
+         * Process for Getting User
+         * 1. Get Player From Member
+         * 2. Craft Limiter
+         * 3. Query For Player
+         * 4. Error For Edge Cases
+         * 5. Create Player if Missing -> Recursive Call For Player Return
+         * 6. Return Crafted Player
+         *  */
+
+        //1.  Get Player From Member
+        String uniqueID = Base64.getEncoder().encodeToString(getUniqueIdentifier(member).getBytes());
+
+        //2.  Craft Limiter
+        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
+
+        JsonExtractLimiter limiter = new JsonExtractLimiter("userAccountId", idToSearchFor);
+
+        //3.  Query For Player
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                Player.class,
+                limiter);
+
+        //4. Error For Edge Cases
+        if (loadedObjects.size() > 1)
+        {
+            throw new UserQueryException("More than One Player for User " + uniqueID);
+        }
+
+
+        // 5. Create Account if Missing -> Recursive Call For User Return
+        if (loadedObjects.size() == 0)
+        {
+            Player newPlayer = new Player(idToSearchFor);
+            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newPlayer, 0);
+            return getPlayer(member);
+        }
+
+        //6. Return Crafted User
+        Player player = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), Player.class);
+        player.setUserAccountId(idToSearchFor);
+        player.setId(loadedObjects.get(0).getId());
+        return player;
+    }
+
     public static void updateUser(UserAccount account) throws SQLException
     {
-
         SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
                 account,
                 account.getId());
