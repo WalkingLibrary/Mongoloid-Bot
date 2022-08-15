@@ -197,8 +197,8 @@ public class LotteryTask extends ScheduledTask
                 if(rolledNumber == houseWinningNumber)
                 {
                     //House Wins
-                    resetThePot();
                     EventListener.sendMessage("The House Won the Lottery of " + currentInstance.getPot().toString());
+                    resetThePot();
                     return;
                     
                 }

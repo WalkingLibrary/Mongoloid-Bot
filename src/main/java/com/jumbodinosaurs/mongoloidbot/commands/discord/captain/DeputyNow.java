@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;

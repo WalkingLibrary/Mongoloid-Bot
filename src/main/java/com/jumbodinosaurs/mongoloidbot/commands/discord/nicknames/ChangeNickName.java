@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.nicknames;
 
 
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;

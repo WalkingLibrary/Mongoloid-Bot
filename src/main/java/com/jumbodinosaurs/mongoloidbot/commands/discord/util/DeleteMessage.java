@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.util;
 
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
@@ -7,8 +7,6 @@ import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery.LotteryTask;
-import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
-import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
