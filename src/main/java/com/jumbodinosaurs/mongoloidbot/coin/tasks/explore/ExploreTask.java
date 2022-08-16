@@ -76,6 +76,7 @@ public class ExploreTask extends ScheduledTask
                 if (playersCurrentInventory.getItems().size() >= Inventory.maxInventoryAmount)
                 {
                     currentAccountsPlayer.setPendingItem(randomItem);
+                    currentAccountsPlayer.setCurrentTask(null);
                     UserAccount.updatePlayer(currentAccountsPlayer);
                     continue;
                 }

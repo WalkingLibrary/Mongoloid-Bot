@@ -59,6 +59,10 @@ public class Inventory extends Command implements IDiscordChatEventable
                 inventoryContents += key + ". " + currentItem.getName() + "\n";
             }
 
+            if (currentUsersPlayer.getPendingItem() != null)
+            {
+                inventoryContents += "Pending Item: " + currentUsersPlayer.getPendingItem().getName();
+            }
 
             if (inventoryContents.equals(""))
             {
