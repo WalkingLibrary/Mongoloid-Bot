@@ -3,7 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery.LotteryTask;
+import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
 
 public class Pot extends Command
 {

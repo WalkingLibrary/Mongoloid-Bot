@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery;
+package com.jumbodinosaurs.mongoloidbot.tasks.lottery;
 
 
 import com.google.gson.Gson;
@@ -9,9 +9,9 @@ import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.JDAController;
 import com.jumbodinosaurs.mongoloidbot.Main;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
-import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.coin;
+package com.jumbodinosaurs.mongoloidbot.models;
 
 import com.google.gson.Gson;
 import com.jumbodinosaurs.devlib.database.Identifiable;
@@ -7,8 +7,8 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLStoreObject;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
-import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
+import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 

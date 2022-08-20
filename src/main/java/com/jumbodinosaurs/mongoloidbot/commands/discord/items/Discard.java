@@ -3,11 +3,11 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
-import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 

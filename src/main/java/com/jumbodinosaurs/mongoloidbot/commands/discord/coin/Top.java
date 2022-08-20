@@ -9,7 +9,7 @@ import com.jumbodinosaurs.devlib.database.Query;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 
 import java.sql.ResultSet;

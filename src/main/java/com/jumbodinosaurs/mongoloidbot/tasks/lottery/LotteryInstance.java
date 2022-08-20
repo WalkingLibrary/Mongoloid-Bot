@@ -1,6 +1,6 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery;
+package com.jumbodinosaurs.mongoloidbot.tasks.lottery;
 
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

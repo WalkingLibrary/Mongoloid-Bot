@@ -8,8 +8,8 @@ import com.jumbodinosaurs.devlib.database.DataBaseUtil;
 import com.jumbodinosaurs.devlib.database.Query;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 

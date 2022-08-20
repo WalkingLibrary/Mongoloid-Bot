@@ -1,14 +1,14 @@
-package com.jumbodinosaurs.mongoloidbot.commands.discord.led;
+package com.jumbodinosaurs.mongoloidbot.commands.discord.coin.led;
 
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.mongoloidbot.arduino.ArduinoUtil;
 import com.jumbodinosaurs.mongoloidbot.arduino.exception.PhotoTimeoutException;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
-import com.jumbodinosaurs.mongoloidbot.coin.exceptions.UserQueryException;
-import com.jumbodinosaurs.mongoloidbot.coin.tasks.lottery.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
+import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import javax.imageio.ImageIO;

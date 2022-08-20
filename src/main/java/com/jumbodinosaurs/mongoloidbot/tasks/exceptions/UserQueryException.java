@@ -1,4 +1,4 @@
-package com.jumbodinosaurs.mongoloidbot.coin.exceptions;
+package com.jumbodinosaurs.mongoloidbot.tasks.exceptions;
 
 public class UserQueryException extends Exception
 {

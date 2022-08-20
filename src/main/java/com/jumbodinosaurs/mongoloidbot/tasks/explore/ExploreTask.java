@@ -1,16 +1,16 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks.explore;
+package com.jumbodinosaurs.mongoloidbot.tasks.explore;
 
 import com.google.gson.Gson;
 import com.jumbodinosaurs.devlib.database.objectHolder.NoLimit;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.CurrentTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;

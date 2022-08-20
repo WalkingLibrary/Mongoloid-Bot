@@ -1,8 +1,8 @@
-package com.jumbodinosaurs.mongoloidbot.coin.tasks.millionairesclub;
+package com.jumbodinosaurs.mongoloidbot.tasks.millionairesclub;
 
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.mongoloidbot.Main;
-import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
