@@ -1,16 +1,17 @@
 package com.jumbodinosaurs.mongoloidbot.coin.tasks.explore;
 
+import com.google.gson.Gson;
+import com.jumbodinosaurs.devlib.database.objectHolder.NoLimit;
+import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
+import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
-import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.coin.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.CurrentTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -39,15 +40,13 @@ public class ExploreTask extends ScheduledTask
     {
         try
         {
-            //Go Though all the Server Members
-            JDA localController = Main.jdaController.getJda();
-            Guild localGuild = localController.getGuildById(Main.GUILD_ID);
-            for (Member guildMember : localGuild.getMemberCache().asList())
+            //Go Though all the Players in the database
+            for (SQLDataBaseObjectHolder objectHolder : SQLDatabaseObjectUtil.loadObjects(
+                    SetupDatabaseConnection.mogoloidDatabase, Player.class,
+                    new NoLimit()))
             {
-
-                UserAccount account = UserAccount.getUser(guildMember);
-                Player currentAccountsPlayer = account.getPlayer(guildMember);
-
+                Player currentAccountsPlayer = new Gson().fromJson(objectHolder.getJsonObject(), Player.class);
+                currentAccountsPlayer.setId(objectHolder.getId());
                 if (currentAccountsPlayer.getCurrentTask() == null)
                 {
                     continue;
@@ -63,7 +62,7 @@ public class ExploreTask extends ScheduledTask
 
 
                 //Roll to see if they get an Item
-                int rolledNumber = (int) (Math.random() * 100);
+                int rolledNumber = (int) (Math.random() * 10);
                 if (rolledNumber > 10)
                 {
                     continue;
@@ -81,9 +80,17 @@ public class ExploreTask extends ScheduledTask
                     continue;
                 }
 
-                playersCurrentInventory.getItems().put(playersCurrentInventory.getItems().size() + 1, randomItem);
-                currentAccountsPlayer.setCurrentTask(null);
-                UserAccount.updatePlayer(currentAccountsPlayer);
+
+                for (int i = 1; i < Inventory.maxInventoryAmount; i++)
+                {
+                    if (!playersCurrentInventory.getItems().containsKey(i))
+                    {
+                        playersCurrentInventory.getItems().put(i, randomItem);
+                        currentAccountsPlayer.setCurrentTask(null);
+                        UserAccount.updatePlayer(currentAccountsPlayer);
+                        break;
+                    }
+                }
             }
             System.out.println("Done Running Exploring");
         }

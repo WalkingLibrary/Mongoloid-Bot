@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class Keep extends CommandWithParameters implements IDiscordChatEventable
+public class Swap extends CommandWithParameters implements IDiscordChatEventable
 {
 
     private GuildMessageReceivedEvent event;
@@ -50,15 +50,21 @@ public class Keep extends CommandWithParameters implements IDiscordChatEventable
 
             HashMap<Integer, Item> playersInventory = currentUsersPlayer.getInventory().getItems();
 
-            if (!playersInventory.containsKey(slotToSwap))
+            if (slotToSwap <= 0 || slotToSwap > com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory.maxInventoryAmount)
             {
                 return new MessageResponse("That isn't a valid slot!");
             }
 
+            Item oldItem = null;
+            if (playersInventory.containsKey(slotToSwap))
+            {
+                oldItem = playersInventory.get(slotToSwap);
+            }
             playersInventory.put(slotToSwap, currentUsersPlayer.getPendingItem());
 
+            currentUsersPlayer.setPendingItem(oldItem);
             UserAccount.updatePlayer(currentUsersPlayer);
-            return new MessageResponse("Your Pending Item has been Swapped!");
+            return new MessageResponse(oldItem.getName() + " has been swapped!");
         }
         catch (SQLException e)
         {
