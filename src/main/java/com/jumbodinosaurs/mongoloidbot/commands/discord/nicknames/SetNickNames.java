@@ -17,17 +17,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SetNickNames extends CommandWithParameters implements IDiscordChatEventable,
-                                                                           IAdminCommand
+        IAdminCommand
 {
     private static final File nickNamesDir = GeneralUtil.checkFor(GeneralUtil.userDir, "NickNameLists", true);
     private GuildMessageReceivedEvent event;
-    
+
+
+    @Override
+    public String getCategory()
+    {
+        return "Nicknames";
+    }
+
     public static String getRandomNickname(ArrayList<String> nickNames)
     {
         int randomIndex = (int) (nickNames.size() * Math.random());
         return nickNames.get(randomIndex);
     }
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException

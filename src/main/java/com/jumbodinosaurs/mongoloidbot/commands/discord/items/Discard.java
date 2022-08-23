@@ -20,6 +20,12 @@ public class Discard extends CommandWithParameters implements IDiscordChatEventa
 
 
     @Override
+    public String getCategory()
+    {
+        return "Item";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
         Member member = event.getMember();

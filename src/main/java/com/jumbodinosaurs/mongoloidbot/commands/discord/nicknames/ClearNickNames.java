@@ -12,17 +12,24 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class ClearNickNames extends Command implements IDiscordChatEventable,
-                                                               IAdminCommand
+        IAdminCommand
 {
     private GuildMessageReceivedEvent event;
-    
+
+
+    @Override
+    public String getCategory()
+    {
+        return "Nicknames";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         Guild guild = event.getGuild();
-        if(guild == null)
+        if (guild == null)
         {
             return new MessageResponse("Error No Guild Given");
         }

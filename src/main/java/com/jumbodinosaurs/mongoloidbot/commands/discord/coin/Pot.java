@@ -7,13 +7,20 @@ import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
 
 public class Pot extends Command
 {
+
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
         return new MessageResponse("Lottery Pot: " + LotteryTask.getPot());
     }
-    
+
     @Override
     public String getHelpMessage()
     {

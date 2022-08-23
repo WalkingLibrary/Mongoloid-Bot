@@ -14,9 +14,15 @@ import java.util.Base64;
 
 public class Bal extends Command implements IDiscordChatEventable
 {
-    
+
     private GuildMessageReceivedEvent event;
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
@@ -24,7 +30,7 @@ public class Bal extends Command implements IDiscordChatEventable
         Member member = event.getMember();
         String uniqueIdentifier = UserAccount.getUniqueIdentifier(member);
         String discordUserNameBase64 = Base64.getEncoder().encodeToString(uniqueIdentifier.getBytes());
-        
+
         try
         {
             UserAccount currentUser = UserAccount.getUser(member);

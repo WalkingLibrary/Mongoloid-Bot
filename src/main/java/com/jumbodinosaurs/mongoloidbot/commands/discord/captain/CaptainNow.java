@@ -22,6 +22,12 @@ public class CaptainNow extends Command implements IDiscordChatEventable
     public static final String captainID = "820504481153286145";
 
     @Override
+    public String getCategory()
+    {
+        return "Captain";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {

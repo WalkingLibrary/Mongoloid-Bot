@@ -20,6 +20,13 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
 
     private GuildMessageReceivedEvent event;
 
+
+    @Override
+    public String getCategory()
+    {
+        return "Item";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException

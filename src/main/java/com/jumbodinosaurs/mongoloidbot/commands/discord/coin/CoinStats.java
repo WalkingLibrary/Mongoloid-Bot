@@ -20,14 +20,20 @@ import java.util.ArrayList;
 
 public class CoinStats extends Command implements IDiscordChatEventable
 {
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     private GuildMessageReceivedEvent event;
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         try
         {
             String selectAllAccounts = "Select * from %s;";

@@ -19,6 +19,12 @@ public class Explore extends Command implements IDiscordChatEventable
     private GuildMessageReceivedEvent event;
 
     @Override
+    public String getCategory()
+    {
+        return "Item";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
         Member member = event.getMember();

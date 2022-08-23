@@ -19,10 +19,16 @@ import java.util.List;
 
 public class ChangeNickName extends CommandWithParameters implements IDiscordChatEventable
 {
-    
+
     private static final BigDecimal nickNameChangeCost = new BigDecimal("5000");
     private GuildMessageReceivedEvent event;
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Nicknames";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException

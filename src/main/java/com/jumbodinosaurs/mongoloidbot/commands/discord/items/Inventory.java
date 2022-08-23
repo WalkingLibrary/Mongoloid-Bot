@@ -21,6 +21,13 @@ public class Inventory extends Command implements IDiscordChatEventable
     public static int maxInventoryAmount = 5;
     private GuildMessageReceivedEvent event;
 
+
+    @Override
+    public String getCategory()
+    {
+        return "Item";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException

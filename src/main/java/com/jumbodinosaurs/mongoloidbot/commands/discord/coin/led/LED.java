@@ -21,14 +21,20 @@ import java.util.ArrayList;
 
 public class LED extends CommandWithParameters implements IDiscordChatEventable
 {
-    
+
     private GuildMessageReceivedEvent event;
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Random";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         /*
          * Process for changing an LED Status
          * Check their Money

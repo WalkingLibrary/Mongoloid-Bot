@@ -14,9 +14,14 @@ import java.util.Base64;
 
 public class Balance extends Command implements IDiscordChatEventable
 {
-    
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     private GuildMessageReceivedEvent event;
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException

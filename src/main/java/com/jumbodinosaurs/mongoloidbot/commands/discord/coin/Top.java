@@ -20,11 +20,17 @@ import java.util.Base64;
 public class Top extends Command
 {
     @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
-        
+
+
         try
         {
             String topTenStatement = "Select *, JSON_EXTRACT(%s, \"$.%s\") as balance from %s ORDER BY " +

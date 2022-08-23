@@ -20,6 +20,12 @@ public class DeputyNow extends Command implements IDiscordChatEventable
     private GuildMessageReceivedEvent event;
 
     @Override
+    public String getCategory()
+    {
+        return "Captain";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
         /*

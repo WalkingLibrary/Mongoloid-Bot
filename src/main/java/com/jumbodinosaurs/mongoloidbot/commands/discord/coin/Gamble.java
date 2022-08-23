@@ -14,14 +14,20 @@ import java.sql.SQLException;
 
 public class Gamble extends CommandWithParameters implements IDiscordChatEventable
 {
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     private GuildMessageReceivedEvent event;
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         BigDecimal amountToGamble = new BigDecimal("1");
         
         if(getParameters() != null && getParameters().size() >= 1)

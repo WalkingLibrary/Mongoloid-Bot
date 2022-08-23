@@ -18,14 +18,20 @@ import java.util.List;
 public class Give extends CommandWithParameters implements IDiscordChatEventable,
         IAdminCommand, IOwnerCommand
 {
-    
+
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     private GuildMessageReceivedEvent event;
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        if(getParameters() == null || getParameters().size() < 1)
+        if (getParameters() == null || getParameters().size() < 1)
         {
             throw new WaveringParametersException("You didn't Give enough Information");
         }

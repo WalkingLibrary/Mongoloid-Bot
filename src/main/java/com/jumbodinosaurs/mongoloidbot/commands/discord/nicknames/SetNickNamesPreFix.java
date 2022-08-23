@@ -12,16 +12,23 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class SetNickNamesPreFix extends CommandWithParameters implements IDiscordChatEventable,
-                                                                                 IAdminCommand
+        IAdminCommand
 {
-    
+
     private GuildMessageReceivedEvent event;
-    
+
+
+    @Override
+    public String getCategory()
+    {
+        return "Nicknames";
+    }
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        if(getParameters() == null || getParameters().size() <= 0)
+        if (getParameters() == null || getParameters().size() <= 0)
         {
             throw new WaveringParametersException("No List Given");
         }

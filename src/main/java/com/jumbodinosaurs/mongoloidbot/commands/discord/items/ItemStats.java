@@ -21,6 +21,12 @@ public class ItemStats extends CommandWithParameters implements IDiscordChatEven
     private GuildMessageReceivedEvent event;
 
     @Override
+    public String getCategory()
+    {
+        return "Item";
+    }
+
+    @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
         Member member = event.getMember();

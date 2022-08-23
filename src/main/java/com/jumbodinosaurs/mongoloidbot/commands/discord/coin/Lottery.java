@@ -14,14 +14,19 @@ import java.sql.SQLException;
 
 public class Lottery extends CommandWithParameters implements IDiscordChatEventable
 {
-    
+    @Override
+    public String getCategory()
+    {
+        return "Coin";
+    }
+
     private GuildMessageReceivedEvent event;
-    
+
     @Override
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        
+
         BigDecimal amountToBuy = new BigDecimal(String.valueOf(1));
         
         if(getParameters() != null && getParameters().size() >= 1)
