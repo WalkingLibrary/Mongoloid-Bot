@@ -55,6 +55,10 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
                 return new MessageResponse("Please Enter Valid Numbers");
             }
 
+            if (priceToSell.signum() < 0)
+            {
+                return new MessageResponse("You cannot Steal Money from People");
+            }
 
             if (slotToSell < 1 || slotToSell > Inventory.maxInventoryAmount)
             {

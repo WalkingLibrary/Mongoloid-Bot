@@ -20,7 +20,7 @@ public class Help extends com.jumbodinosaurs.devlib.commands.Help
             commandsToList += "**" + category + "**:\n```\n";
             for (Command command : CommandManager.getLoadedCommands())
             {
-                if (command.getCategory().equals(category))
+                if (command.getCategory().equals(category) && !(command instanceof Help))
                 {
                     commandsToList += command.getCommand() + "\n";
                 }
