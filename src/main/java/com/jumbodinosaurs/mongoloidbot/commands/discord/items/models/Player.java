@@ -1,5 +1,7 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.items.models;
 
+import java.math.BigDecimal;
+
 public class Player
 {
 
@@ -9,9 +11,12 @@ public class Player
 
     private int stamina;
 
+    private Item itemForSale;
+    private BigDecimal itemSellPrice;
+
     private Item pendingItem;
 
-    private Inventory inventory;
+    private PlayerInventory inventory;
 
     private String userAccountId;
 
@@ -20,7 +25,7 @@ public class Player
     public Player(String userAccountId)
     {
         this.health = 100;
-        this.inventory = new Inventory();
+        this.inventory = new PlayerInventory();
         this.userAccountId = userAccountId;
     }
 
@@ -34,12 +39,12 @@ public class Player
         this.health = health;
     }
 
-    public Inventory getInventory()
+    public PlayerInventory getInventory()
     {
         return inventory;
     }
 
-    public void setInventory(Inventory inventory)
+    public void setInventory(PlayerInventory inventory)
     {
         this.inventory = inventory;
     }
@@ -92,5 +97,25 @@ public class Player
     public void setId(int id)
     {
         this.id = id;
+    }
+
+    public Item getItemForSale()
+    {
+        return itemForSale;
+    }
+
+    public void setItemForSale(Item itemForSale)
+    {
+        this.itemForSale = itemForSale;
+    }
+
+    public BigDecimal getItemSellPrice()
+    {
+        return itemSellPrice;
+    }
+
+    public void setItemSellPrice(BigDecimal itemSellPrice)
+    {
+        this.itemSellPrice = itemSellPrice;
     }
 }

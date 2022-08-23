@@ -5,6 +5,7 @@ import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
@@ -37,7 +38,7 @@ public class Inventory extends Command implements IDiscordChatEventable
             if (currentUsersPlayer.getInventory() == null)
             {
                 currentUsersPlayer.setInventory(
-                        new com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Inventory());
+                        new PlayerInventory());
             }
 
             HashMap<Integer, Item> playersInventory = currentUsersPlayer.getInventory().getItems();
@@ -61,8 +62,17 @@ public class Inventory extends Command implements IDiscordChatEventable
 
             if (currentUsersPlayer.getPendingItem() != null)
             {
-                inventoryContents += "Pending Item: " + currentUsersPlayer.getPendingItem().getName();
+                inventoryContents += "Pending Item: " + currentUsersPlayer.getPendingItem().getName() + "\n";
             }
+
+            if (currentUsersPlayer.getItemForSale() != null)
+            {
+                inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale()
+                        .getName() + "\nPrice: " + currentUsersPlayer.getItemSellPrice() + " " + event.getGuild()
+                        .getEmoteById("916589679518838794")
+                        .getAsMention();
+            }
+
 
             if (inventoryContents.equals(""))
             {

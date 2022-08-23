@@ -3,9 +3,9 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
@@ -41,7 +41,7 @@ public class ItemStats extends CommandWithParameters implements IDiscordChatEven
 
             if (currentUsersPlayer.getInventory() == null)
             {
-                currentUsersPlayer.setInventory(new Inventory());
+                currentUsersPlayer.setInventory(new PlayerInventory());
             }
 
             HashMap<Integer, Item> playersInventory = currentUsersPlayer.getInventory().getItems();

@@ -2,11 +2,11 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items.models;
 
 import java.util.HashMap;
 
-public class Inventory
+public class PlayerInventory
 {
     private HashMap<Integer, Item> items;
 
-    public Inventory()
+    public PlayerInventory()
     {
         this.items = new HashMap<>();
     }

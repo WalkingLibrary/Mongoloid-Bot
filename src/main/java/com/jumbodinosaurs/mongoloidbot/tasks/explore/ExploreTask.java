@@ -9,6 +9,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.CurrentTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
@@ -69,7 +70,7 @@ public class ExploreTask extends ScheduledTask
                 }
 
                 Item randomItem = ItemUntil.generateRandomItem();
-                com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Inventory playersCurrentInventory = currentAccountsPlayer.getInventory();
+                PlayerInventory playersCurrentInventory = currentAccountsPlayer.getInventory();
                 System.out.println("Explorer Found Item");
 
                 if (playersCurrentInventory.getItems().size() >= Inventory.maxInventoryAmount)
