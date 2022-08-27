@@ -70,6 +70,12 @@ public class Swap extends CommandWithParameters implements IDiscordChatEventable
 
             currentUsersPlayer.setPendingItem(oldItem);
             UserAccount.updatePlayer(currentUsersPlayer);
+
+            if (oldItem == null)
+            {
+                return new MessageResponse("Slot " + slotToSwap + " has been swapped!");
+            }
+
             return new MessageResponse(oldItem.getName() + " has been swapped!");
         }
         catch (SQLException e)

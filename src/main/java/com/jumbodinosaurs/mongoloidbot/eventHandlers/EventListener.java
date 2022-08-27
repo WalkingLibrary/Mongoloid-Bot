@@ -22,16 +22,21 @@ import java.io.File;
 public class EventListener extends ListenerAdapter
 {
     private static final String allowedChannelName = "mongoloid-bot";
-    
+
     public static void sendMessage(String message)
+    {
+        sendMessage(message, Main.BOT_CHANNEL_ID);
+    }
+
+    public static void sendMessage(String message, String channelId)
     {
         Main.jdaController.getJda()
                 .getGuildById(Main.GUILD_ID)
-                .getTextChannelById(Main.BOT_CHANNEL_ID)
-                          .sendMessage(message)
-                          .complete();
+                .getTextChannelById(channelId)
+                .sendMessage(message)
+                .complete();
     }
-    
+
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {

@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.SQLException;
 
-public class Explore extends Command implements IDiscordChatEventable
+public class Battle extends Command implements IDiscordChatEventable
 {
 
     private GuildMessageReceivedEvent event;
@@ -41,13 +41,13 @@ public class Explore extends Command implements IDiscordChatEventable
                 return new MessageResponse(
                         "Sorry, you are already " + currentUsersPlayer.getCurrentTask().getTaskName().name());
             }
-            
-            CurrentTask exploringTask = new CurrentTask(CurrentTask.TaskType.EXPLORING);
-            currentUsersPlayer.setCurrentTask(exploringTask);
+
+            CurrentTask battlingTask = new CurrentTask(CurrentTask.TaskType.BATTLING);
+            currentUsersPlayer.setCurrentTask(battlingTask);
 
             UserAccount.updatePlayer(currentUsersPlayer);
 
-            return new MessageResponse(username + " is now Exploring for Items!");
+            return new MessageResponse(username + " is now Battling for King Khan!");
         }
         catch (SQLException e)
         {

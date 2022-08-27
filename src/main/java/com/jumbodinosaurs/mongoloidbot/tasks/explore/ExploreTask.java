@@ -41,13 +41,27 @@ public class ExploreTask extends ScheduledTask
     {
         try
         {
-            //Go Though all the Players in the database
+
+            /*
+             * Process for Running Explore task
+             * 1. Get all the Players in the Database
+             * 2. Check if they are Exploring
+             * 3. Run Chance to Find Item
+             * 4. Add Item to their Inventory or Pending Slot
+             * */
+            //1. Get all the Players in the Database
+            // - Parse the Player
             for (SQLDataBaseObjectHolder objectHolder : SQLDatabaseObjectUtil.loadObjects(
                     SetupDatabaseConnection.mogoloidDatabase, Player.class,
                     new NoLimit()))
             {
+
+                //- Parse the Player
                 Player currentAccountsPlayer = new Gson().fromJson(objectHolder.getJsonObject(), Player.class);
                 currentAccountsPlayer.setId(objectHolder.getId());
+
+                //2. Check if they are Exploring
+                //If there task is null continue in the loop of all players
                 if (currentAccountsPlayer.getCurrentTask() == null)
                 {
                     continue;
@@ -56,38 +70,48 @@ public class ExploreTask extends ScheduledTask
                 boolean isExploring = currentAccountsPlayer.getCurrentTask()
                         .getTaskName()
                         .equals(CurrentTask.TaskType.EXPLORING);
+                //IF their Task is not Exploring Continue
                 if (!isExploring)
                 {
                     continue;
                 }
 
 
-                //Roll to see if they get an Item
+                //3. Run Chance to Find Item
+                //10% chance
                 int rolledNumber = (int) (Math.random() * 10);
                 if (rolledNumber > 10)
                 {
                     continue;
                 }
+                System.out.println(currentAccountsPlayer.getUserAccountId() + " has Found an Item");
 
+                // 4. Add Item to their Inventory or Pending Slot
                 Item randomItem = ItemUntil.generateRandomItem();
                 PlayerInventory playersCurrentInventory = currentAccountsPlayer.getInventory();
-                System.out.println("Explorer Found Item");
 
+
+                // Check their inventory size, if full then place in the pending slot and update the player
                 if (playersCurrentInventory.getItems().size() >= Inventory.maxInventoryAmount)
                 {
                     currentAccountsPlayer.setPendingItem(randomItem);
                     currentAccountsPlayer.setCurrentTask(null);
+
+                    System.out.println("Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
                     UserAccount.updatePlayer(currentAccountsPlayer);
                     continue;
                 }
 
-
-                for (int i = 1; i < Inventory.maxInventoryAmount; i++)
+                //Since there inventory isn't full go over each slot and find the empty one add it
+                // and update the player
+                for (int i = 1; i <= Inventory.maxInventoryAmount; i++)
                 {
-                    if (!playersCurrentInventory.getItems().containsKey(i))
+                    Item currentSlotItem = playersCurrentInventory.getItems().get(i);
+                    if (currentSlotItem == null)
                     {
                         playersCurrentInventory.getItems().put(i, randomItem);
                         currentAccountsPlayer.setCurrentTask(null);
+                        System.out.println("Updating Slot " + i + ": " + new Gson().toJson(currentAccountsPlayer));
                         UserAccount.updatePlayer(currentAccountsPlayer);
                         break;
                     }

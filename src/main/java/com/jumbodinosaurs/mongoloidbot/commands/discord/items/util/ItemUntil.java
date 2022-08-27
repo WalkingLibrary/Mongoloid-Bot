@@ -3,8 +3,10 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items.util;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Ability;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class ItemUntil
 {
@@ -47,6 +49,19 @@ public class ItemUntil
         int randomAdjectiveRolled = (int) (Math.random() * adjectives.length);
 
         return adjectives[randomAdjectiveRolled];
+    }
+
+    public static ArrayList<Item> getItemsOfAbilityType(Player player, Ability.AbilityType abilityType)
+    {
+        ArrayList<Item> playerItems = new ArrayList<Item>();
+        for (Item item : player.getInventory().getItems().values())
+        {
+            if (item.getAbility().getType().equals(abilityType))
+            {
+                playerItems.add(item);
+            }
+        }
+        return playerItems;
     }
 
 

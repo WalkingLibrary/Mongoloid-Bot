@@ -7,6 +7,7 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLStoreObject;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
+import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
@@ -32,16 +33,28 @@ public class UserAccount implements SQLStoreObject,
         this.usernameBase64 = usernameBase64;
         this.balance = balance;
     }
-    
+
     public UserAccount()
     {
     }
-    
+
     public static String getUniqueIdentifier(Member member)
     {
         return member.getIdLong() + "";
     }
-    
+
+    public static String convertAccountIdToMemberId(String accountId)
+    {
+        return new String(Base64.getDecoder().decode(accountId));
+    }
+
+    public static Member getMemberFromAccountId(String accountId)
+    {
+        return Main.jdaController.getJda()
+                .getGuildById(Main.GUILD_ID)
+                .getMemberById(convertAccountIdToMemberId(accountId));
+    }
+
     public static UserAccount getUser(Member member)
             throws SQLException, UserQueryException
     {
@@ -96,6 +109,52 @@ public class UserAccount implements SQLStoreObject,
         SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
                 player,
                 player.getId());
+    }
+
+    public static Player getPlayer(String uniqueID) throws SQLException, UserQueryException
+    {
+        /*
+         * Process for Getting User
+         * 1. Get Player From Member
+         * 2. Craft Limiter
+         * 3. Query For Player
+         * 4. Error For Edge Cases
+         * 5. Create Player if Missing -> Recursive Call For Player Return
+         * 6. Return Crafted Player
+         *  */
+
+
+        //2.  Craft Limiter
+        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
+
+        JsonExtractLimiter limiter = new JsonExtractLimiter("userAccountId", idToSearchFor);
+
+        //3.  Query For Player
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                Player.class,
+                limiter);
+
+        //4. Error For Edge Cases
+        if (loadedObjects.size() > 1)
+        {
+            throw new UserQueryException("More than One Player for User " + uniqueID);
+        }
+
+
+        // 5. Create Account if Missing -> Recursive Call For User Return
+        if (loadedObjects.size() == 0)
+        {
+            Player newPlayer = new Player(idToSearchFor);
+            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newPlayer, 0);
+            return getPlayer(uniqueID);
+        }
+
+        //6. Return Crafted User
+        Player player = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), Player.class);
+        player.setUserAccountId(idToSearchFor);
+        player.setId(loadedObjects.get(0).getId());
+        return player;
     }
 
     public Player getPlayer(Member member) throws SQLException, UserQueryException

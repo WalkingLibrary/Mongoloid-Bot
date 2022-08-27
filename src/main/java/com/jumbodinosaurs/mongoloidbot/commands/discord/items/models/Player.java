@@ -1,6 +1,9 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.items.models;
 
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class Player
 {
@@ -117,5 +120,25 @@ public class Player
     public void setItemSellPrice(BigDecimal itemSellPrice)
     {
         this.itemSellPrice = itemSellPrice;
+    }
+
+    public ArrayList<Item> getWeapons()
+    {
+        return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.TAKE_HEALTH);
+    }
+
+    public ArrayList<Item> getArmor()
+    {
+        return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.ARMOR);
+    }
+
+    public ArrayList<Item> getMedicalItems()
+    {
+        return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.GIVE_HEALTH);
+    }
+
+    public ArrayList<Item> getArmorBreak()
+    {
+        return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.DAMAGE_ARMOR);
     }
 }
