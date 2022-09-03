@@ -34,13 +34,13 @@ public class SetupDatabaseConnection extends StartUpTask
             {
                 LogManager.consoleLogger.error("No Database Found Named: " + mongoloidDatabaseName);
                 LogManager.consoleLogger.info("Please Enter Database Details: ");
-                System.out.println("Enter the database's IP:");
+                LogManager.consoleLogger.info("Enter the database's IP:");
                 String ip = OperatorConsole.getEnsuredAnswer();
-                System.out.println("Enter the database's PORT:");
+                LogManager.consoleLogger.info("Enter the database's PORT:");
                 String port = OperatorConsole.getEnsuredAnswer();
-                System.out.println("Enter the database user's USERNAME:");
+                LogManager.consoleLogger.info("Enter the database user's USERNAME:");
                 String username = OperatorConsole.getEnsuredAnswer();
-                System.out.println("Enter the database user's PASSWORD:");
+                LogManager.consoleLogger.info("Enter the database user's PASSWORD:");
                 String password = OperatorConsole.getEnsuredAnswer();
                 
                 DataBaseUser user = new DataBaseUser(username, password);

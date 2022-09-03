@@ -10,8 +10,6 @@ import java.util.ArrayList;
 
 public class ItemUntil
 {
-
-    public static final int maxIntensity = 200;
     public static File adjectiveFile = GeneralUtil.checkForLocalPath(GeneralUtil.userDir, "Items/adjectives.txt");
     public static File nounFile = GeneralUtil.checkForLocalPath(GeneralUtil.userDir, "Items/nouns.txt");
 
@@ -22,7 +20,8 @@ public class ItemUntil
         Ability.AbilityType randomType = Ability.AbilityType.values()[randomTypeRoll];
         String randomName = generateRandomNoun() + " of " + generateRandomAdjective();
 
-        int randomIntensity = (int) (Math.random() * maxIntensity);
+        //Set Intensity
+        int randomIntensity = (int) (Math.random() * randomType.maxIntensity);
 
         Item randomItem = new Item(randomName, new Ability(randomType, randomIntensity));
         return randomItem;

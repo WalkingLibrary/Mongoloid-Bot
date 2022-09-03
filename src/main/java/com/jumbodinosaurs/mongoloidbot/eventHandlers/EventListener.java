@@ -4,6 +4,7 @@ import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.CommandManager;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
@@ -45,7 +46,7 @@ public class EventListener extends ListenerAdapter
             try
             {
                 String message = event.getMessage().getContentRaw();
-                System.out.println("Command: " + message);
+                LogManager.consoleLogger.info("Command: " + message);
 
                 if (message == null || message.length() <= 0)
                 {
@@ -131,7 +132,7 @@ public class EventListener extends ListenerAdapter
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event)
     {
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
-        System.out.println("Voice Channel Joined: " + voiceChannelJoined.getName());
+        LogManager.consoleLogger.info("Voice Channel Joined: " + voiceChannelJoined.getName());
 
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
@@ -144,7 +145,7 @@ public class EventListener extends ListenerAdapter
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event)
     {
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
-        System.out.println("Voice Channel Left: " + voiceChannelLeft.getName());
+        LogManager.consoleLogger.info("Voice Channel Left: " + voiceChannelLeft.getName());
 
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
@@ -157,7 +158,8 @@ public class EventListener extends ListenerAdapter
     {
         VoiceChannel voiceChannelJoined = event.getChannelJoined();
         VoiceChannel voiceChannelLeft = event.getChannelLeft();
-        System.out.println("User Moved from " + voiceChannelLeft.getName() + " to " + voiceChannelJoined.getName());
+        LogManager.consoleLogger.info(
+                "User Moved from " + voiceChannelLeft.getName() + " to " + voiceChannelJoined.getName());
 
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();

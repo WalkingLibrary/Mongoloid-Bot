@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.jumbodinosaurs.devlib.database.objectHolder.NoLimit;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.CurrentTask;
@@ -84,7 +85,7 @@ public class ExploreTask extends ScheduledTask
                 {
                     continue;
                 }
-                System.out.println(currentAccountsPlayer.getUserAccountId() + " has Found an Item");
+                LogManager.consoleLogger.info(currentAccountsPlayer.getUserAccountId() + " has Found an Item");
 
                 // 4. Add Item to their Inventory or Pending Slot
                 Item randomItem = ItemUntil.generateRandomItem();
@@ -97,7 +98,7 @@ public class ExploreTask extends ScheduledTask
                     currentAccountsPlayer.setPendingItem(randomItem);
                     currentAccountsPlayer.setCurrentTask(null);
 
-                    System.out.println("Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
+                    LogManager.consoleLogger.info("Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
                     UserAccount.updatePlayer(currentAccountsPlayer);
                     continue;
                 }
@@ -111,13 +112,14 @@ public class ExploreTask extends ScheduledTask
                     {
                         playersCurrentInventory.getItems().put(i, randomItem);
                         currentAccountsPlayer.setCurrentTask(null);
-                        System.out.println("Updating Slot " + i + ": " + new Gson().toJson(currentAccountsPlayer));
+                        LogManager.consoleLogger.info(
+                                "Updating Slot " + i + ": " + new Gson().toJson(currentAccountsPlayer));
                         UserAccount.updatePlayer(currentAccountsPlayer);
                         break;
                     }
                 }
             }
-            System.out.println("Done Running Exploring");
+            LogManager.consoleLogger.info("Done Running Exploring");
         }
         catch (Exception e)
         {

@@ -40,13 +40,19 @@ public class Ability
 
     public enum AbilityType
     {
-        TAKE_HEALTH("Weapon"), GIVE_HEALTH("Healing"), ARMOR("Armor"), DAMAGE_ARMOR("Armor Breaking");
+        TAKE_HEALTH("Weapon", 200),
+        GIVE_HEALTH("Healing", 200),
+        ARMOR("Armor", 200),
+        DAMAGE_ARMOR("Armor Breaking", 200),
+        GIVE_STAMINA("Stamina", 1000);
 
         public String displayName;
+        public int maxIntensity;
 
-        AbilityType(String displayName)
+        AbilityType(String displayName, int maxIntensity)
         {
             this.displayName = displayName;
+            this.maxIntensity = maxIntensity;
         }
 
     }

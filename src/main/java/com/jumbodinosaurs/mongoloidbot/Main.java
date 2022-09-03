@@ -26,7 +26,7 @@ public class Main
 
         if (args.length <= 0)
         {
-            System.out.println("Usage: Java -jar jarName.jar discordToken");
+            LogManager.consoleLogger.info("Usage: Java -jar jarName.jar discordToken [noArduino (Optional)]");
             System.exit(1);
         }
     
@@ -41,12 +41,16 @@ public class Main
     
         for(ScheduledTask scheduledTask : scheduledServerTasks)
         {
-            System.out.println("Starting Scheduled Task: " + scheduledTask.getClass().getSimpleName());
+            LogManager.consoleLogger.info("Starting Scheduled Task: " + scheduledTask.getClass().getSimpleName());
             scheduledTask.start();
         }
         try
         {
-            ArduinoUtil.init();
+            //Add Something to Args to Stop Arduino from init in dev
+            if (args.length == 1)
+            {
+                ArduinoUtil.init();
+            }
         }
         catch(InitializationException e)
         {

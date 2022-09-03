@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.nicknames;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.Guild;
@@ -62,7 +63,7 @@ public class SetNickNamesPreFix extends CommandWithParameters implements IDiscor
     {
         try
         {
-            System.out.println("Setting " + member.getNickname() + " to: " + nickName);
+            LogManager.consoleLogger.info("Setting " + member.getNickname() + " to: " + nickName);
             member.modifyNickname(nickName).complete(true);
             try
             {
@@ -87,7 +88,7 @@ public class SetNickNamesPreFix extends CommandWithParameters implements IDiscor
         }
         catch(HierarchyException ignored)
         {
-            System.out.println("Cannot Change: " + member.getNickname());
+            LogManager.consoleLogger.info("Cannot Change: " + member.getNickname());
         }
     }
     

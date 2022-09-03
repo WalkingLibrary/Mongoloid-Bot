@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.jumbodinosaurs.devlib.database.objectHolder.NoLimit;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Ability;
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +34,30 @@ public class BattleTask extends ScheduledTask
         super(executor);
     }
 
-    public static Player battlePlayers(Player player1, Player player2)
+
+    @Override
+    public TimeUnit getTimeUnit()
+    {
+        return TimeUnit.MINUTES;
+    }
+
+    @Override
+    public int getPeriod()
+    {
+        return 1;
+    }
+
+    public static void updatePlayerAfterBattle(Player player) throws SQLException
+    {
+        player.setCurrentTask(null);
+        if (player.getHealth() <= 0)
+        {
+            player.setHealth(100);
+        }
+        UserAccount.updatePlayer(player);
+    }
+
+    public static Player getBattleWinner(Player player1, Player player2)
     {
         Item weaponHands = new Item("Hands", new Ability(Ability.AbilityType.TAKE_HEALTH, 20));
         ArrayList<Item> player1Weapons = player1.getWeapons();
@@ -83,13 +108,14 @@ public class BattleTask extends ScheduledTask
                 }
                 if (attackerDamage < 0)
                 {
-                    attackerDamage = 0;
+                    attackerDamage = 1;
                     break;
                 }
 
             }
 
-            if (player2.getHealth() - attackerDamage <= 0)
+            player2.setHealth(player2.getHealth() - attackerDamage);
+            if (player2.getHealth() <= 0)
             {
                 return player1;
             }
@@ -108,30 +134,20 @@ public class BattleTask extends ScheduledTask
                 }
                 if (khanDamage < 0)
                 {
-                    khanDamage = 0;
+                    khanDamage = 1;
                     break;
                 }
 
             }
 
-            if (player1.getHealth() - khanDamage <= 0)
+            player1.setHealth(player1.getHealth() - khanDamage);
+
+            if (player1.getHealth() <= 0)
             {
                 return player2;
             }
         }
         return player2;
-    }
-
-    @Override
-    public TimeUnit getTimeUnit()
-    {
-        return TimeUnit.MINUTES;
-    }
-
-    @Override
-    public int getPeriod()
-    {
-        return 1;
     }
 
     @Override
@@ -150,7 +166,8 @@ public class BattleTask extends ScheduledTask
              * 6. Run battle of them vs Khan
              * 7. update Players
              */
-            System.out.println("Starting Battle!");
+
+            LogManager.consoleLogger.info("Starting Battle!");
             Guild localGuild = Main.jdaController.getJda().getGuildById(Main.GUILD_ID);
             Role kingKhanRole = Main.jdaController.getJda().getRoleById(BattleTask.kingKhanRole);
             //1. Get All Players in the Database
@@ -195,22 +212,20 @@ public class BattleTask extends ScheduledTask
 
                 //5. Parse Khan Player
                 Player khanPlayer = UserAccount.getPlayer(KING_KHAN_ID);
-                System.out.println(
+                LogManager.consoleLogger.info(
                         "King Khan: " + khanPlayer.getUserAccountId() + " vs " + attackingPlayer.getUserAccountId());
 
 
                 //6. Run battle of them vs Khan
-                Player winningPlayer = battlePlayers(attackingPlayer, khanPlayer);
+                Player winningPlayer = getBattleWinner(attackingPlayer, khanPlayer);
 
 
                 //7. update Players
-                khanPlayer.setCurrentTask(null);
-                attackingPlayer.setCurrentTask(null);
-                UserAccount.updatePlayer(khanPlayer);
-                UserAccount.updatePlayer(attackingPlayer);
+                updatePlayerAfterBattle(attackingPlayer);
+                updatePlayerAfterBattle(khanPlayer);
 
                 Member kingKhan = UserAccount.getMemberFromAccountId(khanPlayer.getUserAccountId());
-
+                LogManager.consoleLogger.info("Done Battling");
 
                 if (winningPlayer.getUserAccountId().equals(KING_KHAN_ID))
                 {
@@ -235,7 +250,7 @@ public class BattleTask extends ScheduledTask
         {
             e.printStackTrace();
         }
-        System.out.println("Done Battling");
+
 
     }
 }

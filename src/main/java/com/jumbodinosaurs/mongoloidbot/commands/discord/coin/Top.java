@@ -8,6 +8,7 @@ import com.jumbodinosaurs.devlib.database.DataBaseUtil;
 import com.jumbodinosaurs.devlib.database.Query;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
@@ -42,7 +43,7 @@ public class Top extends Command
                                             UserAccount.class.getSimpleName());
             
             Query topTenQuery = new Query(topTenStatement);
-            System.out.println("Executing: " + topTenQuery.getStatement());
+            LogManager.consoleLogger.info("Executing: " + topTenQuery.getStatement());
             DataBaseUtil.queryDataBase(topTenQuery, SetupDatabaseConnection.mogoloidDatabase);
             
             //Create Object Holders from Returned Information
@@ -64,7 +65,7 @@ public class Top extends Command
                 currentAccount.setId(current.getId());
     
                 String bytes = new String(Base64.getDecoder().decode(currentAccount.getUsernameBase64()));
-                System.out.println(bytes);
+                LogManager.consoleLogger.info(bytes);
                 String discordName;
                 try
                 {

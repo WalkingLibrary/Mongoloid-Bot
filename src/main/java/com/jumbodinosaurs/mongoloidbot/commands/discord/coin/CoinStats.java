@@ -8,6 +8,7 @@ import com.jumbodinosaurs.devlib.database.DataBaseUtil;
 import com.jumbodinosaurs.devlib.database.Query;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
@@ -41,7 +42,7 @@ public class CoinStats extends Command implements IDiscordChatEventable
             selectAllAccounts = String.format(selectAllAccounts, UserAccount.class.getSimpleName());
             
             Query topTenQuery = new Query(selectAllAccounts);
-            System.out.println("Executing: " + topTenQuery.getStatement());
+            LogManager.consoleLogger.info("Executing: " + topTenQuery.getStatement());
             DataBaseUtil.queryDataBase(topTenQuery, SetupDatabaseConnection.mogoloidDatabase);
             
             //Create Object Holders from Returned Information

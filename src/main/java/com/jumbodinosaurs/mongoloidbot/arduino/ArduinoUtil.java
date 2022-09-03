@@ -2,6 +2,7 @@ package com.jumbodinosaurs.mongoloidbot.arduino;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.arduino.exception.InitializationException;
 import com.jumbodinosaurs.mongoloidbot.arduino.exception.PhotoTimeoutException;
 
@@ -35,9 +36,9 @@ public class ArduinoUtil
          *
          *
          */
-        
-        
-        System.out.println("Scanning for Arduino...");
+
+
+        LogManager.consoleLogger.info("Scanning for Arduino...");
         String arduinoCode = "SYN";
         String arduinoResponseCode = "ACK";
         int baudRate = 115200;
@@ -47,11 +48,11 @@ public class ArduinoUtil
         //List The ports
         for(SerialPort port : ports)
         {
-            System.out.println("Scanning Port [" + port.getSystemPortName() + "]");
+            LogManager.consoleLogger.info("Scanning Port [" + port.getSystemPortName() + "]");
             port.setBaudRate(baudRate);
             if(!port.openPort())
             {
-                System.out.println("Error opening Port " + port.getSystemPortName());
+                LogManager.consoleLogger.info("Error opening Port " + port.getSystemPortName());
                 continue;
             }
             port.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 1000, 1000);
@@ -78,7 +79,7 @@ public class ArduinoUtil
                             if(outputStream.size() > 0)
                             {
                                 String currentMessage = outputStream.toString();
-                                System.out.println("Message Received: " + currentMessage);
+                                LogManager.consoleLogger.info("Message Received: " + currentMessage);
                                 
                                 if(currentMessage.contains(arduinoResponseCode))
                                 {
@@ -92,7 +93,7 @@ public class ArduinoUtil
                             //Do nothing
                         }
                     }
-                    System.out.println("No Longer Listening to [" + port.getSystemPortName() + "]");
+                    LogManager.consoleLogger.info("No Longer Listening to [" + port.getSystemPortName() + "]");
                 }
             };
             
@@ -112,14 +113,14 @@ public class ArduinoUtil
                         Thread.sleep(1000);
                         break;
                     }
-                    
-                    
-                    System.out.println("Trying [" +
-                                       port.getSystemPortName() +
-                                       "] :" +
-                                       timesTried +
-                                       " with " +
-                                       arduinoCode);
+
+
+                    LogManager.consoleLogger.info("Trying [" +
+                            port.getSystemPortName() +
+                            "] :" +
+                            timesTried +
+                            " with " +
+                            arduinoCode);
                     sendMessage(port, arduinoCode);
                     
                 }
@@ -144,9 +145,9 @@ public class ArduinoUtil
         {
             throw new InitializationException("No Arduino Found");
         }
-        
-        
-        System.out.println("Port Found [" + arduinoCamPort.getSystemPortName() + "]");
+
+
+        LogManager.consoleLogger.info("Port Found [" + arduinoCamPort.getSystemPortName() + "]");
         //Verify/Validate Peripherals Connection
         try
         {
@@ -210,8 +211,8 @@ public class ArduinoUtil
             throws IOException
     {
         int code = light.on ? light.offCode : light.onCode;
-        
-        System.out.println("Turning " + light.name() + (light.on ? "Off" : "On"));
+
+        LogManager.consoleLogger.info("Turning " + light.name() + (light.on ? "Off" : "On"));
         light.on = !light.on;
         sendMessage(arduinoCamPort, code + "");
     }
@@ -281,7 +282,7 @@ public class ArduinoUtil
                 
                     if(currentByte == startByteTwo && previousByte == startByteOne)
                     {
-                        System.out.println("Starting Photo Transfer");
+                        LogManager.consoleLogger.info("Starting Photo Transfer");
                         photoPhase = true;
                         imageBytes.write(previousByte);
                         imageBytes.write(currentByte);
@@ -299,7 +300,7 @@ public class ArduinoUtil
                             imageBytes.write(currentByte);
                             try
                             {
-                                System.out.println("Photo Done Transferring");
+                                LogManager.consoleLogger.info("Photo Done Transferring");
                                 BufferedImage preImage = ImageIO.read(new ByteArrayInputStream(imageBytes.toByteArray()));
                                 photoPhase = false;
                                 outputStream.reset();

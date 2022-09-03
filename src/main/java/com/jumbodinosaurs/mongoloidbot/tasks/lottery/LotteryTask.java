@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.JDAController;
@@ -137,9 +138,9 @@ public class LotteryTask extends ScheduledTask
     @Override
     public void run()
     {
-    
-    
-        System.out.println("Spinning the Wheel");
+
+
+        LogManager.consoleLogger.info("Spinning the Wheel");
         if(firstInit)
         {
             firstInit = false;
@@ -160,30 +161,30 @@ public class LotteryTask extends ScheduledTask
                     addToPot(amountToAdd);
                     return;
                 }
-                
+
                 BigDecimal amountOfTicketsBought = new BigDecimal("0");
-                for(UserAccount userAccount : accountsInThePot)
+                for (UserAccount userAccount : accountsInThePot)
                 {
-                    System.out.println(userAccount.toString());
+                    LogManager.consoleLogger.info(userAccount.toString());
                     amountOfTicketsBought = amountOfTicketsBought.add(userAccount.getTicketsBought());
                 }
                 BigDecimal winningNumber = amountOfTicketsBought.multiply(new BigDecimal(Math.random()));
-                
+
                 UserAccount winningAccount = null;
                 BigDecimal currentThreshold = new BigDecimal("0");
-                System.out.println("Amount of Accounts in the Pot: " + accountsInThePot.size());
-                System.out.println("Winning Number:  " + winningNumber);
-                System.out.println("Threshold: " + currentThreshold);
-                while(winningNumber.subtract(currentThreshold).signum() >= 0)
+                LogManager.consoleLogger.info("Amount of Accounts in the Pot: " + accountsInThePot.size());
+                LogManager.consoleLogger.info("Winning Number:  " + winningNumber);
+                LogManager.consoleLogger.info("Threshold: " + currentThreshold);
+                while (winningNumber.subtract(currentThreshold).signum() >= 0)
                 {
-                    
+
                     int randomSelector = (int) (accountsInThePot.size() * Math.random());
                     winningAccount = accountsInThePot.remove(randomSelector);
                     currentThreshold = currentThreshold.add(winningAccount.getTicketsBought());
-                    System.out.println("Threshold: " + currentThreshold);
+                    LogManager.consoleLogger.info("Threshold: " + currentThreshold);
                 }
-                
-                if(winningAccount == null)
+
+                if (winningAccount == null)
                 {
                     throw new IllegalStateException("No One Wins?");
                 }

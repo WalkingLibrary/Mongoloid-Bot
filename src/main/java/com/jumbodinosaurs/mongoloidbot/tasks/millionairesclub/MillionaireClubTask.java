@@ -54,6 +54,8 @@ public class MillionaireClubTask extends ScheduledTask
             //Go Though all the Server Members
             JDA localController = Main.jdaController.getJda();
             Guild localGuild = localController.getGuildById(Main.GUILD_ID);
+
+            assert localGuild != null;
             for (Member guildMember : localGuild.getMemberCache().asList())
             {
 

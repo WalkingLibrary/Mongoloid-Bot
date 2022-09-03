@@ -64,12 +64,18 @@ public class Inventory extends Command implements IDiscordChatEventable
                     continue;
                 }
 
-                inventoryContents += key + ". " + currentItem.getName() + "\n";
+                inventoryContents += key + ". ``" + currentItem.getName()
+                        .toUpperCase() + "``\n``Item Type:`` " + currentItem.getAbility()
+                        .getType().displayName + "\n``Intensity:`` " + currentItem.getAbility().getIntensity() + "\n\n";
             }
 
             if (currentUsersPlayer.getPendingItem() != null)
             {
-                inventoryContents += "Pending Item: " + currentUsersPlayer.getPendingItem().getName() + "\n";
+                inventoryContents += "``Pending Item: " + currentUsersPlayer.getPendingItem()
+                        .getName() + "``\n" + "``Item Type:`` " + currentUsersPlayer.getPendingItem().getAbility()
+                        .getType().displayName + "\n``Intensity:`` " + currentUsersPlayer.getPendingItem()
+                        .getAbility()
+                        .getIntensity() + "\n\n";
             }
 
             if (currentUsersPlayer.getItemForSale() != null)
@@ -86,7 +92,7 @@ public class Inventory extends Command implements IDiscordChatEventable
                 inventoryContents = " Empty!";
             }
 
-            return new MessageResponse(username + "'s Inventory:\n" + inventoryContents);
+            return new MessageResponse("```" + username + "'s Inventory:```\n" + inventoryContents);
         }
         catch (SQLException e)
         {
