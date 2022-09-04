@@ -158,6 +158,10 @@ public class BattleTask extends ScheduledTask
         {
             /*
              * Process For Battling
+             * --
+             * 1. Get All Current King Khans
+             * 2. Run Battles for King Khans
+             * --
              * 1. Get All Players in the Database
              * 2. Check if they are battling
              * 3. Check if they are already Khan
@@ -167,9 +171,60 @@ public class BattleTask extends ScheduledTask
              * 7. update Players
              */
 
+
             LogManager.consoleLogger.info("Starting Battle!");
             Guild localGuild = Main.jdaController.getJda().getGuildById(Main.GUILD_ID);
             Role kingKhanRole = Main.jdaController.getJda().getRoleById(BattleTask.kingKhanRole);
+
+
+            /*
+             * 1. Get All Current King Khans
+             * 2. Run Battles for King Khans
+             * */
+
+            //1. Get All Current King Khans
+            ArrayList<Member> membersWithKingKhanRoles = (ArrayList<Member>) localGuild.getMembersWithRoles(
+                    kingKhanRole);
+            Member bestKingKhan = membersWithKingKhanRoles.get(0);
+
+            KING_KHAN_ID = UserAccount.getUniqueIdentifier(bestKingKhan);
+
+
+            for (int i = 1; i < membersWithKingKhanRoles.size(); i++)
+            {
+
+
+                Member challengingKhan = membersWithKingKhanRoles.get(i);
+                Player bestKhanPlayer = UserAccount.getPlayer(UserAccount.getUniqueIdentifier(bestKingKhan));
+                Player challengingKhanPlayer = UserAccount.getPlayer(UserAccount.getUniqueIdentifier(challengingKhan));
+
+                //2. Run Battles for King Khans
+                Player winningKhan = getBattleWinner(challengingKhanPlayer, bestKhanPlayer);
+
+
+                //7. update Players
+                updatePlayerAfterBattle(challengingKhanPlayer);
+                updatePlayerAfterBattle(bestKhanPlayer);
+
+
+                if (winningKhan.getUserAccountId().equals(KING_KHAN_ID))
+                {
+                    EventListener.sendMessage(
+                            bestKingKhan.getEffectiveName() + " has defended their Position against " + challengingKhan.getEffectiveName() + ", there can only be one Khan",
+                            Main.BATTLE_STEPPE_ID);
+                    localGuild.removeRoleFromMember(challengingKhan, kingKhanRole).complete();
+                    return;
+                }
+
+                KING_KHAN_ID = winningKhan.getUserAccountId();
+                localGuild.removeRoleFromMember(bestKingKhan, kingKhanRole).complete();
+                localGuild.addRoleToMember(challengingKhan, kingKhanRole).complete();
+                EventListener.sendMessage(
+                        challengingKhan.getEffectiveName() + " has taken their Place as King Khan from " + bestKingKhan.getEffectiveName() + ", there can only be one Khan",
+                        Main.BATTLE_STEPPE_ID);
+                bestKingKhan = challengingKhan;
+            }
+
             //1. Get All Players in the Database
             // - Parse Player
             for (SQLDataBaseObjectHolder objectHolder : SQLDatabaseObjectUtil.loadObjects(

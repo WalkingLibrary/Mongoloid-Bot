@@ -14,6 +14,7 @@ import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -123,9 +124,19 @@ public class UserAccount implements SQLStoreObject,
          * 6. Return Crafted Player
          *  */
 
+        String inputToUse = uniqueID;
+        try
+        {
+            inputToUse = Base64.getEncoder()
+                    .encodeToString((Long.parseLong(inputToUse) + "").getBytes(StandardCharsets.UTF_8));
+        }
+        catch (NumberFormatException e)
+        {
+            //Do Nothing
+        }
 
         //2.  Craft Limiter
-        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
+        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(inputToUse).toString();
 
         JsonExtractLimiter limiter = new JsonExtractLimiter("userAccountId", idToSearchFor);
 
@@ -138,7 +149,7 @@ public class UserAccount implements SQLStoreObject,
         //4. Error For Edge Cases
         if (loadedObjects.size() > 1)
         {
-            throw new UserQueryException("More than One Player for User " + uniqueID);
+            throw new UserQueryException("More than One Player for User " + inputToUse);
         }
 
 
@@ -147,7 +158,7 @@ public class UserAccount implements SQLStoreObject,
         {
             Player newPlayer = new Player(idToSearchFor);
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newPlayer, 0);
-            return getPlayer(uniqueID);
+            return getPlayer(inputToUse);
         }
 
         //6. Return Crafted User
