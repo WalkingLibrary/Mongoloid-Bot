@@ -60,17 +60,6 @@ public class BattleTask extends ScheduledTask
     public static Player getBattleWinner(Player player1, Player player2)
     {
         Item weaponHands = new Item("Hands", new Ability(Ability.AbilityType.TAKE_HEALTH, 20));
-        ArrayList<Item> player1Weapons = player1.getWeapons();
-        if (player1Weapons.isEmpty())
-        {
-            player1Weapons.add(weaponHands);
-        }
-
-        ArrayList<Item> player2Weapons = player2.getWeapons();
-        if (player2Weapons.isEmpty())
-        {
-            player1Weapons.add(weaponHands);
-        }
 
         ArrayList<Item> player1Armor = player1.getArmor();
         ArrayList<Item> player2Armor = player2.getArmor();
@@ -96,7 +85,11 @@ public class BattleTask extends ScheduledTask
 
             //1. Apply an Attack from random weapon from attacker
 
-            randomAttackerWeapon = player1Weapons.get((int) (player1Weapons.size() * Math.random()));
+            randomAttackerWeapon = weaponHands;
+            if(player1.getWeapons().size() > 0)
+            {
+                randomAttackerWeapon = player1.getWeapons().get((int) (player1.getWeapons().size() * Math.random()));
+            }
             int attackerDamage = randomAttackerWeapon.getAbility().getIntensity();
 
             for (Item khanArmorItem : player2Armor)
@@ -122,7 +115,11 @@ public class BattleTask extends ScheduledTask
 
 
             //  2. Apply an Attack from random weapon from king khan
-            randomKhanWeapon = player1Weapons.get((int) (player1Weapons.size() * Math.random()));
+            randomKhanWeapon = weaponHands;
+            if(player2.getWeapons().size() > 0)
+            {
+                randomKhanWeapon = player2.getWeapons().get((int) (player2.getWeapons().size() * Math.random()));
+            }
             int khanDamage = randomKhanWeapon.getAbility().getIntensity();
 
             for (Item attackerArmorItem : player1Armor)
@@ -149,6 +146,55 @@ public class BattleTask extends ScheduledTask
         }
         return player2;
     }
+
+    public void runAttack(Player player1, Player player2)
+    {
+        /*
+         * Process for Attacking a Player
+         * 1. set Weapon Heads
+         * 2. Get Random Weapon if available
+         * 3. Run chance to Crit
+         * 4. Set damage
+         * 5. Run Damage though Armor of Other Player
+         * 6. Apply Damage
+         * */
+        //1. set Weapon Heads
+        Item weaponHands = new Item("Hands", new Ability(Ability.AbilityType.TAKE_HEALTH, 20));
+        Item player1Weapon = weaponHands;
+
+
+        //2. Get Random Weapon if available
+        if(player1.getWeapons().size() > 0)
+        {
+            player1Weapon = player1.getWeapons().get((int) (player1.getWeapons().size() * Math.random()));
+        }
+
+        //3. Run chance to Crit
+        // The Chance to Crit is based of the Stamin of a Player
+
+        //4. Set damage
+        int player1Damage = player1Weapon.getAbility().getIntensity();
+
+
+
+        //5. Run Damage though Armor of Other Player
+        for (Item attackerArmorItem : player2.getArmor())
+        {
+            player1Damage -= attackerArmorItem.getAbility().getIntensity();
+
+            if (player1Damage < 0)
+            {
+                player1Damage = 1;
+                break;
+            }
+
+        }
+
+        //6. Apply Damage
+        player2.setHealth(player2.getHealth() - player1Damage);
+    }
+
+
 
     @Override
     public void run()
@@ -185,44 +231,49 @@ public class BattleTask extends ScheduledTask
             //1. Get All Current King Khans
             ArrayList<Member> membersWithKingKhanRoles = (ArrayList<Member>) localGuild.getMembersWithRoles(
                     kingKhanRole);
-            Member bestKingKhan = membersWithKingKhanRoles.get(0);
-
-            KING_KHAN_ID = UserAccount.getUniqueIdentifier(bestKingKhan);
-
-
-            for (int i = 1; i < membersWithKingKhanRoles.size(); i++)
+            //If there is more than one king khan, MAKE EM BATTLE
+            if(membersWithKingKhanRoles.size() > 1)
             {
+                Member bestKingKhan = membersWithKingKhanRoles.get(0);
+
+                KING_KHAN_ID = UserAccount.getUniqueIdentifier(bestKingKhan);
 
 
-                Member challengingKhan = membersWithKingKhanRoles.get(i);
-                Player bestKhanPlayer = UserAccount.getPlayer(UserAccount.getUniqueIdentifier(bestKingKhan));
-                Player challengingKhanPlayer = UserAccount.getPlayer(UserAccount.getUniqueIdentifier(challengingKhan));
-
-                //2. Run Battles for King Khans
-                Player winningKhan = getBattleWinner(challengingKhanPlayer, bestKhanPlayer);
-
-
-                //7. update Players
-                updatePlayerAfterBattle(challengingKhanPlayer);
-                updatePlayerAfterBattle(bestKhanPlayer);
-
-
-                if (winningKhan.getUserAccountId().equals(KING_KHAN_ID))
+                for (int i = 1; i < membersWithKingKhanRoles.size(); i++)
                 {
-                    EventListener.sendMessage(
-                            bestKingKhan.getEffectiveName() + " has defended their Position against " + challengingKhan.getEffectiveName() + ", there can only be one Khan",
-                            Main.BATTLE_STEPPE_ID);
-                    localGuild.removeRoleFromMember(challengingKhan, kingKhanRole).complete();
-                    return;
-                }
 
-                KING_KHAN_ID = winningKhan.getUserAccountId();
-                localGuild.removeRoleFromMember(bestKingKhan, kingKhanRole).complete();
-                localGuild.addRoleToMember(challengingKhan, kingKhanRole).complete();
-                EventListener.sendMessage(
-                        challengingKhan.getEffectiveName() + " has taken their Place as King Khan from " + bestKingKhan.getEffectiveName() + ", there can only be one Khan",
-                        Main.BATTLE_STEPPE_ID);
-                bestKingKhan = challengingKhan;
+
+                    Member challengingKhan = membersWithKingKhanRoles.get(i);
+                    Player bestKhanPlayer = UserAccount.getPlayer(UserAccount.getUniqueIdentifier(bestKingKhan));
+                    Player challengingKhanPlayer = UserAccount.getPlayer(
+                            UserAccount.getUniqueIdentifier(challengingKhan));
+
+                    //2. Run Battles for King Khans
+                    Player winningKhan = getBattleWinner(challengingKhanPlayer, bestKhanPlayer);
+
+
+                    //7. update Players
+                    updatePlayerAfterBattle(challengingKhanPlayer);
+                    updatePlayerAfterBattle(bestKhanPlayer);
+
+
+                    if (winningKhan.getUserAccountId().equals(KING_KHAN_ID))
+                    {
+                        EventListener.sendMessage(
+                                bestKingKhan.getEffectiveName() + " has defended their Position against " + challengingKhan.getEffectiveName() + ", there can only be one Khan",
+                                Main.BATTLE_STEPPE_ID);
+                        localGuild.removeRoleFromMember(challengingKhan, kingKhanRole).complete();
+                        return;
+                    }
+
+                    KING_KHAN_ID = winningKhan.getUserAccountId();
+                    localGuild.removeRoleFromMember(bestKingKhan, kingKhanRole).complete();
+                    localGuild.addRoleToMember(challengingKhan, kingKhanRole).complete();
+                    EventListener.sendMessage(
+                            challengingKhan.getEffectiveName() + " has taken their Place as King Khan from " + bestKingKhan.getEffectiveName() + ", there can only be one Khan",
+                            Main.BATTLE_STEPPE_ID);
+                    bestKingKhan = challengingKhan;
+                }
             }
 
             //1. Get All Players in the Database

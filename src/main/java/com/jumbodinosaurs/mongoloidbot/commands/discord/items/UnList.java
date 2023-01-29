@@ -55,7 +55,7 @@ public class UnList extends Command implements IDiscordChatEventable
             }
 
 
-            for (int i = 1; i < Inventory.maxInventoryAmount; i++)
+            for (int i = 1; i <= Inventory.maxInventoryAmount; i++)
             {
                 if (!playerInventory.getItems().containsKey(i))
                 {

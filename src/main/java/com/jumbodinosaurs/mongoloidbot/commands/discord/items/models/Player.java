@@ -141,4 +141,9 @@ public class Player
     {
         return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.DAMAGE_ARMOR);
     }
+
+    public ArrayList<Item> getStaminaItems()
+    {
+        return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.GIVE_STAMINA);
+    }
 }
