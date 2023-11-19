@@ -199,7 +199,10 @@ public class BattleTask extends ScheduledTask
     @Override
     public void run()
     {
-
+        if(true)
+        {
+            return;
+        }
         try
         {
             /*

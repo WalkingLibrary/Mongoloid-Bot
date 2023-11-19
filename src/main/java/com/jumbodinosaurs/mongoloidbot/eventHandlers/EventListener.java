@@ -9,20 +9,26 @@ import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.ToggleJoinVoiceChats;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class EventListener extends ListenerAdapter
 {
     private static final String allowedChannelName = "mongoloid-bot";
+
+
+    public static AudioManager joinedVC;
 
     public static void sendMessage(String message)
     {
@@ -37,6 +43,8 @@ public class EventListener extends ListenerAdapter
                 .sendMessage(message)
                 .complete();
     }
+
+
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
@@ -131,13 +139,30 @@ public class EventListener extends ListenerAdapter
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event)
     {
-        VoiceChannel voiceChannelJoined = event.getChannelJoined();
-        LogManager.consoleLogger.info("Voice Channel Joined: " + voiceChannelJoined.getName());
+        try {
+            VoiceChannel voiceChannelJoined = event.getChannelJoined();
+            LogManager.consoleLogger.info("Voice Channel Joined: " + voiceChannelJoined.getName());
 
-        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-        event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
+            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
+            event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
+            LogManager.consoleLogger.info("Non Bot User Joined");
 
-        super.onGuildVoiceJoin(event);
+            if(ToggleJoinVoiceChats.joinVoiceChats && (joinedVC == null || !joinedVC.isConnected()))
+            {
+                LogManager.consoleLogger.info("Joining Voice Chat: " + voiceChannelJoined.getName());
+                joinedVC = event.getGuild().getAudioManager();
+                joinedVC.setAutoReconnect(true);
+                joinedVC.setConnectTimeout(1000000);
+                joinedVC.openAudioConnection(voiceChannelJoined);
+
+            }
+            super.onGuildVoiceJoin(event);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -149,6 +174,15 @@ public class EventListener extends ListenerAdapter
 
         Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
         event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
+
+        if(joinedVC != null && joinedVC.isConnected())
+        {
+            if(voiceChannelLeft.getMembers().size() <= 1)
+            {
+                joinedVC.setAutoReconnect(false);
+                joinedVC.closeAudioConnection();
+            }
+        }
 
         super.onGuildVoiceLeave(event);
     }
