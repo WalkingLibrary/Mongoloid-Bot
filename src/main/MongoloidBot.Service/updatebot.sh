@@ -26,6 +26,7 @@ echo "Build successful."
 # Step 3: Stop the currently running service
 echo "Stopping the current service..."
 sudo systemctl stop mongoloidbot.service
+sudo systemctl daemon-reload
 if [ $? -ne 0 ]; then
     echo "Failed to stop the service, stopping script."
     exit 1
