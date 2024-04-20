@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 public class CurrentTask
 {
-    private LocalDateTime startDate;
-    private TaskType taskName;
+    public LocalDateTime startDate;
+    public TaskType taskName;
 
     public CurrentTask(TaskType taskName)
     {
