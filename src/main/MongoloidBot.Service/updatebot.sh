@@ -3,6 +3,12 @@
 # Navigating to the project directory (the directory containing this script)
 cd "$(dirname "$0")"
 
+# Ensuring script is run as root
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
 # Step 1: Pull the latest changes from Git
 echo "Pulling latest changes from Git repository..."
 git pull origin master
@@ -29,7 +35,7 @@ echo "Service stopped."
 # Step 4: Remove the old jar (now unnecessary as renameJar handles it)
 # This step is kept just in case of unexpected failures in the delete operation in Gradle
 echo "Ensuring old JAR file is removed..."
-rm -f mongoloidbot.jar
+mv build/libs/mongoloidbot.jar ./
 if [ $? -ne 0 ]; then
     echo "Failed to ensure the old JAR file is removed."
     exit 1
