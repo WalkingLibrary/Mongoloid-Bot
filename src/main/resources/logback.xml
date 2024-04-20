@@ -21,7 +21,7 @@
     </appender>
 
 
-    <logger name="DiscordLogger" level="info">
+    <logger name="DiscordLogger" level="debug">
         <appender-ref ref="FILE_SESSION"/>
     </logger>
 </configuration>
