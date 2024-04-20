@@ -1,0 +1,15 @@
+[Unit]
+Description=Mongoloid Discord Bot Service
+After=network.target
+
+[Service]
+Type=simple
+User=mongoloidbot-019
+WorkingDirectory=/home/mongoloidbot-019/Mongoloid-Bot/
+# Ensure the path is correctly typed and quotes are used if there are spaces:
+ExecStart=/usr/bin/java -jar "/home/mongoloidbot-019/Mongoloid-Bot/mongoloidbot.jar" <tokenhere> noArduino
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -89,6 +89,34 @@ subprojects {
 
 }
 
+shadowJar {
+    // Configuration for the shadowJar (keeps its dynamic naming)
+    archiveClassifier.set('all')
+}
+
+task renameJar(type: Copy) {
+    // Depends on the shadowJar task
+    dependsOn shadowJar
+
+    // From the shadowJar output directory
+    from shadowJar.archivePath.parentFile
+
+    // Include only the shadowJar output
+    include shadowJar.archiveName
+
+    // Into the same directory (for simplicity)
+    into shadowJar.archivePath.parentFile
+
+    // Rename the file to a fixed name
+    rename { String fileName ->
+        "mongoloidbot.jar"
+    }
+
+    doLast {
+        // Delete the original jar to avoid confusion
+        delete shadowJar.archivePath
+    }
+}
 
 
 
