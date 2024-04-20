@@ -4,6 +4,7 @@ import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.DefaultStartUpTask;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.devlib.task.TaskUtil;
+import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.arduino.ArduinoUtil;
 import com.jumbodinosaurs.mongoloidbot.arduino.exception.InitializationException;
 import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
@@ -23,6 +24,7 @@ public class Main
     public static void main(String[] args)
     {
 
+        LogManager.consoleLogger.debug("User Dir: " + GeneralUtil.userDir.getAbsolutePath());
 
         if (args.length <= 0)
         {
