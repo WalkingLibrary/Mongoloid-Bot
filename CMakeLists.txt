@@ -8,5 +8,4 @@ include_directories(src)
 include_directories(src/main)
 include_directories(src/main/cpp)
 
-add_executable(Mongoloid_Bot
-        src/main/cpp/ArduCAM_Mini_2MP_OV2640_functionsMDOED.ino)
+add_executable(Mongoloid_Bot src/main/cpp/ArduCAM_Mini_2MP_OV2640_functionsMDOED.cpp)
