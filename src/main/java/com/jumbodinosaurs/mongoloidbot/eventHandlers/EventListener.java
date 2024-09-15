@@ -98,7 +98,7 @@ public class EventListener extends ListenerAdapter
                 double chance = random.nextDouble();
 
                 // If the chance is greater than 0.20 (20%), return early
-                if (chance > 0.20)
+                if (chance > 0.02)
                 {
                     LogManager.consoleLogger.info("Brain Task skipped: Chance was " + (chance * 100) + "%");
                     return;
