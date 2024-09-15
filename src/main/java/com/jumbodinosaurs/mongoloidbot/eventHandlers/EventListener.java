@@ -6,12 +6,14 @@ import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
+import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.ToggleJoinVoiceChats;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
@@ -20,8 +22,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Random;
 
 public class EventListener extends ListenerAdapter
 {
@@ -49,31 +50,85 @@ public class EventListener extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
+        String message = event.getMessage().getContentRaw();
+
+        if (message == null || message.length() <= 0)
+        {
+            return;
+        }
+        LogManager.consoleLogger.info("Message: " + message);
+        Command command;
+        try
+        {
+            command = CommandManager.filterCommand(event.getMessage().getContentRaw(), true);
+        }
+        catch (WaveringParametersException e)
+        {
+            event.getChannel().sendMessage(e.getMessage()).complete();
+            return;
+        }
+
+        if (command == null)
+        {
+            //Brains
+            if (!event.getChannel().getId().equals(BrainsController.brainsOptions.getChannelIdToRespondIn()))
+            {
+                LogManager.consoleLogger.info("Brain Task skipped: Not The Correct Channel");
+                return;
+            }
+            if (event.getAuthor().isBot())
+            {
+                LogManager.consoleLogger.info("Brain Task skipped: Not Responding to Self ");
+                return;
+            }
+
+            if (!BrainsController.brainsOptions.isShouldRespond())
+            {
+                LogManager.consoleLogger.info(
+                        "Brain Task skipped: Should Respond: " + BrainsController.brainsOptions.isShouldRespond());
+                return;
+            }
+
+            if (event.getMessage().getReferencedMessage() == null)
+            {
+
+                //Generate Random Chance To Respond
+                Random random = new Random();
+                // Generate a random number between 0 and 1
+                double chance = random.nextDouble();
+
+                // If the chance is greater than 0.20 (20%), return early
+                if (chance > 0.20)
+                {
+                    LogManager.consoleLogger.info("Brain Task skipped: Chance was " + (chance * 100) + "%");
+                    return;
+                }
+            }
+
+            if (event.getMessage().getReferencedMessage() != null && !event.getMessage()
+                    .getReferencedMessage()
+                    .getAuthor()
+                    .isBot())
+            {
+                return;
+            }
+
+
+            LogManager.consoleLogger.info("Responding Too: " + message);
+            BrainsController.respond(event, message);
+
+            return;
+        }
+
         if (event.getChannel().getName().equals(allowedChannelName))
         {
-            try
+            LogManager.consoleLogger.info("Command: " + message);
+            if (command instanceof IDiscordChatEventable)
             {
-                String message = event.getMessage().getContentRaw();
-                LogManager.consoleLogger.info("Command: " + message);
+                ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);
+            }
 
-                if (message == null || message.length() <= 0)
-                {
-                    return;
-                }
-
-                Command command = CommandManager.filterCommand(event.getMessage().getContentRaw(), true);
-
-                if (command == null)
-                {
-                    return;
-                }
-
-                if (command instanceof IDiscordChatEventable)
-                {
-                    ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);
-                }
-
-                if (event.getMember() == null)
+            if (event.getMember() == null)
                 {
                     return;
                 }
@@ -102,17 +157,26 @@ public class EventListener extends ListenerAdapter
                 }
 
 
-                MessageResponse response = command.getExecutedMessage();
+            MessageResponse response = null;
+            try
+            {
+                response = command.getExecutedMessage();
+            }
+            catch (WaveringParametersException e)
+            {
+                event.getChannel().sendMessage(e.getMessage()).complete();
+                return;
+            }
 
 
-                if (response != null)
-                {
-                    event.getChannel().sendMessage(response.getMessage()).complete();
-                }
+            if (response != null)
+            {
+                event.getChannel().sendMessage(response.getMessage()).complete();
+            }
 
-                //check file size
-                if (response.getAttachments() != null)
-                {
+            //check file size
+            if (response.getAttachments() != null)
+            {
                     for (File file : response.getAttachments())
                     {
                         if (file.length() < 8000000)
@@ -127,14 +191,11 @@ public class EventListener extends ListenerAdapter
                         }
                     }
                 }
-            }
-            catch(WaveringParametersException e)
-            {
-                event.getChannel().sendMessage(e.getMessage()).complete();
-            }
-        }
-    }
 
+
+        }
+
+    }
 
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event)
