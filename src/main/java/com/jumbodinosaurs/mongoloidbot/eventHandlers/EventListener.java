@@ -12,6 +12,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.ToggleJoinVoiceChats;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
@@ -71,17 +72,14 @@ public class EventListener extends ListenerAdapter
         if (command == null)
         {
             //Brains
-            if (!event.getChannel().getId().equals(BrainsController.brainsOptions.getChannelIdToRespondIn()))
-            {
-                LogManager.consoleLogger.info("Brain Task skipped: Not The Correct Channel");
-                return;
-            }
+            //Don't Respond to Self
             if (event.getAuthor().isBot())
             {
                 LogManager.consoleLogger.info("Brain Task skipped: Not Responding to Self ");
                 return;
             }
 
+            //Global Setting - Should respond at all?
             if (!BrainsController.brainsOptions.isShouldRespond())
             {
                 LogManager.consoleLogger.info(
@@ -89,9 +87,19 @@ public class EventListener extends ListenerAdapter
                 return;
             }
 
-            if (event.getMessage().getReferencedMessage() == null)
+            boolean botIsMentioned = false;
+            for (Member mentionMember :
+                    event.getMessage().getMentionedMembers())
             {
-
+                if (mentionMember.getUser().isBot() && mentionMember.getUser().equals(event.getJDA().getSelfUser()))
+                {
+                    LogManager.consoleLogger.info("Bot was Mentioned");
+                    botIsMentioned = true;
+                }
+            }
+            //If the bot was not mentioned and the Reference Message(Replay) is null, Generate chance to Interject
+            if (!botIsMentioned && event.getMessage().getReferencedMessage() == null)
+            {
                 //Generate Random Chance To Respond
                 Random random = new Random();
                 // Generate a random number between 0 and 1
@@ -103,20 +111,27 @@ public class EventListener extends ListenerAdapter
                     LogManager.consoleLogger.info("Brain Task skipped: Chance was " + (chance * 100) + "%");
                     return;
                 }
+
+                if (!event.getChannel().getId().equals(BrainsController.brainsOptions.getChannelIdToRespondIn()))
+                {
+                    LogManager.consoleLogger.info("Brain Task Random Interject Skipped: Not The Correct Channel");
+                    return;
+                }
             }
 
-            if (event.getMessage().getReferencedMessage() != null && !event.getMessage()
+
+            if (!botIsMentioned && !event.getMessage()
                     .getReferencedMessage()
                     .getAuthor()
                     .isBot())
             {
+                LogManager.consoleLogger.info("Brain Task skipped: Not a Reply To Bot Reply of Self");
                 return;
             }
 
 
             LogManager.consoleLogger.info("Responding Too: " + message);
             BrainsController.respond(event, message);
-
             return;
         }
 

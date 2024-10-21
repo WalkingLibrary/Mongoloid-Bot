@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.brains;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import javax.net.ssl.*;
@@ -43,6 +44,7 @@ public class BrainsController
         }
         catch (Exception e)
         {
+            LogManager.consoleLogger.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -88,10 +90,11 @@ public class BrainsController
                     JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class);
                     String status = jsonObject.get("status").getAsString();
 
+                    LogManager.consoleLogger.debug("Brains Request: " + requestId);
                     if (status.equalsIgnoreCase("completed"))
                     {
                         // If status is completed, print the response and stop polling
-                        System.out.println("Request Completed: " + jsonObject.get("response").getAsString());
+                        LogManager.consoleLogger.info("Request Completed: " + jsonObject.get("response").getAsString());
                         String responseToPrompt = String.valueOf(jsonObject.get("response"));
                         responseToPrompt = responseToPrompt.replace("\\n", "\n");
                         event.getMessage().reply(responseToPrompt).complete();
@@ -101,17 +104,18 @@ public class BrainsController
                     else if (status.toLowerCase().contains("waiting"))
                     {
                         // If status is waiting, continue polling
-                        System.out.println("Request is still waiting...");
+                        LogManager.consoleLogger.debug("Request is still waiting...");
                     }
                     else
                     {
                         // If status is neither completed nor waiting, it has failed, stop polling
-                        System.out.println("Request Failed.");
+                        LogManager.consoleLogger.error("Request Failed.");
                         timer.cancel(); // Stop the timer
                     }
                 }
                 catch (Exception e)
                 {
+                    LogManager.consoleLogger.error(e.getMessage());
                     e.printStackTrace();
                     timer.cancel(); // Stop polling in case of error
                 }
