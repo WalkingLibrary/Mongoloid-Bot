@@ -126,6 +126,63 @@ public class BrainsController
         timer.scheduleAtFixedRate(task, 0, 2000);
     }
 
+
+    // Poll the status every 2 seconds
+    public static void pollStatus(String requestId, IResponseUser responseUser)
+    {
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    // Define the status check endpoint
+                    String endpoint = brainsOptions.getEndPoint() + "/api/prompt-status/" + requestId;
+
+                    // Send GET request to check the status
+                    String response = sendGetRequest(endpoint);
+
+                    // Parse the status from the response
+                    JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class);
+                    String status = jsonObject.get("status").getAsString();
+
+                    LogManager.consoleLogger.debug("Brains Request: " + requestId);
+                    if (status.equalsIgnoreCase("completed"))
+                    {
+                        // If status is completed, print the response and stop polling
+                        LogManager.consoleLogger.info("Request Completed: " + jsonObject.get("response").getAsString());
+                        String responseToPrompt = String.valueOf(jsonObject.get("response"));
+                        responseToPrompt = responseToPrompt.replace("\\n", "\n");
+                        responseUser.UseResponse(responseToPrompt);
+                        timer.cancel(); // Stop the timer
+                    }
+                    else if (status.toLowerCase().contains("waiting"))
+                    {
+                        // If status is waiting, continue polling
+                        LogManager.consoleLogger.debug("Request is still waiting...");
+                    }
+                    else
+                    {
+                        // If status is neither completed nor waiting, it has failed, stop polling
+                        LogManager.consoleLogger.error("Request Failed.");
+                        timer.cancel(); // Stop the timer
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogManager.consoleLogger.error(e.getMessage());
+                    e.printStackTrace();
+                    timer.cancel(); // Stop polling in case of error
+                }
+            }
+        };
+
+        // Schedule the task to run every 2 seconds
+        timer.scheduleAtFixedRate(task, 0, 2000);
+    }
+
     // Send a GET request to check the status
     public static String sendGetRequest(String endpointUrl) throws Exception
     {

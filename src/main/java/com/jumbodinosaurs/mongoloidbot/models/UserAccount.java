@@ -205,6 +205,7 @@ public class UserAccount implements SQLStoreObject,
         if (loadedObjects.size() == 0)
         {
             Player newPlayer = new Player(idToSearchFor);
+            newPlayer.setPromptName(member.getEffectiveName());
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newPlayer, 0);
             return getPlayer(member);
         }

@@ -1,9 +1,12 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.items.models;
 
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class Player
 {
@@ -24,6 +27,8 @@ public class Player
     private String userAccountId;
 
     private CurrentTask currentTask;
+
+    private String promptNameBase64;
 
     public Player(String userAccountId)
     {
@@ -145,5 +150,31 @@ public class Player
     public ArrayList<Item> getStaminaItems()
     {
         return ItemUntil.getItemsOfAbilityType(this, Ability.AbilityType.GIVE_STAMINA);
+    }
+
+
+    public Member getMember()
+    {
+        return UserAccount.getMemberFromAccountId(getUserAccountId());
+    }
+
+    public String getPromptName()
+    {
+        return new String(Base64.getDecoder().decode(getPromptNameBase64()));
+    }
+
+    public void setPromptName(String promptName)
+    {
+        setPromptNameBase64(Base64.getEncoder().encodeToString(promptName.getBytes()));
+    }
+
+    public String getPromptNameBase64()
+    {
+        return promptNameBase64;
+    }
+
+    public void setPromptNameBase64(String promptName)
+    {
+        this.promptNameBase64 = promptName;
     }
 }

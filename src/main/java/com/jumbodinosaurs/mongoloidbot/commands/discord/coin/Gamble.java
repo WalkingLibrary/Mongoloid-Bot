@@ -225,7 +225,7 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
         {
 
             UserAccount.updateUser(accountToUpdate);
-
+            //Bug when winnings are positive but a loss TODO Fix
             if (totalWinnings.signum() <= -1)
             {
                 LotteryTask.addToPot(totalWinnings.abs());
