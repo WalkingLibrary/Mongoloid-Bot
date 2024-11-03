@@ -31,7 +31,7 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
     public MessageResponse getExecutedMessage()
             throws WaveringParametersException
     {
-        Member member = event.getMember();
+        Member memberBuying = event.getMember();
 
         try
         {
@@ -40,13 +40,18 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
                 return new MessageResponse("You did not Tell me who to buy from!");
             }
 
-            UserAccount currentUser = UserAccount.getUser(member);
-            Player currentUsersPlayer = currentUser.getPlayer(member);
+            UserAccount currentUser = UserAccount.getUser(memberBuying);
+            Player currentUsersPlayer = currentUser.getPlayer(memberBuying);
             PlayerInventory playersInventory = currentUsersPlayer.getInventory();
 
             Member memberToBuyFrom = event.getMessage().getMentionedMembers().get(0);
             UserAccount userAccountToBuyFrom = UserAccount.getUser(memberToBuyFrom);
             Player playerToBuyFrom = userAccountToBuyFrom.getPlayer(memberToBuyFrom);
+
+            if (memberToBuyFrom.equals(memberBuying))
+            {
+                return new MessageResponse("You cannot Buy your own item");
+            }
 
 
             if (playerToBuyFrom.getItemForSale() == null)
