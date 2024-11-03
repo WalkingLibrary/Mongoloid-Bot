@@ -54,11 +54,11 @@ public class BattleTask extends ScheduledTask
             player2.setStamina(100);
         }
         fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")");
-        fullReport.append(player1);
+        fullReport.append(player1.toStringBattleReport());
         fullReport.append("\n");
         fullReport.append(" vs ");
         fullReport.append(player2.getMember().getEffectiveName() + "(" + player2.getPromptName() + ")\n");
-        fullReport.append(player2);
+        fullReport.append(player2.toStringBattleReport());
         fullReport.append("\n");
 
 

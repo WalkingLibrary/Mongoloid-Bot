@@ -178,6 +178,15 @@ public class Player
         this.promptNameBase64 = promptName;
     }
 
+
+    public String toStringBattleReport()
+    {
+        return "Player:\n" +
+                "health: " + health + "\n" +
+                "stamina: " + stamina + "\n" +
+                "inventory: " + inventory.toStringBattleReport();
+    }
+
     @Override
     public String toString()
     {
