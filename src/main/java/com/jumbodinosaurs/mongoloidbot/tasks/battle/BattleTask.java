@@ -6,6 +6,7 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
+import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import com.jumbodinosaurs.mongoloidbot.brains.IResponseUser;
@@ -326,6 +327,7 @@ public class BattleTask extends ScheduledTask
             // Determine the winner of each battle and update players accordingly
             StringBuilder promptGen = new StringBuilder();
             promptGen.append("Mend this into a Summary");
+            StringBuilder warReport = new StringBuilder();
             StringBuilder finalAttackReport = new StringBuilder();
             for (Player challenger : challengingMembers)
             {
@@ -337,6 +339,7 @@ public class BattleTask extends ScheduledTask
                 updatePlayerAfterBattle(kingKhan);
                 updatePlayerAfterBattle(challenger);
                 promptGen.append(finalAttackReport);
+                warReport.append(finalAttackReport);
                 finalAttackReport = new StringBuilder();
             }
 
@@ -411,6 +414,23 @@ public class BattleTask extends ScheduledTask
 
             // Announce the new king in the guild
             EventListener.sendMessage(kingKhanMember.getEffectiveName() + " Is King!", Main.BATTLE_STEPPE_ID);
+            File streamToFile = null;
+            try
+            {
+                streamToFile = File.createTempFile("batteReport", ".txt");
+                GeneralUtil.writeContents(streamToFile, warReport.toString(), false);
+                Main.jdaController.getJda()
+                        .getGuildById(Main.GUILD_ID)
+                        .getTextChannelById(Main.BATTLE_STEPPE_ID)
+                        .sendMessage("Battle Report: ").addFile(streamToFile, streamToFile.getName())
+                        .complete();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                LogManager.consoleLogger.error("Error Sending Battle Report: " + e.getMessage());
+            }
+            streamToFile.deleteOnExit();
 
         }
         catch (Exception e)
