@@ -230,6 +230,15 @@ public class Gamble extends CommandWithParameters implements IDiscordChatEventab
             {
                 LotteryTask.addToPot(totalWinnings.abs());
             }
+
+            //If the Difference between the amount to gamble and the total winings is greater than zero than add to the pot
+            // the difference
+            //Slamo Eaten money report
+            //For example if I gamble 50k and only win 26k, then 24k should be added to the pot
+            if (amountToGamble.subtract(totalWinnings).signum() > 0)
+            {
+                LotteryTask.addToPot(amountToGamble.subtract(totalWinnings));
+            }
         }
         catch(SQLException e)
         {
