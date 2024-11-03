@@ -40,7 +40,7 @@ public class BattleTask extends ScheduledTask
     }
 
 
-    public static Player getBattleWinner(Player player1, Player player2, StringBuilder finalAttackReport)
+    public static Player getBattleWinner(Player player1, Player player2, StringBuilder fullReport)
     {
         Item weaponHands = new Item("Hands", new Ability(Ability.AbilityType.TAKE_HEALTH, 20));
 
@@ -53,30 +53,65 @@ public class BattleTask extends ScheduledTask
         {
             player2.setStamina(100);
         }
+        fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")");
+        fullReport.append(player1);
+        fullReport.append("\n");
+        fullReport.append(" vs ");
+        fullReport.append(player2.getMember().getEffectiveName() + "(" + player2.getPromptName() + ")\n");
+        fullReport.append(player2);
+        fullReport.append("\n");
+
 
         // Continue the battle as long as both players have health above zero
         while (player1.getHealth() > 0 && player2.getHealth() > 0)
         {
-            finalAttackReport.append(player1.getPromptName() + " Attacks " + player2.getPromptName() + "\n");
+            fullReport.append(player1.getPromptName() + " Attacks " + player2.getPromptName() + "\n");
             // Both players take a turn, starting with player 1
-            if (!applyBattleTurn(player1, player2, weaponHands, finalAttackReport))
+            if (!applyBattleTurn(player1, player2, weaponHands, fullReport))
             {
+                fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
                 return player1; // Player 1 wins if Player 2's health drops to 0 or below
             }
-            applyHealing(player1, finalAttackReport);
-            finalAttackReport = new StringBuilder();
-            finalAttackReport.append(player2.getPromptName() + " Attacks " + player1.getPromptName() + "\n");
+            applyHealing(player1, fullReport);
+            fullReport.append(player2.getPromptName() + " Attacks " + player1.getPromptName() + "\n");
             // Then player 2 takes a turn
-            if (!applyBattleTurn(player2, player1, weaponHands, finalAttackReport))
+            if (!applyBattleTurn(player2, player1, weaponHands, fullReport))
             {
+                fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
                 return player2; // Player 2 wins if Player 1's health drops to 0 or below
             }
-            applyHealing(player2, finalAttackReport);
-            finalAttackReport = new StringBuilder();
+            applyHealing(player2, fullReport);
         }
 
-        return player2; // Fallback return if loop exits incorrectly
+        if (player1.getHealth() < player2.getHealth())
+        {
+            fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
+            return player2;
+        }
+        fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
+        return player1; // Fallback return if loop exits incorrectly
     }
+
+    public static void appendLastTenLines(StringBuilder source, StringBuilder destination)
+    {
+        String content = source.toString();
+        if (content.isEmpty())
+        {
+            return;
+        }
+
+        String[] lines = content.split("\n");  // Split the content into lines
+
+        // Calculate the starting index of the last 10 lines
+        int start = Math.max(0, lines.length - 10);
+
+        // Append the last 10 lines (or fewer, if not enough lines exist)
+        for (int i = start; i < lines.length; i++)
+        {
+            destination.append(lines[i]).append("\n");
+        }
+    }
+
 
     private static boolean applyBattleTurn(Player attacker, Player defender, Item defaultWeapon, StringBuilder reportBuilder)
     {
@@ -328,19 +363,17 @@ public class BattleTask extends ScheduledTask
             StringBuilder promptGen = new StringBuilder();
             promptGen.append("Mend this into a Summary");
             StringBuilder warReport = new StringBuilder();
-            StringBuilder finalAttackReport = new StringBuilder();
             for (Player challenger : challengingMembers)
             {
                 if (kingKhan.getUserAccountId().equals(challenger.getUserAccountId()))
                 {
                     continue;
                 }
-                kingKhan = getBattleWinner(kingKhan, challenger, finalAttackReport);
+                kingKhan = getBattleWinner(kingKhan, challenger, warReport);
+                warReport.append("\n");
                 updatePlayerAfterBattle(kingKhan);
                 updatePlayerAfterBattle(challenger);
-                promptGen.append(finalAttackReport);
-                warReport.append(finalAttackReport);
-                finalAttackReport = new StringBuilder();
+                appendLastTenLines(warReport, promptGen);
             }
 
             promptGen.append(

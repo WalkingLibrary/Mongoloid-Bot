@@ -177,4 +177,20 @@ public class Player
     {
         this.promptNameBase64 = promptName;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Player{" +
+                "health=" + health +
+                ", stamina=" + stamina +
+                ", itemForSale=" + itemForSale +
+                ", itemSellPrice=" + itemSellPrice +
+                ", pendingItem=" + pendingItem +
+                ", inventory=" + inventory +
+                ", userAccountId='" + userAccountId + '\'' +
+                ", currentTask=" + currentTask +
+                ", promptNameBase64='" + promptNameBase64 + '\'' +
+                '}';
+    }
 }
