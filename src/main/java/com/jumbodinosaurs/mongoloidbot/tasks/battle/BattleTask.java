@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -53,44 +54,53 @@ public class BattleTask extends ScheduledTask
         {
             player2.setStamina(100);
         }
-        fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")");
+
+        fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")\n");
         fullReport.append(player1.toStringBattleReport());
-        fullReport.append("\n");
-        fullReport.append(" vs ");
+        fullReport.append("\n vs ");
         fullReport.append(player2.getMember().getEffectiveName() + "(" + player2.getPromptName() + ")\n");
         fullReport.append(player2.toStringBattleReport());
         fullReport.append("\n");
 
+        boolean player1AttackFirst = new Random().nextBoolean();
+        Player attacker, defender;
+        attacker = player2;
+        defender = player1;
 
+        if (player1AttackFirst)
+        {
+            attacker = player1;
+            defender = player2;
+        }
+        fullReport.append(attacker.getPromptName() + " Gets First attack!\n");
         // Continue the battle as long as both players have health above zero
         while (player1.getHealth() > 0 && player2.getHealth() > 0)
         {
-            fullReport.append(player1.getPromptName() + " Attacks " + player2.getPromptName() + "\n");
-            // Both players take a turn, starting with player 1
-            if (!applyBattleTurn(player1, player2, weaponHands, fullReport))
+            applyHealing(defender, fullReport);
+            fullReport.append(attacker.getPromptName() + " Attacks " + defender.getPromptName() + "\n");
+            if (!applyBattleTurn(attacker, defender, weaponHands, fullReport))
             {
-                fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
-                return player1; // Player 1 wins if Player 2's health drops to 0 or below
+                fullReport.append(attacker.getPromptName() + " SLAYS " + defender.getPromptName() + "\n");
+                return attacker;
             }
-            applyHealing(player1, fullReport);
-            fullReport.append(player2.getPromptName() + " Attacks " + player1.getPromptName() + "\n");
-            // Then player 2 takes a turn
-            if (!applyBattleTurn(player2, player1, weaponHands, fullReport))
-            {
-                fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
-                return player2; // Player 2 wins if Player 1's health drops to 0 or below
-            }
-            applyHealing(player2, fullReport);
+            // Swap attacker and defender for the next turn
+            Player temp = attacker;
+            attacker = defender;
+            defender = temp;
         }
 
-        if (player1.getHealth() < player2.getHealth())
+        // Final health check in case both reach zero simultaneously
+        if (player1.getHealth() > player2.getHealth())
         {
-            fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
-            return player2;
+            fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
+            return player1;
         }
-        fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
-        return player1; // Fallback return if loop exits incorrectly
+
+        fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
+        return player2;
+
     }
+
 
     public static void appendLastTenLines(StringBuilder source, StringBuilder destination)
     {
@@ -118,9 +128,9 @@ public class BattleTask extends ScheduledTask
         // Apply any stamina boosts before attacking
         applyStaminaBoosts(attacker, reportBuilder);
 
-        // Proceed with the existing attack logic
+        // Select weapon from attacker's inventory or use default if none
         Item weapon = defaultWeapon;
-        if (attacker.getWeapons().size() > 0)
+        if (!attacker.getWeapons().isEmpty())
         {
             weapon = attacker.getWeapons().get((int) (attacker.getWeapons().size() * Math.random()));
         }
@@ -130,25 +140,49 @@ public class BattleTask extends ScheduledTask
         double staminaModifier = 1 + (attacker.getStamina() * 0.005);
         damage = (int) (damage * staminaModifier);
 
-        // Armor reduces the attack damage
+        int totalArmorEffect = 0;
+        int totalArmorBreakingEffect = 0;
+
+        // Calculate total armor effect
         for (Item armorItem : defender.getArmor())
         {
-            damage -= armorItem.getAbility().getIntensity();
-            if (armorItem.getAbility().getIntensity() > 0)
-            {
-                armorItem.getAbility().setIntensity(armorItem.getAbility().getIntensity() - 1);
-                reportBuilder.append(defender.getPromptName() + " Defends with " + armorItem.getName() + "\n");
-
-            }
-
-            if (damage < 0)
-            {
-                damage = 1;
-                break;
-            }
+            totalArmorEffect += armorItem.getAbility().getIntensity();
         }
+
+        // Check for armor-breaking items and calculate total effect
+        for (Item armorBreaking : attacker.getArmorBreak())
+        {
+            totalArmorBreakingEffect += armorBreaking.getAbility().getIntensity();
+        }
+
+        // Reporting total armor breaking effects
+        if (totalArmorBreakingEffect > 0)
+        {
+            reportBuilder.append(
+                    attacker.getPromptName() + " utilizes armor breaking effects totaling " + totalArmorBreakingEffect + " intensity\n");
+        }
+
+        // Calculate effective damage after considering armor
+        damage -= totalArmorEffect;
         reportBuilder.append(
-                attacker.getPromptName() + " Attacks " + defender.getPromptName() + " with " + weapon.getName() + " for an amount of " + damage + " damage " + "\n");
+                defender.getPromptName() + " defends with total armor reducing damage by " + totalArmorEffect + "\n");
+
+        // Adjust damage to ensure it does not go below 1
+        if (damage < 1)
+        {
+            damage = 1;
+        }
+
+        reportBuilder.append(
+                attacker.getPromptName() + " attacks " + defender.getPromptName() + " with " + weapon.getName() + " for an amount of " + damage + " damage\n");
+
+        // Adjust the attacker's stamina based on the difference between armor breaking and armor effectiveness
+        int staminaAdjustment = totalArmorBreakingEffect - totalArmorEffect;
+        attacker.setStamina(
+                Math.max(0, attacker.getStamina() + staminaAdjustment));  // Ensure stamina doesn't go negative
+
+        reportBuilder.append(
+                "Stamina adjustment for " + attacker.getPromptName() + " due to armor breaking is " + totalArmorBreakingEffect + "\n");
 
         // Apply the calculated damage to the defender's health
         defender.setHealth(defender.getHealth() - damage);
@@ -156,6 +190,7 @@ public class BattleTask extends ScheduledTask
         // Check if the defender is still alive
         return defender.getHealth() > 0;
     }
+
 
     public static void updatePlayerAfterBattle(Player player) throws SQLException
     {
@@ -242,8 +277,10 @@ public class BattleTask extends ScheduledTask
                 // Increase the player's stamina by the intensity of the item
                 player.setStamina(player.getStamina() + item.getAbility().getIntensity());
 
+                Random random = new Random();
                 // Decrease the intensity of the item to simulate its usage
-                item.getAbility().setIntensity(item.getAbility().getIntensity() - 1);
+                int reductionAmount = random.nextInt(75) + 1;  //
+                item.getAbility().setIntensity(item.getAbility().getIntensity() - reductionAmount);
                 reportBuilder.append(player.getPromptName() + " adds an Attack Boost of " + item.getAbility()
                         .getIntensity() + " using " + item.getName() + "\n");
                 // Check if the item's intensity is now zero or less, add it to remove list

@@ -42,7 +42,7 @@ public class Ability
     {
         TAKE_HEALTH("Weapon", 200),
         GIVE_HEALTH("Healing", 200),
-        ARMOR("Armor", 200),
+        ARMOR("Armor", 450),
         DAMAGE_ARMOR("Armor Breaking", 200),
         GIVE_STAMINA("Stamina", 1000);
 
