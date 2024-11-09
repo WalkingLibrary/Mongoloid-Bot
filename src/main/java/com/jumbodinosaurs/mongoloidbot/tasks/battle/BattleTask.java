@@ -305,7 +305,7 @@ public class BattleTask extends ScheduledTask
     @Override
     public int getPeriod()
     {
-        return 8;
+        return 4;
     }
 
     @Override
