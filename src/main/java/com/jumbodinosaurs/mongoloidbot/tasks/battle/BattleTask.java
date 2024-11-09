@@ -22,10 +22,7 @@ import net.dv8tion.jda.api.entities.Role;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -44,16 +41,8 @@ public class BattleTask extends ScheduledTask
     public static Player getBattleWinner(Player player1, Player player2, StringBuilder fullReport)
     {
         Item weaponHands = new Item("Hands", new Ability(Ability.AbilityType.TAKE_HEALTH, 20));
-
-        // Ensure players have stamina to fight
-        if (player1.getStamina() <= 0)
-        {
-            player1.setStamina(100);
-        }
-        if (player2.getStamina() <= 0)
-        {
-            player2.setStamina(100);
-        }
+        player1.setStamina(100);
+        player2.setStamina(100);
 
         fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")\n");
         fullReport.append(player1.toStringBattleReport());
@@ -197,7 +186,7 @@ public class BattleTask extends ScheduledTask
         player.setCurrentTask(null);
         if (player.getHealth() <= 0)
         {
-            player.setHealth(100);
+            player.setHealth(5000);
         }
         UserAccount.updatePlayer(player);
     }
@@ -216,6 +205,7 @@ public class BattleTask extends ScheduledTask
         // Create a list to hold keys of items to be removed to avoid ConcurrentModificationException
         ArrayList<Integer> keysToRemove = new ArrayList<>();
 
+        int healthMultiplier = 20;
         // Iterate over the entries of the map
         for (Map.Entry<Integer, Item> entry : items.entrySet())
         {
@@ -224,7 +214,7 @@ public class BattleTask extends ScheduledTask
             if (item.getAbility().getType() == Ability.AbilityType.GIVE_HEALTH && item.getAbility().getIntensity() > 0)
             {
                 // Heal the player by the intensity of the item
-                player.setHealth(player.getHealth() + item.getAbility().getIntensity());
+                player.setHealth(player.getHealth() + (item.getAbility().getIntensity() * healthMultiplier));
 
                 // Decrease the intensity of the item to simulate its usage
                 item.getAbility().setIntensity(item.getAbility().getIntensity() - 1);
@@ -396,9 +386,10 @@ public class BattleTask extends ScheduledTask
                 kingKhan = challengingMembers.get(0);
             }
 
+
             // Determine the winner of each battle and update players accordingly
             StringBuilder promptGen = new StringBuilder();
-            promptGen.append("Mend this into a Summary");
+            promptGen.append("Mend this into a Summary and Exaggerate the Place it's at.");
             StringBuilder warReport = new StringBuilder();
             for (Player challenger : challengingMembers)
             {
@@ -406,6 +397,7 @@ public class BattleTask extends ScheduledTask
                 {
                     continue;
                 }
+
                 kingKhan = getBattleWinner(kingKhan, challenger, warReport);
                 warReport.append("\n");
                 updatePlayerAfterBattle(kingKhan);
@@ -414,7 +406,9 @@ public class BattleTask extends ScheduledTask
             }
 
             promptGen.append(
-                    "Be sure it's only a paragraph, the summary will be used to generate an image. Be sure to add the names of the people mentioned.");
+                    "Be sure it's only two sentences long, the summary will be used to generate an image. Be sure to add the names of the people mentioned.");
+            // Randomly select a theme for this battle
+
             // Send the POST request and get the requestId
             try
             {
@@ -433,7 +427,13 @@ public class BattleTask extends ScheduledTask
                         {
                             try
                             {
-                                File battleImage = ImageFetcher.fetchImage(response);
+                                // Define a list of themes for battle summaries
+                                ArrayList<String> themes = (ArrayList<String>) Arrays.asList("Realistic", "Isometric",
+                                        "Painting", "Wireframe", "Surreal", "Sketch", "Cartoon", "Retro", "Futuristic",
+                                        "Pixel Art");
+                                Random random = new Random();
+                                String theme = themes.get(random.nextInt(themes.size()));
+                                File battleImage = ImageFetcher.fetchImage("Theme: " + theme + " - " + response);
                                 if (battleImage.length() > 8000000)
                                 {
                                     LogManager.consoleLogger.error(
