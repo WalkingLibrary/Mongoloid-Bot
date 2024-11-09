@@ -36,12 +36,6 @@ public class Battle extends Command implements IDiscordChatEventable
 
             String username = event.getMember().getUser().getName();
 
-            if (currentUsersPlayer.getCurrentTask() != null)
-            {
-                return new MessageResponse(
-                        "Sorry, you are already " + currentUsersPlayer.getCurrentTask().getTaskName().name());
-            }
-
             CurrentTask battlingTask = new CurrentTask(CurrentTask.TaskType.BATTLING);
             currentUsersPlayer.setCurrentTask(battlingTask);
 

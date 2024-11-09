@@ -175,6 +175,7 @@ public class BattleTask extends ScheduledTask
 
         // Apply the calculated damage to the defender's health
         defender.setHealth(defender.getHealth() - damage);
+        reportBuilder.append("Health is now " + defender.getHealth() + " for " + defender.getPromptName() + "\n");
 
         // Check if the defender is still alive
         return defender.getHealth() > 0;
@@ -183,10 +184,9 @@ public class BattleTask extends ScheduledTask
 
     public static void updatePlayerAfterBattle(Player player) throws SQLException
     {
-        player.setCurrentTask(null);
         if (player.getHealth() <= 0)
         {
-            player.setHealth(5000);
+            player.setHealth(2500);
         }
         UserAccount.updatePlayer(player);
     }
@@ -428,7 +428,7 @@ public class BattleTask extends ScheduledTask
                             try
                             {
                                 // Define a list of themes for battle summaries
-                                ArrayList<String> themes = (ArrayList<String>) Arrays.asList("Realistic", "Isometric",
+                                List<String> themes = Arrays.asList("Realistic", "Isometric",
                                         "Painting", "Wireframe", "Surreal", "Sketch", "Cartoon", "Retro", "Futuristic",
                                         "Pixel Art");
                                 Random random = new Random();

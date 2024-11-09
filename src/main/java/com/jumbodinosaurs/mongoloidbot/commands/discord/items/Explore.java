@@ -36,11 +36,6 @@ public class Explore extends Command implements IDiscordChatEventable
 
             String username = event.getMember().getUser().getName();
 
-            if (currentUsersPlayer.getCurrentTask() != null)
-            {
-                return new MessageResponse(
-                        "Sorry, you are already " + currentUsersPlayer.getCurrentTask().getTaskName().name());
-            }
             
             CurrentTask exploringTask = new CurrentTask(CurrentTask.TaskType.EXPLORING);
             currentUsersPlayer.setCurrentTask(exploringTask);
