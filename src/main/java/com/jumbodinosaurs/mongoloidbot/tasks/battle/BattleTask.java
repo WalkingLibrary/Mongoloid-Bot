@@ -389,7 +389,7 @@ public class BattleTask extends ScheduledTask
 
             // Determine the winner of each battle and update players accordingly
             StringBuilder promptGen = new StringBuilder();
-            promptGen.append("Mend this into a Summary and Exaggerate the Place it's at.");
+            promptGen.append("Mend this into a Summary and Exaggerate the Place it is at.");
             StringBuilder warReport = new StringBuilder();
             for (Player challenger : challengingMembers)
             {
@@ -406,7 +406,7 @@ public class BattleTask extends ScheduledTask
             }
 
             promptGen.append(
-                    "Be sure it's only two sentences long, the summary will be used to generate an image. Be sure to add the names of the people mentioned.");
+                    "Be sure it's only a paragraph long, the summary will be used to generate an image. Be sure to add the names of the people mentioned.");
             // Randomly select a theme for this battle
 
             // Send the POST request and get the requestId
