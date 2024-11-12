@@ -85,7 +85,7 @@ public class ExploreTask extends ScheduledTask
                 {
                     continue;
                 }
-                LogManager.consoleLogger.info(currentAccountsPlayer.getUserAccountId() + " has Found an Item");
+                LogManager.consoleLogger.debug(currentAccountsPlayer.getUserAccountId() + " has Found an Item");
 
                 // 4. Add Item to their Inventory or Pending Slot
                 Item randomItem = ItemUntil.generateRandomItem();
@@ -98,7 +98,8 @@ public class ExploreTask extends ScheduledTask
                     currentAccountsPlayer.setPendingItem(randomItem);
                     currentAccountsPlayer.setCurrentTask(null);
 
-                    LogManager.consoleLogger.info("Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
+                    LogManager.consoleLogger.debug(
+                            "Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
                     UserAccount.updatePlayer(currentAccountsPlayer);
                     continue;
                 }
@@ -112,14 +113,14 @@ public class ExploreTask extends ScheduledTask
                     {
                         playersCurrentInventory.getItems().put(i, randomItem);
                         currentAccountsPlayer.setCurrentTask(null);
-                        LogManager.consoleLogger.info(
+                        LogManager.consoleLogger.debug(
                                 "Updating Slot " + i + ": " + new Gson().toJson(currentAccountsPlayer));
                         UserAccount.updatePlayer(currentAccountsPlayer);
                         break;
                     }
                 }
             }
-            LogManager.consoleLogger.info("Done Running Exploring");
+            LogManager.consoleLogger.debug("Done Running Exploring");
         }
         catch (Exception e)
         {
