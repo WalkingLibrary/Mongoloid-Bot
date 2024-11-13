@@ -50,7 +50,7 @@ public class BattleTask extends ScheduledTask
         fullReport.append(player2.getMember().getEffectiveName() + "(" + player2.getPromptName() + ")\n");
         fullReport.append(player2.toStringBattleReport());
         fullReport.append("\n");
-
+        int roundNumber = 0;
         boolean player1AttackFirst = new Random().nextBoolean();
         Player attacker, defender;
         attacker = player2;
@@ -65,10 +65,13 @@ public class BattleTask extends ScheduledTask
         // Continue the battle as long as both players have health above zero
         while (player1.getHealth() > 0 && player2.getHealth() > 0)
         {
+            roundNumber++;
+            fullReport.append("Round: " + roundNumber + "\n");
             applyHealing(defender, fullReport);
             fullReport.append(attacker.getPromptName() + " Attacks " + defender.getPromptName() + "\n");
             if (!applyBattleTurn(attacker, defender, weaponHands, fullReport))
             {
+                fullReport.append("\n");
                 fullReport.append(attacker.getPromptName() + " SLAYS " + defender.getPromptName() + "\n");
                 return attacker;
             }
@@ -76,6 +79,7 @@ public class BattleTask extends ScheduledTask
             Player temp = attacker;
             attacker = defender;
             defender = temp;
+            fullReport.append("\n");
         }
 
         // Final health check in case both reach zero simultaneously
@@ -128,7 +132,8 @@ public class BattleTask extends ScheduledTask
         // Apply stamina factor in damage calculation
         double staminaModifier = 1 + (attacker.getStamina() * 0.005);
         damage = (int) (damage * staminaModifier);
-
+        reportBuilder.append(
+                attacker.getPromptName() + " charges his attack using " + weapon.getName() + " for a total of " + damage + " damage\n");
         int totalArmorEffect = 0;
         int totalArmorBreakingEffect = 0;
 
@@ -148,13 +153,15 @@ public class BattleTask extends ScheduledTask
         if (totalArmorBreakingEffect > 0)
         {
             reportBuilder.append(
-                    attacker.getPromptName() + " utilizes armor breaking effects totaling " + totalArmorBreakingEffect + " intensity\n");
+                    attacker.getPromptName() + " utilizes armor breaking effects totaling " + totalArmorBreakingEffect + "\n");
+
         }
 
+
         // Calculate effective damage after considering armor
-        damage -= totalArmorEffect;
+        damage -= (totalArmorEffect - totalArmorBreakingEffect);
         reportBuilder.append(
-                defender.getPromptName() + " defends with total armor reducing damage by " + totalArmorEffect + "\n");
+                defender.getPromptName() + " defends with armor reducing damage by " + totalArmorEffect + "\n");
 
         // Adjust damage to ensure it does not go below 1
         if (damage < 1)
@@ -163,16 +170,17 @@ public class BattleTask extends ScheduledTask
         }
 
         reportBuilder.append(
-                attacker.getPromptName() + " attacks " + defender.getPromptName() + " with " + weapon.getName() + " for an amount of " + damage + " damage\n");
+                attacker.getPromptName() + " attacks " + defender.getPromptName() + " with " + weapon.getName() + " dealing " + damage + " damage\n");
 
         // Adjust the attacker's stamina based on the difference between armor breaking and armor effectiveness
         int staminaAdjustment = totalArmorBreakingEffect - totalArmorEffect;
-        attacker.setStamina(
-                Math.max(0, attacker.getStamina() + staminaAdjustment));  // Ensure stamina doesn't go negative
-
-        reportBuilder.append(
-                "Stamina adjustment for " + attacker.getPromptName() + " due to armor breaking is " + totalArmorBreakingEffect + "\n");
-
+        if (staminaAdjustment > 0)
+        {
+            attacker.setStamina(
+                    Math.max(0, attacker.getStamina() - staminaAdjustment));  // Ensure stamina doesn't go negative
+            reportBuilder.append(
+                    attacker.getPromptName() + " loses " + staminaAdjustment + " Stamina due to " + defender.getPromptName() + "s armor\n");
+        }
         // Apply the calculated damage to the defender's health
         defender.setHealth(defender.getHealth() - damage);
         reportBuilder.append("Health is now " + defender.getHealth() + " for " + defender.getPromptName() + "\n");
