@@ -19,20 +19,25 @@ public class ImageFetcher
     private static final OkHttpClient client = createClient();
     private static final Gson gson = new Gson();
 
-    public static File fetchImage(String prompt) throws IOException
+    public static File fetchImage(String prompt) throws Exception
     {
         String jsonResponse = makeApiCall("https://aiservices.calebwarren.dev/MongolBrains/api/image?prompt=" + prompt);
         String imageUrl = extractImageUrl(jsonResponse);
         return downloadAndSaveImage(imageUrl, prompt);
     }
 
-    private static String makeApiCall(String url) throws IOException
+    private static String makeApiCall(String url) throws Exception
     {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+
         try (Response response = client.newCall(request).execute())
         {
+            if (response.code() != 200)
+            {
+                throw new Exception("Error Fetching Image - HTTP Response: " + response);
+            }
             return response.body().string();
         }
     }

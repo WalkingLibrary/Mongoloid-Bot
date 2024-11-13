@@ -7,7 +7,6 @@ import com.jumbodinosaurs.mongoloidbot.brains.ImageFetcher;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class ImageFetchTest extends Command implements IOwnerCommand
@@ -22,7 +21,7 @@ public class ImageFetchTest extends Command implements IOwnerCommand
             genImages.add(ImageFetcher.fetchImage(prompt));
             return new MessageResponse(prompt, genImages);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             return new MessageResponse("Error: " + e.getMessage());
         }

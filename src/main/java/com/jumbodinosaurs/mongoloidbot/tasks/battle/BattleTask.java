@@ -455,7 +455,7 @@ public class BattleTask extends ScheduledTask
                                         .sendMessage(response + ": ").addFile(battleImage, battleImage.getName())
                                         .complete();
                             }
-                            catch (IOException e)
+                            catch (Exception e)
                             {
                                 LogManager.consoleLogger.error("Error Getting Image for BattleTask: " + e.getMessage());
                                 e.printStackTrace();

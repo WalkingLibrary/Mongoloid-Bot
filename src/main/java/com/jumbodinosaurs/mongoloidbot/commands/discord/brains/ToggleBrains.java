@@ -7,12 +7,12 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsOptions;
-import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.ConnectBrain;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-public class ToggleBrains extends Command implements IDiscordChatEventable, IAdminCommand
+public class ToggleBrains extends Command implements IDiscordChatEventable, IOwnerCommand
 {
 
     private GuildMessageReceivedEvent event;
