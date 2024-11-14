@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -316,6 +317,64 @@ public class BattleTask extends ScheduledTask
         return 4;
     }
 
+    public static void SendBattleReport(StringBuilder warReport)
+    {
+        final int CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB in bytes
+        ArrayList<File> filesToDelete = new ArrayList<>();
+
+        try
+        {
+            // Convert warReport to bytes
+            byte[] warReportBytes = warReport.toString().getBytes(StandardCharsets.UTF_8);
+            int totalBytes = warReportBytes.length;
+            int chunkCount = (int) Math.ceil((double) totalBytes / CHUNK_SIZE);
+
+            for (int i = 0; i < chunkCount; i++)
+            {
+                int start = i * CHUNK_SIZE;
+                int end = Math.min((i + 1) * CHUNK_SIZE, totalBytes);
+
+                // Extract the byte chunk
+                byte[] chunkBytes = new byte[end - start];
+                System.arraycopy(warReportBytes, start, chunkBytes, 0, end - start);
+
+                // Convert byte chunk back to string for writing
+                String chunkString = new String(chunkBytes, StandardCharsets.UTF_8);
+
+                // Create a temporary file for this chunk
+                File chunkFile = File.createTempFile("battleReport_chunk_" + (i + 1), ".txt");
+                filesToDelete.add(chunkFile);
+
+                // Write the chunk to the file
+                GeneralUtil.writeContents(chunkFile, chunkString, false);
+
+                // Send the file
+                Main.jdaController.getJda()
+                        .getGuildById(Main.GUILD_ID)
+                        .getTextChannelById(Main.BATTLE_STEPPE_ID)
+                        .sendMessage("Battle Report Part " + (i + 1) + " of " + chunkCount + ":")
+                        .addFile(chunkFile, chunkFile.getName())
+                        .complete();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            LogManager.consoleLogger.error("Error Sending Battle Report: " + e.getMessage());
+        }
+        finally
+        {
+            // Ensure all temp files are deleted after usage
+            for (File file : filesToDelete)
+            {
+                if (file.exists())
+                {
+                    file.delete();
+                }
+            }
+        }
+    }
+
     @Override
     public void run()
     {
@@ -492,23 +551,7 @@ public class BattleTask extends ScheduledTask
 
             // Announce the new king in the guild
             EventListener.sendMessage(kingKhanMember.getEffectiveName() + " Is King!", Main.BATTLE_STEPPE_ID);
-            File streamToFile = null;
-            try
-            {
-                streamToFile = File.createTempFile("batteReport", ".txt");
-                GeneralUtil.writeContents(streamToFile, warReport.toString(), false);
-                Main.jdaController.getJda()
-                        .getGuildById(Main.GUILD_ID)
-                        .getTextChannelById(Main.BATTLE_STEPPE_ID)
-                        .sendMessage("Battle Report: ").addFile(streamToFile, streamToFile.getName())
-                        .complete();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                LogManager.consoleLogger.error("Error Sending Battle Report: " + e.getMessage());
-            }
-            streamToFile.deleteOnExit();
+            SendBattleReport(warReport);
 
         }
         catch (Exception e)
@@ -518,5 +561,6 @@ public class BattleTask extends ScheduledTask
             e.printStackTrace();
         }
     }
+
 
 }
