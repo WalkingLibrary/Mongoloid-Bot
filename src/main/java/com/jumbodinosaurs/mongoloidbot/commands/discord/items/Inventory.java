@@ -7,6 +7,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.models.DiscordANSITextHelper;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
@@ -47,7 +48,6 @@ public class Inventory extends Command implements IDiscordChatEventable
                 currentUsersPlayer.setInventory(
                         new PlayerInventory());
             }
-
             HashMap<Integer, Item> playersInventory = currentUsersPlayer.getInventory().getItems();
 
             if (playersInventory == null)
@@ -56,34 +56,36 @@ public class Inventory extends Command implements IDiscordChatEventable
                 currentUsersPlayer.getInventory().setItems(playersInventory);
             }
 
+            int alternatorSpace = 0;
             for (Integer key : playersInventory.keySet())
             {
+
                 Item currentItem = playersInventory.get(key);
                 if (currentItem == null)
                 {
                     continue;
                 }
+                //Every Other Item
+                alternatorSpace++;
+                if (alternatorSpace % 2 == 0)
+                {
+                    inventoryContents += " " + key + ". " + currentItem.toInventoryDisplay() + "\n";
+                    continue;
+                }
 
-                inventoryContents += key + ". ``" + currentItem.getName()
-                        .toUpperCase() + "``\n``Item Type:`` " + currentItem.getAbility()
-                        .getType().displayName + "\n``Intensity:`` " + currentItem.getAbility().getIntensity() + "\n\n";
+                inventoryContents += key + ". " + currentItem.toInventoryDisplay() + "\n";
             }
-
             if (currentUsersPlayer.getPendingItem() != null)
             {
-                inventoryContents += "``Pending Item: " + currentUsersPlayer.getPendingItem()
-                        .getName() + "``\n" + "``Item Type:`` " + currentUsersPlayer.getPendingItem().getAbility()
-                        .getType().displayName + "\n``Intensity:`` " + currentUsersPlayer.getPendingItem()
-                        .getAbility()
-                        .getIntensity() + "\n\n";
+                inventoryContents += "\n";
+                inventoryContents += "Pending Item:" + currentUsersPlayer.getPendingItem().toInventoryDisplay() + "\n";
             }
 
             if (currentUsersPlayer.getItemForSale() != null)
             {
-                inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale()
-                        .getName() + "\nPrice: " + currentUsersPlayer.getItemSellPrice() + " " + event.getGuild()
-                        .getEmoteById("916589679518838794")
-                        .getAsMention();
+                inventoryContents += "\n";
+                inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale().toInventoryDisplay()
+                        + "\nPrice: " + currentUsersPlayer.getItemSellPrice();
             }
 
 
@@ -91,8 +93,9 @@ public class Inventory extends Command implements IDiscordChatEventable
             {
                 inventoryContents = " Empty!";
             }
-
-            return new MessageResponse("```" + username + "'s Inventory:```\n" + inventoryContents);
+            System.out.println(DiscordANSITextHelper.finalWrap(username + "'s Inventory:\n" + inventoryContents));
+            return new MessageResponse(
+                    DiscordANSITextHelper.finalWrap(username + "'s Inventory:\n" + inventoryContents));
         }
         catch (SQLException e)
         {
