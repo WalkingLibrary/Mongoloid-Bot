@@ -71,7 +71,7 @@ public class Item
                 "\n" +
                 DiscordANSITextHelper.BOLD.wrap("Item Type:") +
                 " " +
-                GetColor(ability).wrap(ability.getType().toString()) +
+                GetColor(ability).wrap(ability.getType().displayName) +
                 " " +
                 DiscordANSITextHelper.BOLD.wrap("Intensity:") +
                 " " +
