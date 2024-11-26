@@ -56,12 +56,16 @@ public class CaptainNow extends Command implements IDiscordChatEventable
 
             //2. Remove Rank From everyone else
             Role captainRole = event.getGuild().getRoleById(captainID);
+            StringBuilder message = new StringBuilder();
+            message.append(
+                    "https://cdn.discordapp.com/attachments/946297978707136562/957794918330413126/iamdacaptainnow.mp4?ex=6745bbc7&is=67446a47&hm=6acff501c1808f4fcb4cf9774b2724fc9df5ef2b8541ebf965320239eb5654d7&\n");
+
             for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
             {
                 if (member.getRoles().contains(captainRole))
                 {
                     event.getGuild().removeRoleFromMember(member, captainRole).complete();
-
+                    message.append(member.getAsMention() + "\n");
                 }
             }
 
@@ -76,9 +80,9 @@ public class CaptainNow extends Command implements IDiscordChatEventable
             
             //5. Add Money to Pot
             LotteryTask.addToPot(costOfCaptainRank.divide(new BigDecimal("4")));
-            
-            
-            return new MessageResponse("You are the Captain Now");
+
+
+            return new MessageResponse(message.toString());
         }
         catch(SQLException e)
         {
