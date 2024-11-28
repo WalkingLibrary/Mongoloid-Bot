@@ -8,6 +8,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
+import com.jumbodinosaurs.mongoloidbot.tasks.lottery.SaleTask;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -48,6 +49,10 @@ public class CaptainNow extends Command implements IDiscordChatEventable
         {
             UserAccount accountToUpdate = UserAccount.getUser(event.getMember());
             BigDecimal costOfCaptainRank = new BigDecimal("1000000");
+            if (SaleTask.isBlackFriday())
+            {
+                costOfCaptainRank = new BigDecimal("1000");
+            }
             //1. Check their Money
             if (accountToUpdate.getBalance().subtract(costOfCaptainRank).signum() <= -1)
             {
