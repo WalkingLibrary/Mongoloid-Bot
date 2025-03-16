@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
@@ -19,7 +20,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
 {
 
     private GuildMessageReceivedEvent event;
-    public static final String captainID = "820504481153286145";
+    public static final String captainID = AppSettingsManager.getValue("captainID");
 
     @Override
     public String getCategory()

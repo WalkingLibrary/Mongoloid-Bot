@@ -1,6 +1,7 @@
 package com.jumbodinosaurs.mongoloidbot.tasks.millionairesclub;
 
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import net.dv8tion.jda.api.JDA;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MillionaireClubTask extends ScheduledTask
 {
-    public static String millionaireClubRankID = "976297169017516034";
+    public static String millionaireClubRankID = AppSettingsManager.getValue("millionaireClubRankID");
 
     public MillionaireClubTask(ScheduledThreadPoolExecutor executor)
     {

@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
@@ -16,7 +17,7 @@ import java.sql.SQLException;
 public class DeputyNow extends Command implements IDiscordChatEventable
 {
 
-    public static final String deputyID = "866729742827651073";
+    public static final String deputyID = AppSettingsManager.getValue("deputyID");
     private GuildMessageReceivedEvent event;
 
     @Override

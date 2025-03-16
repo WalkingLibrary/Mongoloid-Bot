@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
@@ -92,7 +93,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
 
             return new MessageResponse("Paid " +
                     amountToPay +
-                    event.getGuild().getEmoteById("916589679518838794").getAsMention() +
+                    event.getGuild().getEmoteById(AppSettingsManager.getValue("emoteId")).getAsMention() +
                     " to " +
                     memberToBePaid.getUser().getName());
         }

@@ -7,12 +7,13 @@ import com.jumbodinosaurs.devlib.database.exceptions.NoSuchDataBaseException;
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.StartUpTask;
 import com.jumbodinosaurs.devlib.util.OperatorConsole;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.JDAController;
 
 public class SetupDatabaseConnection extends StartUpTask
 {
     
-    private static final String mongoloidDatabaseName = "Mongoloid_Khanate_Discord";
+    private static final String mongoloidDatabaseName = AppSettingsManager.getValue("mongoloidDatabaseName");
     public static DataBase mogoloidDatabase;
     
     @Override

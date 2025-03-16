@@ -28,7 +28,7 @@ public class VCCheck extends ScheduledTask
     public void run()
     {
         for(VoiceChannel voiceChannel : Main.jdaController.getJda()
-                                                          .getGuildById("472944533089550397")
+                                                          .getGuildById(Main.GUILD_ID)
                                                           .getVoiceChannels())
         {
             for(Member member : voiceChannel.getMembers())

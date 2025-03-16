@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
@@ -87,7 +88,7 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
             UserAccount.updatePlayer(currentUsersPlayer);
             return new MessageResponse(
                     itemToSell.getName() + " is now for sale for " + priceToSellString + " " + event.getGuild()
-                            .getEmoteById("916589679518838794")
+                            .getEmoteById(AppSettingsManager.getValue("emoteId"))
                             .getAsMention());
         }
         catch (SQLException e)
