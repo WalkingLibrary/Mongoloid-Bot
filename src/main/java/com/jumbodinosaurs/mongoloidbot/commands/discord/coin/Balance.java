@@ -40,7 +40,7 @@ public class Balance extends Command implements IDiscordChatEventable
                                        "'s Balance: " +
                                        currentUser.getBalance().toString() +
                                        " " +
-                                       event.getGuild().getEmoteById(AppSettingsManager.getValue("emoteId")).getAsMention());
+                                       event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
         }
         catch(SQLException e)
         {

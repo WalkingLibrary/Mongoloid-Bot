@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public class CaptainCandidate implements SQLStoreObject, Identifiable
 {
     private transient int id;
+
+    private boolean isActiveCampaign;
     private String userAccountId;
 
     private ArrayList<String> supportersLongIds;
@@ -21,6 +23,10 @@ public class CaptainCandidate implements SQLStoreObject, Identifiable
     public CaptainCandidate(String userAccountId)
     {
         this.userAccountId = userAccountId;
+        this.lastTakeOverAttempt = LocalDateTime.now().minusYears(1);
+        this.supportersLongIds = new ArrayList<String>();
+        this.wasLastTakeOverAttemptMutiny = false;
+        this.isActiveCampaign = false;
     }
 
     @Override
@@ -74,5 +80,15 @@ public class CaptainCandidate implements SQLStoreObject, Identifiable
     public void setSupportersLongIds(ArrayList<String> supportersLongIds)
     {
         this.supportersLongIds = supportersLongIds;
+    }
+
+    public boolean isActiveCampaign()
+    {
+        return isActiveCampaign;
+    }
+
+    public void setActiveCampaign(boolean activeCampaign)
+    {
+        isActiveCampaign = activeCampaign;
     }
 }

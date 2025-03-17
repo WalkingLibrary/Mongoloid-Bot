@@ -93,7 +93,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
 
             return new MessageResponse("Paid " +
                     amountToPay +
-                    event.getGuild().getEmoteById(AppSettingsManager.getValue("emoteId")).getAsMention() +
+                    event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention() +
                     " to " +
                     memberToBePaid.getUser().getName());
         }

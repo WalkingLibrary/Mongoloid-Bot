@@ -83,7 +83,7 @@ public class Inventory extends Command implements IDiscordChatEventable
             {
                 inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale()
                         .getName() + "\nPrice: " + currentUsersPlayer.getItemSellPrice() + " " + event.getGuild()
-                        .getEmoteById(AppSettingsManager.getValue("emoteId"))
+                        .getEmoteById(AppSettingsManager.getStringValue("emoteId"))
                         .getAsMention();
             }
 

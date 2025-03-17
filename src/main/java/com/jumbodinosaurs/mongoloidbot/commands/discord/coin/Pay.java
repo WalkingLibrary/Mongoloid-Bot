@@ -71,7 +71,7 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
             {
                 return new MessageResponse("You Don't Have enough Money for that\nCurrent Balance: " +
                                            userToPay.getBalance().toString() +
-                                           event.getGuild().getEmoteById(AppSettingsManager.getValue("emoteId")).getAsMention());
+                                           event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
             }
     
             if(amountToPay.signum() <= -1)
@@ -117,7 +117,7 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
 
             return new MessageResponse("Paid " +
                     amountToPay +
-                    event.getGuild().getEmoteById(AppSettingsManager.getValue("emoteId")).getAsMention() +
+                    event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention() +
                     " to " +
                     memberToBePaid.getUser().getName());
         }

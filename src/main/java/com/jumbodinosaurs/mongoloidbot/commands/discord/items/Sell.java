@@ -88,7 +88,7 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
             UserAccount.updatePlayer(currentUsersPlayer);
             return new MessageResponse(
                     itemToSell.getName() + " is now for sale for " + priceToSellString + " " + event.getGuild()
-                            .getEmoteById(AppSettingsManager.getValue("emoteId"))
+                            .getEmoteById(AppSettingsManager.getStringValue("emoteId"))
                             .getAsMention());
         }
         catch (SQLException e)

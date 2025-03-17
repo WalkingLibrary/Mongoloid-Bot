@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MillionaireClubTask extends ScheduledTask
 {
-    public static String millionaireClubRankID = AppSettingsManager.getValue("millionaireClubRankID");
+    public static String millionaireClubRankID = AppSettingsManager.getStringValue("millionaireClubRankID");
 
     public MillionaireClubTask(ScheduledThreadPoolExecutor executor)
     {

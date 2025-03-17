@@ -7,5 +7,7 @@
   "kingKhanRole": "1350976536517541949",
   "deputyID": "1350976704990150706",
   "captainID": "1350976744102035467",
-  "emoteId": "1306772974464143360"
+  "emoteId": "1306772974464143360",
+  "intervalHoursForReTakeShip": 6,
+  "intervalHoursForMutiny" : 24
 }

@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class BattleTask extends ScheduledTask
 {
     public static String KING_KHAN_ID = "";
-    public static String kingKhanRole = AppSettingsManager.getValue("kingKhanRole");
+    public static String kingKhanRole = AppSettingsManager.getStringValue("kingKhanRole");
 
 
     public BattleTask(ScheduledThreadPoolExecutor executor)

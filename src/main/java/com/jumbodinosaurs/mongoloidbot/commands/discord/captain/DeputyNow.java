@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class DeputyNow extends Command implements IDiscordChatEventable
 {
 
-    public static final String deputyID = AppSettingsManager.getValue("deputyID");
+    public static final String deputyID = AppSettingsManager.getStringValue("deputyID");
     private GuildMessageReceivedEvent event;
 
     @Override

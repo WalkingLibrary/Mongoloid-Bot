@@ -13,7 +13,7 @@ import com.jumbodinosaurs.mongoloidbot.JDAController;
 public class SetupDatabaseConnection extends StartUpTask
 {
     
-    private static final String mongoloidDatabaseName = AppSettingsManager.getValue("mongoloidDatabaseName");
+    private static final String mongoloidDatabaseName = AppSettingsManager.getStringValue("mongoloidDatabaseName");
     public static DataBase mogoloidDatabase;
     
     @Override

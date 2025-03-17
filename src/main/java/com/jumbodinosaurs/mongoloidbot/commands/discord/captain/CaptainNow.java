@@ -20,7 +20,7 @@ public class CaptainNow extends Command implements IDiscordChatEventable
 {
 
     private GuildMessageReceivedEvent event;
-    public static final String captainID = AppSettingsManager.getValue("captainID");
+    public static final String captainID = AppSettingsManager.getStringValue("captainID");
 
     @Override
     public String getCategory()

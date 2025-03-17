@@ -271,6 +271,13 @@ public class UserAccount implements SQLStoreObject,
         return captainCandidate;
     }
 
+    public static void updateCaptainCandidate(CaptainCandidate captainCandidate) throws SQLException
+    {
+        SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
+                captainCandidate,
+                captainCandidate.getId());
+    }
+
     public static void updateUser(UserAccount account) throws SQLException
     {
         SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,

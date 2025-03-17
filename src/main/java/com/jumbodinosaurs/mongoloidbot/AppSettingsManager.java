@@ -35,15 +35,57 @@ public class AppSettingsManager
         }
     }
 
-    public static String getValue(String key)
+
+    public static String getStringValue(String key)
     {
-        if(settings == null)
+        return (String) getValue(key);
+    }
+    public static Object getValue(String key)
+    {
+        if (settings == null)
         {
             loadAppSettingsFile(isDebugMode);
         }
-        // Access the key value
+
         JsonElement element = settings.get(key);
-        return element != null ? element.getAsString() : null; // Return null if key is not found or key is not a string
+        if (element == null)
+        {
+            return null; // Key not found
+        }
+
+        // Check and return the appropriate type
+        if (element.isJsonPrimitive())
+        {
+            if (element.getAsJsonPrimitive().isBoolean())
+            {
+                return element.getAsBoolean();
+            }
+            else if (element.getAsJsonPrimitive().isNumber())
+            {
+                // Try to detect what type of number (int, long, double)
+                String numStr = element.getAsString();
+                if (numStr.contains(".") || numStr.contains("e") || numStr.contains("E"))
+                {
+                    return element.getAsDouble();
+                }
+                else
+                {
+                    try
+                    {
+                        return element.getAsInt();
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return element.getAsLong();
+                    }
+                }
+            }
+            else
+            {
+                return element.getAsString();
+            }
+        }
+        return element.getAsString(); // Default to string if something else
     }
 }
 
