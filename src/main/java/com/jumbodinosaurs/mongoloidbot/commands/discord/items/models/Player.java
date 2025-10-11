@@ -30,6 +30,8 @@ public class Player
 
     private String promptNameBase64;
 
+    private boolean isNPC;
+
     public Player(String userAccountId)
     {
         this.health = 100;

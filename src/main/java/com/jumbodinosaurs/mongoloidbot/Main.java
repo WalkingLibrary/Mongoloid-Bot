@@ -15,9 +15,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class Main
 {
     public static JDAController jdaController;
-    public static final String GUILD_ID = "472944533089550397";
-    public static final String BOT_CHANNEL_ID = "916766127793782804";
-    public static final String BATTLE_STEPPE_ID = "1007490616919326860";
+    public static final String GUILD_ID = AppSettingsManager.getStringValue("GUILD_ID");
+    public static final String BOT_CHANNEL_ID = AppSettingsManager.getStringValue("BOT_CHANNEL_ID");
+    public static final String BATTLE_STEPPE_ID = AppSettingsManager.getStringValue("BATTLE_STEPPE_ID");
     private static final ScheduledThreadPoolExecutor threadScheduler = new ScheduledThreadPoolExecutor(4);
 
 

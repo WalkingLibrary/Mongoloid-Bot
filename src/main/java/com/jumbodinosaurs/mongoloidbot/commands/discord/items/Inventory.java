@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.items;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
@@ -84,8 +85,10 @@ public class Inventory extends Command implements IDiscordChatEventable
             if (currentUsersPlayer.getItemForSale() != null)
             {
                 inventoryContents += "\n";
-                inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale().toInventoryDisplay()
-                        + "\nPrice: " + currentUsersPlayer.getItemSellPrice();
+                inventoryContents += "Item For Sale: " + currentUsersPlayer.getItemForSale()
+                        .getName() + "\nPrice: " + currentUsersPlayer.getItemSellPrice() + " " + event.getGuild()
+                        .getEmoteById(AppSettingsManager.getStringValue("emoteId"))
+                        .getAsMention();
             }
 
 

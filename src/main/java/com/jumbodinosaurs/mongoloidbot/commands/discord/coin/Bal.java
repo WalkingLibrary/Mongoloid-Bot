@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
@@ -40,7 +41,7 @@ public class Bal extends Command implements IDiscordChatEventable
                                        "'s Balance: " +
                                        currentUser.getBalance().toString() +
                                        " " +
-                                       event.getGuild().getEmoteById("916589679518838794").getAsMention());
+                                       event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
         }
         catch(SQLException e)
         {

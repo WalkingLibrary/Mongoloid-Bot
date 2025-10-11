@@ -7,6 +7,7 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import com.jumbodinosaurs.mongoloidbot.brains.IResponseUser;
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class BattleTask extends ScheduledTask
 {
     public static String KING_KHAN_ID = "";
-    public static String kingKhanRole = "1007490325834633287";
+    public static String kingKhanRole = AppSettingsManager.getStringValue("kingKhanRole");
 
 
     public BattleTask(ScheduledThreadPoolExecutor executor)

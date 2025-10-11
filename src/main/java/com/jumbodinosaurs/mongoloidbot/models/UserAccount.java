@@ -7,10 +7,12 @@ import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLStoreObject;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
+import com.jumbodinosaurs.mongoloidbot.JDAController;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.math.BigDecimal;
@@ -59,6 +61,11 @@ public class UserAccount implements SQLStoreObject,
     public static UserAccount getUser(Member member)
             throws SQLException, UserQueryException
     {
+        return getUser(getUniqueIdentifier(member));
+    }
+
+    public static UserAccount getUser(String memberLongId) throws SQLException, UserQueryException
+    {
         /*
          * Process for Getting User
          * 1. Get Unique ID From Member
@@ -70,7 +77,7 @@ public class UserAccount implements SQLStoreObject,
          *  */
 
         //1. Get Unique ID From Member
-        String uniqueID = Base64.getEncoder().encodeToString(getUniqueIdentifier(member).getBytes());
+        String uniqueID = Base64.getEncoder().encodeToString(memberLongId.getBytes());
 
         //2. Craft Limiter
         String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
@@ -95,13 +102,13 @@ public class UserAccount implements SQLStoreObject,
         {
             UserAccount newAccount = new UserAccount(uniqueID, new BigDecimal("0"));
             SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newAccount, 0);
-            return getUser(member);
+            return getUser(memberLongId);
         }
 
         //6. Return Crafted User
         UserAccount account = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), UserAccount.class);
         account.setId(loadedObjects.get(0).getId());
-        account.setMember(member);
+        account.setMember(Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMemberById(memberLongId));
         return account;
     }
 
@@ -216,6 +223,61 @@ public class UserAccount implements SQLStoreObject,
         player.setUserAccountId(idToSearchFor);
         player.setId(loadedObjects.get(0).getId());
         return player;
+    }
+
+    public CaptainCandidate getCaptainCandidate(Member member) throws SQLException, UserQueryException
+    {
+        /*
+         * Process for Getting User
+         * 1. Get Player From Member
+         * 2. Craft Limiter
+         * 3. Query For Player
+         * 4. Error For Edge Cases
+         * 5. Create Player if Missing -> Recursive Call For Player Return
+         * 6. Return Crafted Player
+         *  */
+
+        //1.  Get Player From Member
+        String uniqueID = Base64.getEncoder().encodeToString(getUniqueIdentifier(member).getBytes());
+
+        //2.  Craft Limiter
+        String idToSearchFor = GeneralUtil.replaceUnicodeCharacters(uniqueID).toString();
+
+        JsonExtractLimiter limiter = new JsonExtractLimiter("userAccountId", idToSearchFor);
+
+        //3.  Query For Player
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                CaptainCandidate.class,
+                limiter);
+
+        //4. Error For Edge Cases
+        if (loadedObjects.size() > 1)
+        {
+            throw new UserQueryException("More than One CaptainCandidate for User " + uniqueID);
+        }
+
+
+        // 5. Create Account if Missing -> Recursive Call For User Return
+        if (loadedObjects.size() == 0)
+        {
+            CaptainCandidate newCaptainCandidate = new CaptainCandidate(idToSearchFor);
+            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, newCaptainCandidate, 0);
+            return getCaptainCandidate(member);
+        }
+
+        //6. Return Crafted User
+        CaptainCandidate captainCandidate = new Gson().fromJson(loadedObjects.get(0).getJsonObject(), CaptainCandidate.class);
+        captainCandidate.setUserAccountId(idToSearchFor);
+        captainCandidate.setId(loadedObjects.get(0).getId());
+        return captainCandidate;
+    }
+
+    public static void updateCaptainCandidate(CaptainCandidate captainCandidate) throws SQLException
+    {
+        SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase,
+                captainCandidate,
+                captainCandidate.getId());
     }
 
     public static void updateUser(UserAccount account) throws SQLException

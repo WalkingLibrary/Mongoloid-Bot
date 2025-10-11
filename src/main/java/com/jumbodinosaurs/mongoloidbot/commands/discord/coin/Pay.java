@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.coin;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
@@ -70,7 +71,7 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
             {
                 return new MessageResponse("You Don't Have enough Money for that\nCurrent Balance: " +
                                            userToPay.getBalance().toString() +
-                                           event.getGuild().getEmoteById("916589679518838794").getAsMention());
+                                           event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
             }
     
             if(amountToPay.signum() <= -1)
@@ -116,7 +117,7 @@ public class Pay extends CommandWithParameters implements IDiscordChatEventable
 
             return new MessageResponse("Paid " +
                     amountToPay +
-                    event.getGuild().getEmoteById("916589679518838794").getAsMention() +
+                    event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention() +
                     " to " +
                     memberToBePaid.getUser().getName());
         }
