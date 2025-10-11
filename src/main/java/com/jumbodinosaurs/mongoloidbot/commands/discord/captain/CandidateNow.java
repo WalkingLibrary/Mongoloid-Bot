@@ -3,7 +3,6 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.CaptainCandidate;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
@@ -32,7 +31,11 @@ public class CandidateNow extends Command implements IDiscordChatEventable
 
             CaptainCandidate captainCandidate = currentUser.getCaptainCandidate(member);
 
-            //TODO Go though an remove support from all other Candidate Captains
+            for (CaptainCandidate candidate : CaptainCandidate.getAllCaptainCandidates())
+            {
+                candidate.removeSupporter(String.valueOf(member.getIdLong()));
+                UserAccount.updateCaptainCandidate(candidate);
+            }
 
             StringBuilder stringBuilder = new StringBuilder();
             if(!captainCandidate.isActiveCampaign())
@@ -43,7 +46,7 @@ public class CandidateNow extends Command implements IDiscordChatEventable
 
             stringBuilder.append("You have " + captainCandidate.getSupportersLongIds().size() + " Supporters\n");
 
-            LocalDateTime retakeDateTime = ReTakeUtil.GetNextRetakeDateTime(captainCandidate);
+            LocalDateTime retakeDateTime = TakeShip.GetNextRetakeDateTime(captainCandidate);
             String reTakeTime = "at " + retakeDateTime.toString();
             if(retakeDateTime.isBefore(LocalDateTime.now()))
             {

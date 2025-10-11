@@ -1,6 +1,5 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 
-import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 
 public class CastLot extends CommandWithParameters implements IDiscordChatEventable
@@ -56,7 +54,12 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
             {
                 return new MessageResponse("They haven't stepped up to be Captain");
             }
-            //TODO Go though an remove support from all other Candidate Captains
+
+            for (CaptainCandidate candidate : CaptainCandidate.getAllCaptainCandidates())
+            {
+                candidate.removeSupporter(String.valueOf(member.getIdLong()));
+                UserAccount.updateCaptainCandidate(candidate);
+            }
 
             // Transfer supporters from current to new candidate
             for (String supporterId : currentCaptainCandidate.getSupportersLongIds())
@@ -75,7 +78,7 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
             stringBuilder.append(member.getEffectiveName() + " has supported a new captain, " + memberToSupport.getEffectiveName() + "!\n");
             stringBuilder.append("The new captain now has " + newCaptainCandidate.getSupportersLongIds().size() + " supporters.\n");
 
-            LocalDateTime retakeDateTime = ReTakeUtil.GetNextRetakeDateTime(newCaptainCandidate);
+            LocalDateTime retakeDateTime = TakeShip.GetNextRetakeDateTime(newCaptainCandidate);
             String reTakeTime = "at " + retakeDateTime.toString();
             if (retakeDateTime.isBefore(LocalDateTime.now()))
             {
@@ -95,13 +98,18 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
             e.printStackTrace();
             return new MessageResponse("Account Error");
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new MessageResponse("Error");
+        }
     }
 
 
     @Override
     public String getHelpMessage()
     {
-        return "Allows the User to become a Captain Candidate";
+        return "Allows the User to Cast their Support to a Captain Candidate";
     }
 
 

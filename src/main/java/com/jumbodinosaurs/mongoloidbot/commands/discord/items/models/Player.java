@@ -25,6 +25,8 @@ public class Player
 
     private CurrentTask currentTask;
 
+    private boolean isNPC;
+
     public Player(String userAccountId)
     {
         this.health = 100;
