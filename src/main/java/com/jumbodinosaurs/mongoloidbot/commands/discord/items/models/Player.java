@@ -1,10 +1,19 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.items.models;
 
+import com.google.gson.Gson;
+import com.jumbodinosaurs.devlib.database.DataBaseUtil;
+import com.jumbodinosaurs.devlib.database.Query;
+import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
+import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
+import com.jumbodinosaurs.devlib.database.objectHolder.SelectLimiter;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -31,6 +40,8 @@ public class Player
     private String promptNameBase64;
 
     private boolean isNPC;
+
+    private String npcImageLink;
 
     public Player(String userAccountId)
     {
@@ -194,6 +205,7 @@ public class Player
     {
         return "Player{" +
                 "health=" + health +
+                ", isNPC=" + isNPC +
                 ", stamina=" + stamina +
                 ", itemForSale=" + itemForSale +
                 ", itemSellPrice=" + itemSellPrice +
@@ -203,5 +215,157 @@ public class Player
                 ", currentTask=" + currentTask +
                 ", promptNameBase64='" + promptNameBase64 + '\'' +
                 '}';
+    }
+
+    public boolean isNPC()
+    {
+        return isNPC;
+    }
+
+    public void setNPC(boolean NPC)
+    {
+        isNPC = NPC;
+    }
+
+
+
+    public static void removeAllNPCPlayers() throws SQLException
+    {
+        LogManager.consoleLogger.debug("🧹 Removing all NPC Players from database...");
+
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                Player.class,
+                new SelectLimiter()
+                {
+                    @Override
+                    public String getSelectLimiterStatement()
+                    {
+                        return "";
+                    }
+                }
+        );
+
+        int removedCount = 0;
+        for (SQLDataBaseObjectHolder holder : loadedObjects)
+        {
+            Player player = new Gson().fromJson(holder.getJsonObject(), Player.class);
+            player.setId(holder.getId());
+
+            if (player.isNPC())
+            {
+                deletePlayer(player.getId());
+                removedCount++;
+            }
+        }
+
+        LogManager.consoleLogger.debug("✅ Removed " + removedCount + " NPC Player(s) from database.");
+    }
+
+    public static void deletePlayer(int playerId) throws SQLException
+    {
+        Query deleteQuery = new Query( "DELETE FROM Player WHERE id = " + playerId + ";") ;
+        DataBaseUtil.manipulateDataBase(deleteQuery, SetupDatabaseConnection.mogoloidDatabase);
+    }
+
+    public static void addNPCPlayers(ArrayList<Player> npcCrew) throws SQLException
+    {
+        if (npcCrew == null || npcCrew.isEmpty())
+        {
+            LogManager.consoleLogger.debug("⚠️ No NPC players to add.");
+            return;
+        }
+
+        LogManager.consoleLogger.debug("⚙️ Adding " + npcCrew.size() + " NPC Player(s) to database...");
+
+        for (Player npc : npcCrew)
+        {
+            SQLDatabaseObjectUtil.putObject(SetupDatabaseConnection.mogoloidDatabase, npc, 0);
+            LogManager.consoleLogger.debug("➕ Added NPC Player: " + npc.toString());
+        }
+
+        LogManager.consoleLogger.debug("✅ All NPC Players successfully added to database.");
+    }
+
+    public static ArrayList<Player> getAllNPCPlayers() throws SQLException
+    {
+        ArrayList<Player> npcPlayers = new ArrayList<>();
+
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                Player.class,
+                new SelectLimiter()
+                {
+                    @Override
+                    public String getSelectLimiterStatement()
+                    {
+                        // Just load all Players; filtering is done in-memory
+                        return "";
+                    }
+                }
+        );
+
+        for (SQLDataBaseObjectHolder holder : loadedObjects)
+        {
+            Player player = new Gson().fromJson(holder.getJsonObject(), Player.class);
+            player.setId(holder.getId());
+
+            if (player.isNPC())
+                npcPlayers.add(player);
+        }
+
+        return npcPlayers;
+    }
+
+    public static ArrayList<Player> getPlayersByUserAccountIds(ArrayList<String> base64UserAccountIds) throws SQLException
+    {
+        if (base64UserAccountIds == null || base64UserAccountIds.isEmpty())
+            return new ArrayList<>();
+
+        StringBuilder whereClause = new StringBuilder("WHERE ");
+
+        for (int i = 0; i < base64UserAccountIds.size(); i++)
+        {
+            whereClause.append("JSON_UNQUOTE(JSON_EXTRACT(objectJson, '$.userAccountId')) = '")
+                    .append(base64UserAccountIds.get(i))
+                    .append("'");
+
+            if (i < base64UserAccountIds.size() - 1)
+                whereClause.append(" OR ");
+        }
+        ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
+                SetupDatabaseConnection.mogoloidDatabase,
+                Player.class,
+                new SelectLimiter()
+                {
+                    @Override
+                    public String getSelectLimiterStatement()
+                    {
+                        return whereClause.toString();
+                    }
+                }
+        );
+
+        ArrayList<Player> players = new ArrayList<>();
+        for (SQLDataBaseObjectHolder holder : loadedObjects)
+        {
+            Player player = new Gson().fromJson(holder.getJsonObject(), Player.class);
+            player.setId(holder.getId());
+            players.add(player);
+        }
+
+        return players;
+    }
+
+
+
+    public String getNpcImageLink()
+    {
+        return npcImageLink;
+    }
+
+    public void setNpcImageLink(String npcImageLink)
+    {
+        this.npcImageLink = npcImageLink;
     }
 }

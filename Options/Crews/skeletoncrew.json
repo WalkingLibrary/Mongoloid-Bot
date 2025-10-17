@@ -1,0 +1,75 @@
+[
+  {
+    "isNPC": true,
+    "health": 540,
+    "stamina": 120,
+    "inventory": {
+      "items": {
+        "1": { "name": "cutlass of the damned", "ability": { "type": "DAMAGE_ARMOR", "intensity": 310 } },
+        "2": { "name": "barnacle charm", "ability": { "type": "ARMOR", "intensity": 180 } },
+        "3": { "name": "rum of courage", "ability": { "type": "GIVE_HEALTH", "intensity": 250 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Q2FwdGFpbiBDbGFja2JlYXJk",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1426747789932761130/image.png?ex=68ec59ec&is=68eb086c&hm=eb43325d19db47c67d7fc63f51421b12f9490f77ebb732e59908c19753269395&"
+  },
+  {
+    "isNPC": true,
+    "health": 720,
+    "stamina": 50,
+    "inventory": {
+      "items": {
+        "1": { "name": "hook of vengeance", "ability": { "type": "DAMAGE_ARMOR", "intensity": 420 } },
+        "2": { "name": "eyepatch of foresight", "ability": { "type": "ARMOR", "intensity": 210 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Rmlyc3QgTWF0ZSBUb290aHkgVG9t",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1426747712631472139/image.png?ex=68ec59da&is=68eb085a&hm=84c3cb0e5b35a7d5e443e33126a3449f8680aca2f401d738aaea8a54c7a85891&"
+  },
+  {
+    "isNPC": true,
+    "health": 610,
+    "stamina": 80,
+    "inventory": {
+      "items": {
+        "1": { "name": "pegleg of power", "ability": { "type": "DAMAGE_ARMOR", "intensity": 370 } },
+        "2": { "name": "coat of salt", "ability": { "type": "ARMOR", "intensity": 200 } },
+        "3": { "name": "map of forgotten tides", "ability": { "type": "GIVE_HEALTH", "intensity": 150 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "U2tlbGxpbmd0b24gSm9obg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1426747935474978817/image.png?ex=68ec5a0f&is=68eb088f&hm=be37f7ca0fbc04195f9d4cc0b63d66e5bdae5a6acb463058e4d6aa05ca406870&"
+  },
+  {
+    "isNPC": true,
+    "health": 495,
+    "stamina": 200,
+    "inventory": {
+      "items": {
+        "1": { "name": "harpoon of hunger", "ability": { "type": "DAMAGE_ARMOR", "intensity": 275 } },
+        "2": { "name": "belt of ballast", "ability": { "type": "ARMOR", "intensity": 190 } },
+        "3": { "name": "lantern of clarity", "ability": { "type": "GIVE_HEALTH", "intensity": 230 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "U2lyIFJpYnMtYS1Mb3Q=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1426748014826885120/image.png?ex=68ec5a22&is=68eb08a2&hm=8503db4c091429d0030aee8ccb737a3d4779e929d4d1b83310b133b3488e20d3&"
+  },
+  {
+    "isNPC": true,
+    "health": 560,
+    "stamina": 160,
+    "inventory": {
+      "items": {
+        "1": { "name": "anchor chain", "ability": { "type": "ARMOR", "intensity": 400 } },
+        "2": { "name": "coin of whispering seas", "ability": { "type": "TAKE_HEALTH", "intensity": 220 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "QnJpdHRsZSBCaXNjdWl0",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1426747971952967700/image.png?ex=68ec5a18&is=68eb0898&hm=99b4b5b85deb40950641c5ca5d8d8081566ad779e2f7df6b1442c394eda5a73b&"
+  }
+]

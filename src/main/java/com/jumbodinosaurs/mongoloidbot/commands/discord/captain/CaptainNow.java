@@ -67,6 +67,10 @@ public class CaptainNow extends Command implements IDiscordChatEventable
 
             // 2. Check their Money
             BigDecimal costOfCaptainRank = new BigDecimal("1000000");
+            if (SaleTask.isBlackFriday())
+            {
+                costOfCaptainRank = new BigDecimal("1000");
+            }
             if (accountToUpdate.getBalance().subtract(costOfCaptainRank).signum() <= -1)
             {
                 return new MessageResponse("💰 You don't have enough gold to claim the Captain's title!");

@@ -68,6 +68,7 @@ public class BrainsController
         return null;
     }
 
+
     // Poll the status every 2 seconds
     public static void pollStatus(GuildMessageReceivedEvent event, String requestId)
     {
@@ -292,5 +293,38 @@ public class BrainsController
         HostnameVerifier allHostsValid = (hostname, session) -> true;
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
     }
+
+
+    public static void generateResponse(String prompt, IResponseUser callback)
+    {
+        try
+        {
+            LogManager.consoleLogger.debug("Submitting prompt to Brains LLM...");
+
+            // 1. Submit the prompt and get back the requestId
+            String response = sendPostRequest(brainsOptions.getEndPoint() + "/api/submit-prompt", prompt);
+            String requestId = parseRequestId(response);
+
+            // 2. Validate requestId
+            if (requestId == null)
+            {
+                LogManager.consoleLogger.error("Failed to retrieve requestId from response.");
+                callback.UseResponse("Error: Unable to start LLM request.");
+                return;
+            }
+
+            LogManager.consoleLogger.debug("Brains request started. Request ID: " + requestId);
+
+            // 3. Start polling for completion, tied to the callback
+            pollStatus(requestId, callback);
+        }
+        catch (Exception e)
+        {
+            LogManager.consoleLogger.error("Failed to generate response: " + e.getMessage());
+            e.printStackTrace();
+            callback.UseResponse("Error generating LLM response: " + e.getMessage());
+        }
+    }
+
 
 }

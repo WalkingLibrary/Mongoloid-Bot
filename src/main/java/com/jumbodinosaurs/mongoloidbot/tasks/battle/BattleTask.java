@@ -46,55 +46,84 @@ public class BattleTask extends ScheduledTask
         player1.setStamina(100);
         player2.setStamina(100);
 
-        fullReport.append(player1.getMember().getEffectiveName() + "(" + player1.getPromptName() + ")\n");
-        fullReport.append(player1.toStringBattleReport());
-        fullReport.append("\n vs ");
-        fullReport.append(player2.getMember().getEffectiveName() + "(" + player2.getPromptName() + ")\n");
-        fullReport.append(player2.toStringBattleReport());
-        fullReport.append("\n");
+        // 🧠 Safe display names for both players
+        String name1 = player1.isNPC()
+                ? player1.getPromptName()
+                : player1.getMember() != null
+                ? player1.getMember().getEffectiveName()
+                : player1.getPromptName();
+
+        String name2 = player2.isNPC()
+                ? player2.getPromptName()
+                : player2.getMember() != null
+                ? player2.getMember().getEffectiveName()
+                : player2.getPromptName();
+
+        // --- Battle Header ---
+        fullReport.append(name1)
+                .append(" (").append(player1.getPromptName()).append(")\n")
+                .append(player1.toStringBattleReport())
+                .append("\n vs ")
+                .append(name2)
+                .append(" (").append(player2.getPromptName()).append(")\n")
+                .append(player2.toStringBattleReport())
+                .append("\n");
+
         int roundNumber = 0;
         boolean player1AttackFirst = new Random().nextBoolean();
-        Player attacker, defender;
-        attacker = player2;
-        defender = player1;
+        Player attacker = player1AttackFirst ? player1 : player2;
+        Player defender = player1AttackFirst ? player2 : player1;
 
-        if (player1AttackFirst)
-        {
-            attacker = player1;
-            defender = player2;
-        }
-        fullReport.append(attacker.getPromptName() + " Gets First attack!\n");
-        // Continue the battle as long as both players have health above zero
+        fullReport.append(attacker.getPromptName()).append(" Gets First attack!\n");
+
+        // --- Main Battle Loop ---
         while (player1.getHealth() > 0 && player2.getHealth() > 0)
         {
             roundNumber++;
-            fullReport.append("Round: " + roundNumber + "\n");
+            fullReport.append("Round: ").append(roundNumber).append("\n");
+
             applyHealing(defender, fullReport);
-            fullReport.append(attacker.getPromptName() + " Attacks " + defender.getPromptName() + "\n");
+
+            fullReport.append(attacker.getPromptName())
+                    .append(" Attacks ")
+                    .append(defender.getPromptName())
+                    .append("\n");
+
             if (!applyBattleTurn(attacker, defender, weaponHands, fullReport))
             {
-                fullReport.append("\n");
-                fullReport.append(attacker.getPromptName() + " SLAYS " + defender.getPromptName() + "\n");
+                fullReport.append("\n")
+                        .append(attacker.getPromptName())
+                        .append(" SLAYS ")
+                        .append(defender.getPromptName())
+                        .append("\n");
                 return attacker;
             }
-            // Swap attacker and defender for the next turn
+
+            // Swap for next turn
             Player temp = attacker;
             attacker = defender;
             defender = temp;
+
             fullReport.append("\n");
         }
 
-        // Final health check in case both reach zero simultaneously
+        // --- Final health check ---
         if (player1.getHealth() > player2.getHealth())
         {
-            fullReport.append(player2.getPromptName() + " SLAYS " + player1.getPromptName() + "\n");
+            fullReport.append(player1.getPromptName())
+                    .append(" SLAYS ")
+                    .append(player2.getPromptName())
+                    .append("\n");
             return player1;
         }
 
-        fullReport.append(player1.getPromptName() + " SLAYS " + player2.getPromptName() + "\n");
+        fullReport.append(player2.getPromptName())
+                .append(" SLAYS ")
+                .append(player1.getPromptName())
+                .append("\n");
         return player2;
-
     }
+
 
 
     public static void appendLastTenLines(StringBuilder source, StringBuilder destination)
@@ -353,6 +382,64 @@ public class BattleTask extends ScheduledTask
                 Main.jdaController.getJda()
                         .getGuildById(Main.GUILD_ID)
                         .getTextChannelById(Main.BATTLE_STEPPE_ID)
+                        .sendMessage("Battle Report Part " + (i + 1) + " of " + chunkCount + ":")
+                        .addFile(chunkFile, chunkFile.getName())
+                        .complete();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            LogManager.consoleLogger.error("Error Sending Battle Report: " + e.getMessage());
+        }
+        finally
+        {
+            // Ensure all temp files are deleted after usage
+            for (File file : filesToDelete)
+            {
+                if (file.exists())
+                {
+                    file.delete();
+                }
+            }
+        }
+    }
+
+    public static void SendBattleReport(StringBuilder warReport, String channelId)
+    {
+        final int CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB in bytes
+        ArrayList<File> filesToDelete = new ArrayList<>();
+
+        try
+        {
+            // Convert warReport to bytes
+            byte[] warReportBytes = warReport.toString().getBytes(StandardCharsets.UTF_8);
+            int totalBytes = warReportBytes.length;
+            int chunkCount = (int) Math.ceil((double) totalBytes / CHUNK_SIZE);
+
+            for (int i = 0; i < chunkCount; i++)
+            {
+                int start = i * CHUNK_SIZE;
+                int end = Math.min((i + 1) * CHUNK_SIZE, totalBytes);
+
+                // Extract the byte chunk
+                byte[] chunkBytes = new byte[end - start];
+                System.arraycopy(warReportBytes, start, chunkBytes, 0, end - start);
+
+                // Convert byte chunk back to string for writing
+                String chunkString = new String(chunkBytes, StandardCharsets.UTF_8);
+
+                // Create a temporary file for this chunk
+                File chunkFile = File.createTempFile("battleReport_chunk_" + (i + 1), ".txt");
+                filesToDelete.add(chunkFile);
+
+                // Write the chunk to the file
+                GeneralUtil.writeContents(chunkFile, chunkString, false);
+
+                // Send the file
+                Main.jdaController.getJda()
+                        .getGuildById(Main.GUILD_ID)
+                        .getTextChannelById(channelId)
                         .sendMessage("Battle Report Part " + (i + 1) + " of " + chunkCount + ":")
                         .addFile(chunkFile, chunkFile.getName())
                         .complete();

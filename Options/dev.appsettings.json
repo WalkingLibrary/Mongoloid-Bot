@@ -9,5 +9,6 @@
   "captainID": "1350976744102035467",
   "emoteId": "1306772974464143360",
   "intervalHoursForReTakeShip": 6,
-  "intervalHoursForMutiny" : 24
+  "intervalHoursForMutiny" : 24,
+  "captainChannel": ""
 }
