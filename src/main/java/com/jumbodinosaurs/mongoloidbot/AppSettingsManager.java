@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class AppSettingsManager
 {
-    private static boolean isDebugMode = true;
+    private static boolean isDebugMode = false;
     private static JsonObject settings;
 
     public AppSettingsManager()
