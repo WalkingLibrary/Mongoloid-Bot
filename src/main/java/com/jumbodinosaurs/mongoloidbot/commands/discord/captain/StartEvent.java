@@ -50,6 +50,15 @@ public class StartEvent extends Command implements IAdminCommand, IDiscordChatEv
                     message.append(guildMember.getAsMention() + "\n");
                 }
             }
+            Role deputyCaptainRole = event.getGuild().getRoleById(DeputyNow.deputyID);
+            for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
+            {
+                if (member.getRoles().contains(deputyCaptainRole))
+                {
+                    event.getGuild().removeRoleFromMember(member, deputyCaptainRole).complete();
+
+                }
+            }
             // 1. Generate and Add NPC Crew Players + NPCCaptainCandidate
             generateAndAddNPCCrew();
             // 2. Replace the Current Captain
