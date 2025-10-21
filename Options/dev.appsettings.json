@@ -8,7 +8,8 @@
   "deputyID": "1350976704990150706",
   "captainID": "1350976744102035467",
   "emoteId": "1306772974464143360",
-  "intervalHoursForReTakeShip": 6,
+  "intervalHoursForReTakeShip": 3,
   "intervalHoursForMutiny" : 24,
-  "captainChannel": ""
+  "captainChannel": "",
+  "runBattleTask": false
 }

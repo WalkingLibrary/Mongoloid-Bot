@@ -468,6 +468,11 @@ public class BattleTask extends ScheduledTask
     {
         try
         {
+            if((boolean) AppSettingsManager.getValue("runBattleTask"))
+            {
+                LogManager.consoleLogger.info("Skipping Battle Task - App Setting Set To Skip");
+                return;
+            }
             // Logging the start of the battle process
             LogManager.consoleLogger.info("Starting Battle!");
 
