@@ -1,29 +1,38 @@
 package com.jumbodinosaurs.mongoloidbot.tasks.captain;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDataBaseObjectHolder;
 import com.jumbodinosaurs.devlib.database.objectHolder.SQLDatabaseObjectUtil;
 import com.jumbodinosaurs.devlib.database.objectHolder.SelectLimiter;
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.task.ScheduledTask;
+import com.jumbodinosaurs.devlib.util.GeneralUtil;
+import com.jumbodinosaurs.mongoloidbot.JDAController;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import com.jumbodinosaurs.mongoloidbot.brains.IResponseUser;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.captain.CaptainNow;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.NPCUtil;
 import com.jumbodinosaurs.mongoloidbot.models.CaptainCandidate;
+import com.jumbodinosaurs.mongoloidbot.models.Crew;
+import com.jumbodinosaurs.mongoloidbot.models.NPCMessage;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class TauntTask extends ScheduledTask
 {
+
+    private static File currentTakeOVerCrewFile = GeneralUtil.checkFor(JDAController.optionsFolder, "currentTakeOverCrew.json");
+
     public TauntTask(ScheduledThreadPoolExecutor executor)
     {
         super(executor);
@@ -49,32 +58,11 @@ public class TauntTask extends ScheduledTask
             }
 
             // 1. Load all Player objects
-            ArrayList<SQLDataBaseObjectHolder> loadedObjects = SQLDatabaseObjectUtil.loadObjects(
-                    SetupDatabaseConnection.mogoloidDatabase,
-                    Player.class,
-                    new SelectLimiter()
-                    {
-                        @Override
-                        public String getSelectLimiterStatement()
-                        {
-                            return ""; // Load all players
-                        }
-                    }
-            );
+            Crew currentNPCCrew = Crew.loadCrewFromFile(getCurrentCrew());
+
 
             // 2. Collect NPCs
-            List<Player> npcPlayers = new ArrayList<>();
-
-            for (SQLDataBaseObjectHolder holder : loadedObjects)
-            {
-                Player player = new Gson().fromJson(holder.getJsonObject(), Player.class);
-                player.setId(holder.getId());
-
-                if (player.isNPC())
-                {
-                    npcPlayers.add(player);
-                }
-            }
+            List<Player> npcPlayers = currentNPCCrew.getPlayers();
 
             LogManager.consoleLogger.debug("Loaded " + npcPlayers.size() + " NPC player(s).");
 
@@ -84,19 +72,45 @@ public class TauntTask extends ScheduledTask
                 return;
             }
 
+
+
             // 3. Pick a random NPC
             Random random = new Random();
             Player chosenNPC = npcPlayers.get(random.nextInt(npcPlayers.size()));
 
+            List<NPCMessage> handcraftedMessages = currentNPCCrew.getHandCraftedMessages();
+            boolean useHandcrafted = !handcraftedMessages.isEmpty() && random.nextDouble() < .95;
+
+            if (useHandcrafted)
+            {
+                NPCMessage selectedMessage = handcraftedMessages.get(random.nextInt(handcraftedMessages.size()));
+                Player takeOverMessageSender = npcPlayers.get(random.nextInt(npcPlayers.size()));
+                if(selectedMessage.isSpecificNPC())
+                {
+                    takeOverMessageSender = NPCMessage.getSpecificNPCPlayer(selectedMessage);
+                }
+
+                LogManager.consoleLogger.debug("Using handcrafted message: " + selectedMessage.getMessage());
+                NPCUtil.SendNPCChatMessage("captainChannel", selectedMessage.getMessage(), takeOverMessageSender);
+                return;
+            }
 
             StringBuilder tauntResponseGenerationMessageBuilder = new StringBuilder();
-            tauntResponseGenerationMessageBuilder.append("Please Generate a Response to the Following Context:");
-            tauntResponseGenerationMessageBuilder.append("Your name is " + chosenNPC.getPromptName() + " and you are a part of a skeleton pirate ");
-            tauntResponseGenerationMessageBuilder.append("crew that wants to insight the players of a game to try and take the ship");
-            tauntResponseGenerationMessageBuilder.append(" Now with this in mind generate a taunt to send to the players. Note that what you say back will be sent directly to the live game.");
-            tauntResponseGenerationMessageBuilder.append("Make it down right mean and controversial, use expletives!  Lean into that the ship is yours");
+            String prePrompt = "Please generate a response to the following context - Note that what you say back will be sent directly to the live game:";
+            tauntResponseGenerationMessageBuilder.append(prePrompt);
+            tauntResponseGenerationMessageBuilder.append(currentNPCCrew.getPromptMessage());
+
+            // Build full prompt
+            String tauntPrompt = tauntResponseGenerationMessageBuilder.toString();
+
+            // Replace any variables in the prompt
+            tauntPrompt = tauntPrompt
+                    .replace("{npcName}", chosenNPC.getPromptName())
+                    .replace("{npcBase64Name}", chosenNPC.getPromptNameBase64())
+                    .replace("{crewName}", currentNPCCrew.getCrewNPCsFileName());
+
             LogManager.consoleLogger.debug("Generating a new Taunt");
-            BrainsController.generateResponse(tauntResponseGenerationMessageBuilder.toString(),
+            BrainsController.generateResponse(tauntPrompt,
                     new IResponseUser()
                     {
                         @Override
@@ -106,7 +120,10 @@ public class TauntTask extends ScheduledTask
                             // 5. Send taunt to Discord captain channel
                             try
                             {
-                                NPCUtil.SendNPCChatMessage("captainChannel", response, chosenNPC);
+                                if(!response.contains("Error generating LLM response: Connection timed out: connect"))
+                                {
+                                    NPCUtil.SendNPCChatMessage("captainChannel", response, chosenNPC);
+                                }
                                 LogManager.consoleLogger.debug("🦴 " + chosenNPC.getPromptName() + " taunted: " + response);
                             }
                             catch (IOException e)
@@ -144,5 +161,23 @@ public class TauntTask extends ScheduledTask
     public int getOrderingNumber()
     {
         return 2;
+    }
+
+
+
+    public static void setCurrentCrew(String crewName)
+    {
+        Map<String, String> data = new HashMap<>();
+        data.put("currentCrew", crewName);
+        String takeOverSaveString = new Gson().toJson(data);
+        GeneralUtil.writeContents(currentTakeOVerCrewFile, takeOverSaveString, false);
+    }
+
+    public static String getCurrentCrew()
+    {
+        String takeOverSaveString = GeneralUtil.scanFileContents(currentTakeOVerCrewFile);
+        Type type = new TypeToken<Map<String, String>>() {}.getType();
+        Map<String, String> data = new Gson().fromJson(takeOverSaveString, type);
+        return data.get("currentCrew");
     }
 }

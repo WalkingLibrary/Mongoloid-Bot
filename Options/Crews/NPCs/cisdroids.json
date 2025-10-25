@@ -1,0 +1,76 @@
+[
+  {
+    "isNPC": true,
+    "health": 10000,
+    "stamina": 140,
+    "inventory": {
+      "items": {
+        "1": { "name": "E-5 blaster rifle", "ability": { "type": "TAKE_HEALTH", "intensity": 320 } },
+        "2": { "name": "droid plating", "ability": { "type": "ARMOR", "intensity": 190 } },
+        "3": { "name": "power cell", "ability": { "type": "GIVE_HEALTH", "intensity": 210 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "QjEgQmF0dGxlIERyb2lk",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1431507368247820339/image.png?ex=68fdaaa0&is=68fc5920&hm=ffbcf1a3038f191925a31f90f2d9222b87733a35867ec34967a1d4ab7b9a6500&"
+  },
+  {
+    "isNPC": true,
+    "health": 30000,
+    "stamina": 100,
+    "inventory": {
+      "items": {
+        "1": { "name": "wrist rocket", "ability": { "type": "TAKE_HEALTH", "intensity": 3000 } },
+        "2": { "name": "durasteel armor plating", "ability": { "type": "ARMOR", "intensity": 260 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "QjIgU3VwZXIgQmF0dGxlIERyb2lk",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1431506773155647508/image.png?ex=68fdaa12&is=68fc5892&hm=8f785d91ee1193900317e0e4f5c4413f264d0c2e988a843f0555aa23b4a036c2&"
+  },
+  {
+    "isNPC": true,
+    "health": 10000,
+    "stamina": 180,
+    "inventory": {
+      "items": {
+        "1": { "name": "twin repeating blaster cannons", "ability": { "type": "TAKE_HEALTH", "intensity": 390 } },
+        "2": { "name": "energy deflector shield", "ability": { "type": "ARMOR", "intensity": 5000 } },
+        "3": { "name": "repair nanites", "ability": { "type": "GIVE_HEALTH", "intensity": 160 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "RHJvaWRla2E=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1431505921636307004/image.png?ex=68fda947&is=68fc57c7&hm=60f821e266d547e6447713c2d63b379af90d670b89ee94325ca714d8c1b8f5ae&"
+  },
+  {
+    "isNPC": true,
+    "health": 50000,
+    "stamina": 150,
+    "inventory": {
+      "items": {
+        "1": { "name": "four lightsabers", "ability": { "type": "DAMAGE_ARMOR", "intensity": 510 } },
+        "2": { "name": "cybernetic plating", "ability": { "type": "ARMOR", "intensity": 500 } },
+        "3": { "name": "spare organics serum", "ability": { "type": "GIVE_HEALTH", "intensity": 400 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "R2VuZXJhbCBHcmlldm91cw==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1431505730472513608/image.png?ex=68fda91a&is=68fc579a&hm=dfd05de63d08d5cf2863b5b5e92116b82a9023c434065ae9cdc2804d4a970842&"
+  },
+  {
+    "isNPC": true,
+    "health": 50000,
+    "stamina": 190,
+    "inventory": {
+      "items": {
+        "1": { "name": "curved-hilt lightsaber", "ability": { "type": "TAKE_HEALTH", "intensity": 470 } },
+        "2": { "name": "force push", "ability": { "type": "DAMAGE_ARMOR", "intensity": 240 } },
+        "3": { "name": "cloak of the separatist", "ability": { "type": "ARMOR", "intensity": 230 } }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Q291bnQgRG9va3U=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1431505580484202563/image.png?ex=68fda8f6&is=68fc5776&hm=8fec1f874bf9aade37db06618924d4d3d669915a29c9a87c7e09aefb1456da30&"
+  }
+]

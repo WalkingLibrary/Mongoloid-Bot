@@ -223,6 +223,7 @@ public class TakeShip extends Command implements IDiscordChatEventable
         }
         catch (IOException e)
         {
+            e.printStackTrace();
             return new MessageResponse("Error Running Task");
         }
         catch (Exception e)

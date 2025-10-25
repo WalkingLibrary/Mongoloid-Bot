@@ -1,7 +1,9 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jumbodinosaurs.devlib.commands.Command;
+import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.devlib.json.GsonUtil;
@@ -9,19 +11,25 @@ import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.NPCUtil;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.CaptainCandidate;
+import com.jumbodinosaurs.mongoloidbot.models.Crew;
+import com.jumbodinosaurs.mongoloidbot.models.NPCMessage;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.captain.TauntTask;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class StartEvent extends Command implements IAdminCommand, IDiscordChatEventable
+public class StartEvent extends CommandWithParameters implements IAdminCommand, IDiscordChatEventable
 {
     private GuildMessageReceivedEvent event;
 
@@ -36,35 +44,13 @@ public class StartEvent extends Command implements IAdminCommand, IDiscordChatEv
 
         try
         {
-
-            StringBuilder message = new StringBuilder();
-            message.append("CAPTAIN AHOY! Something stirs below the waves!\n");
-            message.append("https://cdn.discordapp.com/attachments/480122702888435734/1426651988963233843/CaptainLookStart.mp4?ex=68ec00b4&is=68eaaf34&hm=f89560749c4a5a15da502ca0cd6a5aa029c3e81db98c591b0d30cc4d75b2c1b7& \n");
-            Role captainRole = event.getGuild().getRoleById(CaptainNow.captainID);
-            for (Member guildMember : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
+            if(getParameters() == null || getParameters().size() <= 0)
             {
-                if (guildMember.getRoles().contains(captainRole))
-                {
-                    event.getGuild().removeRoleFromMember(guildMember, captainRole).complete();
-
-                    message.append(guildMember.getAsMention() + "\n");
-                }
+                return new MessageResponse("No Crew File Given");
             }
-            Role deputyCaptainRole = event.getGuild().getRoleById(DeputyNow.deputyID);
-            for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
-            {
-                if (member.getRoles().contains(deputyCaptainRole))
-                {
-                    event.getGuild().removeRoleFromMember(member, deputyCaptainRole).complete();
-
-                }
-            }
-            // 1. Generate and Add NPC Crew Players + NPCCaptainCandidate
-            generateAndAddNPCCrew();
-            // 2. Replace the Current Captain
+            String crewFileName = getParameters().get(0).getParameter();
             replaceCurrentCaptain();
-            TakeShip.isPirateWarActive = true;
-            return new MessageResponse(message.toString());
+            return generateAndAddNPCCrew(crewFileName);
         }
         catch (Exception e)
         {
@@ -79,51 +65,34 @@ public class StartEvent extends Command implements IAdminCommand, IDiscordChatEv
         return "Admin Command To Start an Event";
     }
 
-    /**
-     * 1. Generate and Add NPC Crew Players + NPCCaptainCandidate
-     */
-    private void generateAndAddNPCCrew() throws SQLException
+
+    private MessageResponse generateAndAddNPCCrew(String crewFileName) throws SQLException
     {
-        /*
-         * 1. Load Crew List Json File from Options/Crews/skeletoncrew.json
-         * 2. Load using gson object util
-         * 3. Get and Remove all the Player NPCs from the Player Table
-         * 4. Add All the new NPC Players to the Player Table
-         */
-
         LogManager.consoleLogger.debug("Generating and adding NPC crew players...");
-
-        // Step 1: Load JSON file
-        File skeletonCrewFile = GeneralUtil.checkFor(GeneralUtil.userDir, "Options/Crews/skeletoncrew.json", false);
-
-        if (!skeletonCrewFile.exists())
-        {
-            LogManager.consoleLogger.error("❌ Crew file not found: " + skeletonCrewFile.getAbsolutePath());
-            return;
-        }
-
-        // Step 2: Deserialize crew list using GsonUtil
-        ArrayList<Player> npcCrew = GsonUtil.readList(
-                skeletonCrewFile,
-                Player.class,
-                new TypeToken<ArrayList<Player>>() {},
-                false
-        );
-
-        if (npcCrew == null || npcCrew.isEmpty())
-        {
-            LogManager.consoleLogger.error("❌ No NPC crew found in " + skeletonCrewFile.getAbsolutePath());
-            return;
-        }
-
-        LogManager.consoleLogger.debug("✅ Loaded " + npcCrew.size() + " NPC crew members from file.");
-        // Step 3: Remove all existing NPCs from the Player table
+        Crew npcCrew = Crew.loadCrewFromFile(crewFileName);
         Player.removeAllNPCPlayers();
+        ArrayList<Player> npcPlayers = npcCrew.getPlayers();
+        Player.addNPCPlayers(npcPlayers);
 
-        // Step 4: Add the new NPCs to the Player table
-        Player.addNPCPlayers(npcCrew);
+        NPCMessage takeOVerMessage = npcCrew.getTakeOVerMessage();
+        Player takeOverMessageSender = npcPlayers.get(0);
+        if(takeOVerMessage.isSpecificNPC())
+        {
+            takeOverMessageSender = NPCMessage.getSpecificNPCPlayer(takeOVerMessage);
+        }
 
+        try
+        {
+            NPCUtil.SendNPCChatMessage("captainChannel", takeOVerMessage.getMessage(), takeOverMessageSender);
+        }
+        catch (IOException e)
+        {
+            LogManager.consoleLogger.error(e.getMessage(), e);
+        }
+        TauntTask.setCurrentCrew(crewFileName);
         LogManager.consoleLogger.debug("NPC crew has been added.");
+        TakeShip.isPirateWarActive = true;
+        return new MessageResponse("So it Begins!");
     }
 
 
@@ -152,6 +121,16 @@ public class StartEvent extends Command implements IAdminCommand, IDiscordChatEv
             if (guildMember.getRoles().contains(captainRole))
             {
                 event.getGuild().removeRoleFromMember(guildMember, captainRole).complete();
+            }
+        }
+
+        Role deputyCaptainRole = event.getGuild().getRoleById(DeputyNow.deputyID);
+        for (Member member : Main.jdaController.getJda().getGuildById(Main.GUILD_ID).getMembers())
+        {
+            if (member.getRoles().contains(deputyCaptainRole))
+            {
+                event.getGuild().removeRoleFromMember(member, deputyCaptainRole).complete();
+
             }
         }
     }

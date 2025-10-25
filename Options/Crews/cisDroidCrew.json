@@ -1,0 +1,116 @@
+{
+  "crewNPCsFileName": "cisdroids.json",
+  "promptMessage": "You are {npcName}, a member of the Confederacy of Independent Systems. You may be a battle droid, a tactical commander, or a leader such as Count Dooku or General Grievous. Your purpose is to taunt, mock, or command the enemy players who oppose the droid army. If you are a droid, speak with mechanical formality, sarcasm, and occasional errors—use 'Roger, Roger' when it fits. If you are an organic leader like Count Dooku, maintain superiority, elegance, and authority over both droids and enemies. Generate a confident, witty, or menacing taunt that reflects your role within the CIS.",
+  "takeOVerMessage": {
+    "specificNPC": true,
+    "specificNPCBase64Username": "R2VuZXJhbCBHcmlldm91cw==",
+    "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431775687316078592/Timeline_1.mp4?ex=68fea484&is=68fd5304&hm=1fff106a3a820c7024f792c7ae4febd81e8b4754759362ebc1cbe6884db0fd2a&"
+  },
+  "handCraftedMessages": [
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Roger, roger."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Roger, roger."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjIgU3VwZXIgQmF0dGxlIERyb2lk",
+      "message": "Roger, roger."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "RHJvaWRla2E=",
+      "message": "Roger, roger."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjIgU3VwZXIgQmF0dGxlIERyb2lk",
+      "message": "Rodger, Rodger. Droids are better than Clones"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "RHJvaWRla2E=",
+      "message": "Rollin Rollin Rollin"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "Q291bnQgRG9va3U=",
+      "message": "Twice the Pride, Double the Fall"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Uh-oh..."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Sir, I think I just shot one of ours... again."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "Q291bnQgRG9va3U=",
+      "message": "A pity you are no Jedi. This will be brief."
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "R2VuZXJhbCBHcmlldm91cw==",
+      "message": "Your lightsabers will make a fine addition to my collection!"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Wait, are we winning? No one tells me anything!"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431733669797822474/dea96013a0f3da046291a8ac883726228701510b978778fc561ba8bdc888e3f8_1.mp4?ex=68fe7d63&is=68fd2be3&hm=3811a12404e6d81fe1f25e8cc0674e088fd327a804ce1ee74583445e2db3d974&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "Faggot Clones, Rodger Rodger -> https://cdn.discordapp.com/attachments/480122702888435734/1431765186812837919/image.png?ex=68fe9abd&is=68fd493d&hm=b4be64003d66d549d3a800eeb8a774b4ac613f9e85d1e095d0ab35f5a1a4f7ea&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjIgU3VwZXIgQmF0dGxlIERyb2lk",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431764018204377261/image.png?ex=68fe99a6&is=68fd4826&hm=a40ebadc73f9ec1a3e69ce6e8b95abddb4f01423f3993687005ad46343d73aea&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "RHJvaWRla2E=",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431763933924163614/image.png?ex=68fe9992&is=68fd4812&hm=d9265019751132bbc89465cae1582cf64869006d06a3fa49c5d47f498b559a32&"
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "Clankers on Top! https://cdn.discordapp.com/attachments/480122702888435734/1431764727410856127/1c896b3246d1c3ff0fb75a277f3ed7575f0177b9f552cc5234a8cd8938d72c39_1.mp4?ex=68fe9a4f&is=68fd48cf&hm=e8f0a1a916d1bd75e211d617ae74bc0edc4678de50e1ad7df4368f401cae0832&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "R2VuZXJhbCBHcmlldm91cw==",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431764892620165240/7df8f541bd64abecff53aeb8d656ce043248b53d6846ad7d28b3345dcae7804b_1.mp4?ex=68fe9a77&is=68fd48f7&hm=ab800c56fd9bd3bb44c116b482f36f9190c8b7ffdcbe2d9520dbf1b4bdad7cb7&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "Q291bnQgRG9va3U=",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431767457043058887/ssstik.io_ahsokatanonumberonefan_1761430346393.mp4?ex=68fe9cda&is=68fd4b5a&hm=167716612c7a51dcd515e7526bb7a7e14a21d471e32f804576b5bb13b7f2db4d&"
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431765015270260766/034a0d06acae83986a086230dccae31e1a9dd98dc59aeaa5b6a4b4fdd00b7176_1.mp4?ex=68fe9a94&is=68fd4914&hm=b448dafc19c55b61aa4e9b0d9ae186caa514ac1e725308df1549f2534a3c1e7a&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "QjEgQmF0dGxlIERyb2lk",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1431769025397919905/YTDown.com_YouTube_The-C-I-S-Simpsonwave-edit-Star-Wars_Media_Crr06r2krK8_004_360p.mp4?ex=68fe9e50&is=68fd4cd0&hm=992ed7467fe47c8d8d64ed9ad51047c80c834622c66bf262e477c9c57881a855&"
+    }
+  ]
+}
