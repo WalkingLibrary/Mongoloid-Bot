@@ -45,7 +45,7 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
             }
 
             UserAccount currentUser = UserAccount.getUser(member);
-            CaptainCandidate currentCaptainCandidate = currentUser.getCaptainCandidate(member);
+
 
             UserAccount userAccountToSupport = UserAccount.getUser(memberToSupport);
             CaptainCandidate newCaptainCandidate = userAccountToSupport.getCaptainCandidate(memberToSupport);
@@ -60,7 +60,7 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
                 candidate.removeSupporter(String.valueOf(member.getIdLong()));
                 UserAccount.updateCaptainCandidate(candidate);
             }
-
+            CaptainCandidate currentCaptainCandidate = currentUser.getCaptainCandidate(member);
             // Transfer supporters from current to new candidate
             for (String supporterId : currentCaptainCandidate.getSupportersLongIds())
             {
