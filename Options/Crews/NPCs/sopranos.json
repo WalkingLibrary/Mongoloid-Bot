@@ -1,0 +1,78 @@
+[
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 4000,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Beretta 84FS \"Cheetah\"",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 800
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "VG9ueSBTb3ByYW5v",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1434039162146656357/image.png?ex=6906e08b&is=69058f0b&hm=c1e76e3e81e8bc65e70462ccf62758dd93112b8dad6023ddf77ac05419bd57e6&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 4000,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Smith & Wesson Model 36",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 800
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "VW5jbGUgSnVuaW9y",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1434039665492758589/image.png?ex=6906e103&is=69058f83&hm=5572c8eca73652f379cb014e6d4b3c393a990b6384d4067a46fc6f4333edb69c&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 4000,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Walther PPK",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 800
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Q2hyaXN0b3BoZXI=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1434040274069225593/image.png?ex=6906e194&is=69059014&hm=d1217fca22768d1d5656e26a7aec3003267775bf2c03b7dbaceb767fd3ac2ea5&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 4000,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "SIG-Sauer P228",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 800
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "UGF1bGllICdXYWxudXRzJyBHdWFsdGllcmk=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1434040713166983298/image.png?ex=6906e1fd&is=6905907d&hm=4a929f8a0dce174af2861ef4552aa54b8f9eb14d4fbfc10386b9124097759a6d&"
+  }
+]

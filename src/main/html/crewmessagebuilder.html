@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NPC Message JSON Builder</title>
+    <style>
+        :root{--bg:#0f172a;--panel:#111827;--muted:#6b7280;--text:#e5e7eb;--accent:#22c55e;--info:#38bdf8;--danger:#ef4444}
+        *{box-sizing:border-box}
+        body{margin:0;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"}
+        header{padding:16px 20px;border-bottom:1px solid #111827;background:#0b1220;position:sticky;top:0;z-index:10}
+        h1{margin:0;font-size:18px;letter-spacing:.4px}
+        main{display:grid;grid-template-columns:380px 1fr;gap:16px;padding:16px}
+        @media (max-width: 1100px){main{grid-template-columns:1fr;}}
+        .panel{background:rgba(17,24,39,.85);backdrop-filter: blur(6px);border:1px solid #1f2937;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+        .panel h2{margin:0 0 8px 0;font-size:15px;color:#cbd5e1}
+        .panel .body{padding:14px}
+        .controls{display:flex;gap:8px;flex-wrap:wrap}
+        .btn{appearance:none;border:1px solid #273042;color:#e5e7eb;background:#0b1220;padding:8px 12px;border-radius:10px;cursor:pointer;transition:.15s;line-height:1}
+        .btn:hover{border-color:#3a465e;transform:translateY(-1px)}
+        .btn.primary{background:linear-gradient(180deg,#1e293b,#0b1220);border-color:#334155}
+        .btn.accent{background:linear-gradient(180deg,#10623f,#0b4a31);border-color:#0e7a49}
+        .btn.info{background:linear-gradient(180deg,#0b3b64,#09263f);border-color:#0e5e8f}
+        .btn.danger{background:linear-gradient(180deg,#6a1420,#3a0a10);border-color:#a11a2c}
+        .btn.small{padding:6px 10px;border-radius:8px}
+        .btn.ghost{background:transparent}
+        .stack{display:flex;flex-direction:column;gap:10px}
+        .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .field{display:flex;flex-direction:column;gap:4px;min-width:120px}
+        label{font-size:12px;color:#bfc6d4}
+        input[type="text"], input[type="number"], input[type="url"], select, textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid #263142;background:#0b1220;color:#e5e7eb}
+        textarea{min-height:120px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+        .hint{font-size:12px;color:#9aa3b2}
+        .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #2b3750;background:#0c1323;padding:6px 8px;border-radius:999px;font-size:12px;color:#cfe0ff}
+        .list{display:flex;flex-direction:column;gap:12px}
+        .message-card{border:1px solid #253042;border-radius:12px;padding:12px;background:#0a1220}
+        .message-card header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .media-preview{margin-top:8px;border:1px solid #1f2937;border-radius:10px;overflow:hidden;max-width:100%}
+        .media-preview img{display:block;max-width:100%;height:auto}
+        .media-preview video{display:block;max-width:100%}
+        .sticky-actions{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:10px;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.9) 30%,rgba(11,18,32,1));border-top:1px solid #1e293b}
+        .divider{height:1px;background:#1f2937;margin:12px 0}
+        .warn{background:#3a0a10;border:1px solid #a11a2c;color:#fecaca;padding:8px 12px;border-radius:10px;margin:10px 0}
+        .kbd{font-family:ui-monospace,monospace;background:#0b1220;border:1px solid #273042;border-bottom-width:2px;border-radius:6px;padding:0 6px;color:#cbd5e1}
+    </style>
+</head>
+<body>
+<header>
+    <h1>NPC Message JSON Builder <span class="hint">· works offline / single file</span></h1>
+</header>
+<main>
+    <!-- Left column: project + preview -->
+    <section class="panel" aria-label="Toolbox">
+        <div class="body stack">
+            <h2>Project</h2>
+            <div class="controls">
+                <button id="loadNpcBtn" class="btn info">Load NPCs…</button>
+                <input id="npcFileInput" type="file" accept="application/json,.json" hidden />
+                <button id="loadMsgBtn" class="btn info">Load Messages…</button>
+                <input id="msgFileInput" type="file" accept="application/json,.json" hidden />
+                <button id="downloadBtn" class="btn primary">Download JSON</button>
+                <button id="copyBtn" class="btn">Copy JSON</button>
+                <button id="resetBtn" class="btn danger">Reset</button>
+            </div>
+
+            <div id="fileWarn" class="warn" style="display:none">⚠️ You're viewing this as a local file (<code>file://</code>). Some external images/videos may be blocked by the browser (Opaque Response Blocking). For full previews, serve this file via a local web server, e.g. <code>python -m http.server 8080</code> then open <code>http://localhost:8080/</code>.</div>
+
+            <div class="divider"></div>
+            <div class="stack">
+                <div class="field">
+                    <label for="filename">Download filename</label>
+                    <input id="filename" type="text" value="npc-messages.json" />
+                </div>
+                <div class="field">
+                    <label for="jsonPreview">JSON Preview</label>
+                    <textarea id="jsonPreview" spellcheck="false" aria-label="JSON preview"></textarea>
+                </div>
+                <div class="hint">Tip: Press <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> to prettify JSON.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right column: editor -->
+    <section class="panel" aria-label="Editor">
+        <div class="body stack">
+            <h2 style="display:flex;align-items:center;gap:10px">Message File Editor</h2>
+
+            <div class="stack">
+                <div class="row">
+                    <div class="field" style="flex:1">
+                        <label>Crew NPCs File Name</label>
+                        <input id="crewFileName" type="text" placeholder="cisdroids.json" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Prompt Message (supports {npcName})</label>
+                    <textarea id="promptMessage" placeholder="You are {npcName}, …"></textarea>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Take Over Message</h3>
+            <div id="takeover" class="message-card stack">
+                <div class="row">
+                    <div class="field" style="max-width:160px">
+                        <label>Specific NPC?</label>
+                        <select id="toSpecific" aria-label="TakeOver Specific NPC">
+                            <option value="no">No (any)</option>
+                            <option value="yes">Yes (choose)</option>
+                        </select>
+                    </div>
+                    <div class="field" style="flex:1">
+                        <label>NPC</label>
+                        <select id="toNpc" disabled></select>
+                        <div class="hint">Stores Base64 internally.</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Message (text or media URL)</label>
+                    <input id="toMessage" type="text" placeholder="Text or https://… (png/jpg/mp4/webm)" />
+                    <div class="media-preview" id="toPreview" style="display:none"></div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row" style="justify-content:space-between;align-items:center">
+                <h3>Hand-Crafted Messages <span id="msgCount" class="badge">0</span></h3>
+                <button id="addMsg" class="btn accent small">+ Add Message</button>
+            </div>
+            <div id="msgList" class="list" aria-live="polite"></div>
+
+            <div class="sticky-actions">
+                <button id="expandAll" class="btn ghost">Expand all</button>
+                <button id="collapseAll" class="btn ghost">Collapse all</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<template id="msgTemplate">
+    <div class="message-card" data-collapsed="false">
+        <header>
+            <div class="row" style="flex:1;min-width:0">
+                <div class="field" style="max-width:160px">
+                    <label>Specific NPC?</label>
+                    <select class="specific">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <div class="field" style="flex:1;min-width:220px">
+                    <label>NPC</label>
+                    <select class="npc" disabled></select>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn small ghost toggleBtn" title="Collapse/Expand">▾</button>
+                <button class="btn small" data-action="dup">Duplicate</button>
+                <button class="btn small danger" data-action="remove">Remove</button>
+            </div>
+        </header>
+        <div class="section stack">
+            <div class="field">
+                <label>Message (text or media URL)</label>
+                <input type="text" class="message" placeholder="Text or https://…" />
+                <div class="media-preview" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    (function(){
+        const $ = (s,r=document)=>r.querySelector(s);
+        const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+
+        const utf8ToB64 = (str) => {
+            if (!str) return "";
+            const bytes = new TextEncoder().encode(str);
+            let bin = ""; bytes.forEach(b=>bin+=String.fromCharCode(b));
+            return btoa(bin);
+        };
+        const b64ToUtf8 = (b64) => {
+            try {
+                if (!b64) return "";
+                const bin = atob(b64);
+                const bytes = new Uint8Array([...bin].map(c=>c.charCodeAt(0)));
+                return new TextDecoder().decode(bytes);
+            } catch { return ""; }
+        };
+
+        const pretty = (o)=>JSON.stringify(o,null,2);
+        const download = (filename, text) => { const blob=new Blob([text],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),2000); };
+
+        // Warn for file:// ORB issues
+        if (location.protocol === 'file:') { $('#fileWarn').style.display='block'; }
+
+        // ---- State ----
+        let npcIndex = []; // [{name, b64}]
+        let model = {
+            crewNPCsFileName: "",
+            promptMessage: "",
+            takeOVerMessage: { specificNPC:false, specificNPCBase64Username:null, message:"" },
+            handCraftedMessages: []
+        };
+
+        // ---- DOM Refs ----
+        const filenameInput = $('#filename');
+        const jsonPreview = $('#jsonPreview');
+
+        const crewFileName = $('#crewFileName');
+        const promptMessage = $('#promptMessage');
+
+        const toSpecific = $('#toSpecific');
+        const toNpc = $('#toNpc');
+        const toMessage = $('#toMessage');
+        const toPreview = $('#toPreview');
+
+        const msgList = $('#msgList');
+        const msgTemplate = $('#msgTemplate');
+        const msgCount = $('#msgCount');
+
+        // ---- Helpers ----
+        function buildNpcIndexFromArray(npcs){
+            npcIndex = (Array.isArray(npcs)?npcs:[]).map(n=>{
+                const name = b64ToUtf8(n.promptNameBase64 || "") || n._promptNameRaw || n.name || "(unknown)";
+                const b64 = n.promptNameBase64 || (n._promptNameRaw?utf8ToB64(n._promptNameRaw):"");
+                return { name, b64 };
+            }).filter(x=>x.b64);
+            npcIndex.sort((a,b)=>a.name.localeCompare(b.name));
+            refreshNpcSelects();
+        }
+
+        function refreshNpcSelect(selectEl){
+            const cur = selectEl.value;
+            selectEl.innerHTML = '';
+            const optNone = document.createElement('option');
+            optNone.value = ''; optNone.textContent = '— choose NPC —';
+            selectEl.appendChild(optNone);
+            npcIndex.forEach(({name,b64})=>{
+                const o = document.createElement('option'); o.value=b64; o.textContent=name; selectEl.appendChild(o);
+            });
+            if (cur) selectEl.value = cur;
+        }
+
+        function refreshNpcSelects(){
+            // takeover select
+            refreshNpcSelect(toNpc);
+            // message card selects
+            $$('.message-card select.npc', msgList).forEach(sel=>refreshNpcSelect(sel));
+        }
+
+        function isMediaUrl(u){
+            if (!u || typeof u !== 'string') return false;
+            const s = u.toLowerCase();
+            return s.startsWith('http://') || s.startsWith('https://');
+        }
+        function mediaType(u){
+            const s = (u||'').toLowerCase();
+            if (s.match(/\.(png|jpg|jpeg|gif|webp)(\?|#|$)/)) return 'img';
+            if (s.match(/\.(mp4|webm|ogg)(\?|#|$)/)) return 'video';
+            return null;
+        }
+        function renderMediaPreview(container, url){
+            container.innerHTML = '';
+            const kind = mediaType(url);
+            if (!isMediaUrl(url) || !kind){ container.style.display='none'; return; }
+            container.style.display='block';
+            if (kind==='img'){
+                const img = document.createElement('img');
+                img.src = url; img.alt = 'preview';
+                container.appendChild(img);
+            } else if (kind==='video'){
+                const v = document.createElement('video');
+                v.src = url; v.controls = true; v.playsInline = true; v.preload='metadata';
+                container.appendChild(v);
+            }
+        }
+
+        function updatePreview(){ jsonPreview.value = pretty(model); msgCount.textContent = String(model.handCraftedMessages.length); }
+
+        function renderMsgs(){
+            msgList.innerHTML = '';
+            model.handCraftedMessages.forEach((m, i)=>{
+                const node = msgTemplate.content.firstElementChild.cloneNode(true);
+                const selSpecific = $('.specific', node);
+                const selNpc = $('.npc', node);
+                const inputMsg = $('.message', node);
+                const media = $('.media-preview', node);
+                const toggleBtn = $('.toggleBtn', node);
+
+                // populate NPC dropdown
+                refreshNpcSelect(selNpc);
+
+                selSpecific.value = m.specificNPC ? 'yes' : 'no';
+                selNpc.disabled = !m.specificNPC;
+                selNpc.value = m.specificNPC ? (m.specificNPCBase64Username || '') : '';
+                inputMsg.value = m.message || '';
+                renderMediaPreview(media, m.message);
+
+                // bindings
+                selSpecific.addEventListener('change', e=>{
+                    const yes = e.target.value === 'yes';
+                    m.specificNPC = yes;
+                    selNpc.disabled = !yes;
+                    if (!yes){ m.specificNPCBase64Username = null; selNpc.value = ''; }
+                    updatePreview();
+                });
+                selNpc.addEventListener('change', e=>{ m.specificNPCBase64Username = e.target.value || null; updatePreview(); });
+                inputMsg.addEventListener('input', e=>{ m.message = e.target.value; renderMediaPreview(media, m.message); updatePreview(); });
+
+                // actions
+                node.querySelector('[data-action="remove"]').addEventListener('click', ()=>{ model.handCraftedMessages.splice(i,1); renderMsgs(); updatePreview(); });
+                node.querySelector('[data-action="dup"]').addEventListener('click', ()=>{ model.handCraftedMessages.splice(i+1,0,JSON.parse(JSON.stringify(m))); renderMsgs(); updatePreview(); });
+                toggleBtn.addEventListener('click', ()=>{
+                    const collapsed = node.dataset.collapsed === 'true';
+                    node.dataset.collapsed = String(!collapsed);
+                    $('.section', node).style.display = collapsed ? '' : 'none';
+                    toggleBtn.textContent = collapsed ? '▾' : '▸';
+                });
+
+                msgList.appendChild(node);
+            });
+            updatePreview();
+        }
+
+        // ---- TakeOver card ----
+        function bindTakeOver(){
+            toSpecific.value = model.takeOVerMessage.specificNPC ? 'yes' : 'no';
+            toNpc.disabled = !model.takeOVerMessage.specificNPC;
+            refreshNpcSelect(toNpc);
+            toNpc.value = model.takeOVerMessage.specificNPC ? (model.takeOVerMessage.specificNPCBase64Username || '') : '';
+            toMessage.value = model.takeOVerMessage.message || '';
+            renderMediaPreview(toPreview, model.takeOVerMessage.message);
+        }
+
+        toSpecific.addEventListener('change', e=>{
+            const yes = e.target.value === 'yes';
+            model.takeOVerMessage.specificNPC = yes;
+            toNpc.disabled = !yes;
+            if (!yes){ model.takeOVerMessage.specificNPCBase64Username = null; toNpc.value=''; }
+            updatePreview();
+        });
+        toNpc.addEventListener('change', e=>{ model.takeOVerMessage.specificNPCBase64Username = e.target.value || null; updatePreview(); });
+        toMessage.addEventListener('input', e=>{ model.takeOVerMessage.message = e.target.value; renderMediaPreview(toPreview, model.takeOVerMessage.message); updatePreview(); });
+
+        // ---- Top fields ----
+        crewFileName.addEventListener('input', e=>{ model.crewNPCsFileName = e.target.value; updatePreview(); });
+        promptMessage.addEventListener('input', e=>{ model.promptMessage = e.target.value; updatePreview(); });
+
+        // ---- Import NPCs ----
+        $('#loadNpcBtn').addEventListener('click', ()=> $('#npcFileInput').click());
+        $('#npcFileInput').addEventListener('change', async (e)=>{
+            const f = e.target.files?.[0]; if(!f) return; const text = await f.text();
+            try{
+                const arr = JSON.parse(text);
+                if (!Array.isArray(arr)) throw new Error('NPC file must be an array');
+                buildNpcIndexFromArray(arr);
+            }catch(err){ alert('Failed to parse NPC file: '+err.message); }
+            finally{ e.target.value=''; }
+        });
+
+        // ---- Import Messages ----
+        $('#loadMsgBtn').addEventListener('click', ()=> $('#msgFileInput').click());
+        $('#msgFileInput').addEventListener('change', async (e)=>{
+            const f = e.target.files?.[0]; if(!f) return; const text = await f.text();
+            try{
+                const json = JSON.parse(text);
+                model.crewNPCsFileName = json.crewNPCsFileName || '';
+                model.promptMessage = json.promptMessage || '';
+                model.takeOVerMessage = {
+                    specificNPC: !!(json.takeOVerMessage && json.takeOVerMessage.specificNPC),
+                    specificNPCBase64Username: json.takeOVerMessage ? (json.takeOVerMessage.specificNPCBase64Username ?? null) : null,
+                    message: json.takeOVerMessage ? (json.takeOVerMessage.message || '') : ''
+                };
+                model.handCraftedMessages = Array.isArray(json.handCraftedMessages) ? json.handCraftedMessages.map(m=>({
+                    specificNPC: !!m.specificNPC,
+                    specificNPCBase64Username: m.specificNPC ? (m.specificNPCBase64Username ?? null) : null,
+                    message: m.message || ''
+                })) : [];
+                // reflect in UI
+                crewFileName.value = model.crewNPCsFileName;
+                promptMessage.value = model.promptMessage;
+                bindTakeOver();
+                renderMsgs();
+            }catch(err){ alert('Failed to parse Messages file: '+err.message); }
+            finally{ e.target.value=''; }
+        });
+
+        // ---- Add new message ----
+        $('#addMsg').addEventListener('click', ()=>{
+            model.handCraftedMessages.push({ specificNPC:false, specificNPCBase64Username:null, message:'' });
+            renderMsgs();
+        });
+
+        // ---- Expand/Collapse all ----
+        $('#expandAll').addEventListener('click', ()=>{ $$('.message-card').forEach(n=>{ n.dataset.collapsed='false'; $('.section',n).style.display=''; $('.toggleBtn',n).textContent='▾';}); });
+        $('#collapseAll').addEventListener('click', ()=>{ $$('.message-card').forEach(n=>{ n.dataset.collapsed='true'; $('.section',n).style.display='none'; $('.toggleBtn',n).textContent='▸';}); });
+
+        // ---- Download / Copy ----
+        $('#downloadBtn').addEventListener('click', ()=> download((filenameInput.value||'npc-messages.json').trim(), jsonPreview.value));
+        $('#copyBtn').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(jsonPreview.value); alert('Copied JSON to clipboard'); }catch{ alert('Copy failed; select & Ctrl+C'); }});
+        $('#resetBtn').addEventListener('click', ()=>{ if(confirm('Clear current message model?')){ model = { crewNPCsFileName:'', promptMessage:'', takeOVerMessage:{specificNPC:false,specificNPCBase64Username:null,message:''}, handCraftedMessages:[] }; crewFileName.value=''; promptMessage.value=''; bindTakeOver(); renderMsgs(); updatePreview(); }});
+
+        jsonPreview.addEventListener('keydown', e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ try{ const parsed=JSON.parse(jsonPreview.value); jsonPreview.value=pretty(parsed);}catch{} }});
+
+        // ---- Seed initial empty form ----
+        bindTakeOver();
+        renderMsgs();
+        updatePreview();
+    })();
+</script>
+</body>
+</html>

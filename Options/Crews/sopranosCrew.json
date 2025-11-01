@@ -1,0 +1,76 @@
+{
+  "crewNPCsFileName": "sopranos.json",
+  "promptMessage": "You are {npcName}, a member of the DiMeo crime family from North Jersey. You may be Tony, Paulie, Silvio, Christopher, or another associate. You speak like a real mobster from *The Sopranos* — tough, streetwise, and steeped in Italian-American culture. \n\nWhen taunting enemies or outsiders, use sarcasm, bravado, and dark humor. You might reference “the family,” loyalty, money, or respect. Avoid modern slang; stay in that early-2000s New Jersey tone. You can curse casually, but focus on personality, not profanity. \n\nIf you are Tony, speak with authority and occasional introspection.  \nIf you are Paulie, be superstitious and unpredictable.  \nIf you are Silvio, quote mob wisdom and imitate movie lines.  \nIf you are Christopher, be ambitious but insecure.  \n\nGenerate a confident, witty, or menacing taunt that sounds like it came straight out of *The Sopranos* universe.\n",
+  "takeOVerMessage": {
+    "specificNPC": true,
+    "specificNPCBase64Username": "VG9ueSBTb3ByYW5v",
+    "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434047342730022982/image.png?ex=6906e829&is=690596a9&hm=b4ebc46213ecc6da9bdfd1cb7a36b853306fb5390bd441979ddf4fb5285808f8&"
+  },
+  "handCraftedMessages": [
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "VW5jbGUgSnVuaW9y",
+      "message": "Tony, if you're gonna lie to me, tell me there's a broad in the car waiting to tongue my balls. "
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "how bout that https://cdn.discordapp.com/attachments/1270715409179475988/1433528281340317886/how_about_that.mp4?ex=6906563f&is=690504bf&hm=265a24583be1543ab5e8f8f8c9a706e489a87630200d70956202620ea0c1b2d9&"
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434043507630407751/591848b7-ad8c-4f03-9003-2745440b6743_text.gif?ex=6906e497&is=69059317&hm=8e4bd84c5f02335fdc21ba3837cfe035c551c5f36569530ec1ec6da7285a5b41&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "UGF1bGllICdXYWxudXRzJyBHdWFsdGllcmk=",
+      "message": "https://youtu.be/aqrSVlARFow?si=sbQ83XgTa908m8GG"
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "https://tenor.com/view/the-sopranos-tony-soprano-how-bout-dat-how-about-that-sopranos-gif-16854992944801209042"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "Q2hyaXN0b3BoZXI=",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434044390740852869/hx3jlyo4n3o71.jpg?ex=6906e56a&is=690593ea&hm=ebbff9ffd821c17ddc69b2dda26e98f13f9440273481c7823a969ff5d07929b2&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "VW5jbGUgSnVuaW9y",
+      "message": "https://youtu.be/b2C6MhNMMv8?si=uexxx075g6UNUna2"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "VG9ueSBTb3ByYW5v",
+      "message": "https://youtu.be/A8FUUzmaCxc?si=RcnxLjqGIcaCdJ-O"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "VG9ueSBTb3ByYW5v",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434045680418164807/image.png?ex=6906e69d&is=6905951d&hm=011cc4f9e930ca38a2c38ffa391dcb27116431029a9dd731b397ed0c7190e3f5&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "UGF1bGllICdXYWxudXRzJyBHdWFsdGllcmk=",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434045680418164807/image.png?ex=6906e69d&is=6905951d&hm=011cc4f9e930ca38a2c38ffa391dcb27116431029a9dd731b397ed0c7190e3f5&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "UGF1bGllICdXYWxudXRzJyBHdWFsdGllcmk=",
+      "message": "https://cdn.discordapp.com/attachments/916766127793782804/1433599593274408980/image.png?ex=690698aa&is=6905472a&hm=87c984db467601d6f83553d27ac89efdf56ec319326b5a031d5bf295c5705480&"
+    },
+    {
+      "specificNPC": true,
+      "specificNPCBase64Username": "VW5jbGUgSnVuaW9y",
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434046632831225877/523bbfadd236fe4bb34fd6a8ff56f0f7c742ad40dd4b7cc57ef77e05489baaa8_1.mp4?ex=6906e780&is=69059600&hm=15577e12d468014a647d3a033785f184ba27b44d2686eb6b0dc4926019b556fb&"
+    },
+    {
+      "specificNPC": false,
+      "specificNPCBase64Username": null,
+      "message": "https://cdn.discordapp.com/attachments/480122702888435734/1434047091034034307/c35abf6f305bc5beb283e2a42f3fac14935ed5dd97c3bad408e6bc205e07f7ce_1.mp4?ex=6906e7ed&is=6905966d&hm=7ec33b0c28c4d46fee4d68a12bca813e7b12f7ae2d54bc964d57cf4dd243543a&"
+    }
+  ]
+}
