@@ -5,6 +5,7 @@ import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.NPCUtil;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
@@ -130,7 +131,7 @@ public class TakeShip extends Command implements IDiscordChatEventable
             Player currentAttacker = attackingPlayers.remove(0);
             Player winningPlayer = null;
             StringBuilder reportBuilder = new StringBuilder();
-            while(currentDefender != null && currentAttacker != null)
+            while(currentDefender.getHealth() >= 0 && currentAttacker != null)
             {
                 winningPlayer = BattleTask.getBattleWinner(currentDefender, currentAttacker, reportBuilder);
 
@@ -149,7 +150,6 @@ public class TakeShip extends Command implements IDiscordChatEventable
                 if(defendingPlayers.size() <= 0 )
                 {
                     isDefenderWin = false;
-                    currentDefender = null;
                     continue;
                 }
                 currentDefender = defendingPlayers.remove(0);
@@ -168,7 +168,7 @@ public class TakeShip extends Command implements IDiscordChatEventable
                 return new MessageResponse(stringBuilder.toString());
             }
 
-            TakeShip.isPirateWarActive = false;
+
 
             if(isDefenderWin)
             {
@@ -192,9 +192,12 @@ public class TakeShip extends Command implements IDiscordChatEventable
                 if ( currentDefender.getInventory() != null &&
                         currentDefender.getInventory().getItems() != null &&
                         !currentDefender.getInventory().getItems().isEmpty() &&
-                        currentDefender.getInventory().getItems().get(0) != null) {
+                        currentDefender.getInventory().getItems().get(1) != null) {
 
-                    currentAttacker.setPendingItem(currentDefender.getInventory().getItems().get(0));
+
+                    currentAttacker.setPendingItem(currentDefender.getInventory().getItems().get(1));
+                    //Yes they will lose their other useable item stats but fair trade
+                    UserAccount.updatePlayer(currentAttacker);
                 }
             }
 
@@ -254,10 +257,10 @@ public class TakeShip extends Command implements IDiscordChatEventable
         {
             if (candidate.isCaptain())
             {
-               return true;
+               return false;
             }
         }
-        return false;
+        return true;
     }
 
 
