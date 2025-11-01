@@ -187,6 +187,18 @@ public class TakeShip extends Command implements IDiscordChatEventable
 
             //Swap Captain Rank
             // 3. Remove Rank and Captain Flag From everyone else
+            if (isCurrentCaptainaNPC())
+            {
+                if ( currentDefender.getInventory() != null &&
+                        currentDefender.getInventory().getItems() != null &&
+                        !currentDefender.getInventory().getItems().isEmpty() &&
+                        currentDefender.getInventory().getItems().get(0) != null) {
+
+                    currentAttacker.setPendingItem(currentDefender.getInventory().getItems().get(0));
+                }
+            }
+
+
             Role captainRole = event.getGuild().getRoleById(CaptainNow.captainID);
             ArrayList<CaptainCandidate> allCandidates = CaptainCandidate.getAllCaptainCandidates();
             for (CaptainCandidate candidate : allCandidates)
@@ -207,6 +219,8 @@ public class TakeShip extends Command implements IDiscordChatEventable
             captainCandidate.setLastTakeOverAttempt(LocalDateTime.now());
             captainCandidate.setCaptain(true);
             UserAccount.updateCaptainCandidate(captainCandidate);
+
+
             // 4. Add Captain role to this user
             event.getGuild().addRoleToMember(member, captainRole).complete();
             return new MessageResponse(stringBuilder.toString());
