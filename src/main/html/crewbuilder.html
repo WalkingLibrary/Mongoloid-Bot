@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NPC JSON Builder</title>
+    <style>
+        :root{--bg:#0f172a;--panel:#111827;--muted:#6b7280;--text:#e5e7eb;--accent:#22c55e;--accent2:#38bdf8;--danger:#ef4444}
+        *{box-sizing:border-box}
+        body{margin:0;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"}
+        header{padding:16px 20px;border-bottom:1px solid #111827;background:#0b1220;position:sticky;top:0;z-index:10}
+        h1{margin:0;font-size:18px;letter-spacing:.4px}
+        main{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px}
+        @media (max-width: 1100px){main{grid-template-columns:1fr;}}
+        .panel{background:rgba(17,24,39,.85);backdrop-filter: blur(6px);border:1px solid #1f2937;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+        .panel h2{margin:0 0 8px 0;font-size:15px;color:#cbd5e1}
+        .panel .body{padding:14px}
+        .controls{display:flex;gap:8px;flex-wrap:wrap}
+        .btn{appearance:none;border:1px solid #273042;color:#e5e7eb;background:#0b1220;padding:8px 12px;border-radius:10px;cursor:pointer;transition:.15s;line-height:1}
+        .btn:hover{border-color:#3a465e;transform:translateY(-1px)}
+        .btn.primary{background:linear-gradient(180deg,#1e293b,#0b1220);border-color:#334155}
+        .btn.accent{background:linear-gradient(180deg,#10623f,#0b4a31);border-color:#0e7a49}
+        .btn.info{background:linear-gradient(180deg,#0b3b64,#09263f);border-color:#0e5e8f}
+        .btn.danger{background:linear-gradient(180deg,#6a1420,#3a0a10);border-color:#a11a2c}
+        .btn.small{padding:6px 10px;border-radius:8px}
+        .btn.ghost{background:transparent}
+        .stack{display:flex;flex-direction:column;gap:10px}
+        .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .field{display:flex;flex-direction:column;gap:4px;min-width:120px}
+        label{font-size:12px;color:#bfc6d4}
+        input[type="text"], input[type="number"], input[type="url"], select, textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid #263142;background:#0b1220;color:#e5e7eb}
+        input[type="checkbox"]{transform:scale(1.1)}
+        textarea{min-height:180px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+        .npc{border:1px solid #253042;border-radius:12px;padding:12px;background:#0a1220}
+        .npc header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0;border:0;background:transparent;position:static}
+        .npc h3{margin:0;font-size:14px;color:#cbd5e1}
+        .items{display:flex;flex-direction:column;gap:8px}
+        .item{border:1px dashed #334155;padding:10px;border-radius:10px}
+        .hint{font-size:12px;color:#9aa3b2}
+        .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #2b3750;background:#0c1323;padding:6px 8px;border-radius:999px;font-size:12px;color:#cfe0ff}
+        .list{display:flex;flex-direction:column;gap:12px}
+        .sticky-actions{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:10px;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.9) 30%,rgba(11,18,32,1));border-top:1px solid #1e293b}
+        .divider{height:1px;background:#1f2937;margin:12px 0}
+        .kbd{font-family:ui-monospace,monospace;background:#0b1220;border:1px solid #273042;border-bottom-width:2px;border-radius:6px;padding:0 6px;color:#cbd5e1}
+        .error{color:#fecaca}
+    </style>
+</head>
+<body>
+<header>
+    <h1>NPC JSON Builder <span class="hint">· works offline / single file</span></h1>
+</header>
+<main>
+    <!-- Left: Toolkit -->
+    <section class="panel" aria-label="Toolbox">
+        <div class="body stack">
+            <h2>Project</h2>
+            <div class="controls">
+                <button id="addNpc" class="btn accent">+ Add NPC</button>
+                <button id="importBtn" class="btn info">Import JSON…</button>
+                <input id="importFile" type="file" accept="application/json,.json" hidden />
+                <button id="downloadBtn" class="btn primary">Download JSON</button>
+                <button id="copyBtn" class="btn">Copy JSON</button>
+                <button id="resetBtn" class="btn danger">Reset</button>
+            </div>
+            <div class="divider"></div>
+            <div class="stack">
+                <div class="field">
+                    <label for="filename">Download filename</label>
+                    <input id="filename" type="text" value="npcs.json" />
+                </div>
+                <div class="field">
+                    <label for="jsonPreview">JSON Preview</label>
+                    <textarea id="jsonPreview" spellcheck="false" aria-label="JSON preview"></textarea>
+                </div>
+                <div class="hint">Tip: Press <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> to prettify JSON in the preview.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right: Editor -->
+    <section class="panel" aria-label="Editor">
+        <div class="body">
+            <h2 style="display:flex;align-items:center;gap:10px">NPCs <span id="npcCount" class="badge" aria-live="polite">0 total</span></h2>
+            <div id="npcList" class="list" aria-live="polite"></div>
+            <div class="sticky-actions">
+                <button id="addNpc2" class="btn accent">+ Add NPC</button>
+                <button id="expandAll" class="btn ghost">Expand all</button>
+                <button id="collapseAll" class="btn ghost">Collapse all</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<template id="npcTemplate">
+    <div class="npc" data-collapsed="false">
+        <header>
+            <h3>NPC <span class="idx"></span> — <span class="namePreview hint">(prompt name)</span></h3>
+            <div class="controls">
+                <button class="btn small ghost toggleBtn" title="Collapse/Expand">▾</button>
+                <button class="btn small" data-action="duplicate">Duplicate</button>
+                <button class="btn small danger" data-action="remove">Remove</button>
+            </div>
+        </header>
+
+        <div class="stack section">
+            <div class="row">
+                <div class="field" style="max-width:120px">
+                    <label>isNPC</label>
+                    <input type="checkbox" class="isNPC" checked />
+                </div>
+                <div class="field">
+                    <label>Health</label>
+                    <input type="number" class="health" min="0" step="1" value="10000" />
+                </div>
+                <div class="field">
+                    <label>Stamina</label>
+                    <input type="number" class="stamina" min="0" step="1" value="140" />
+                </div>
+                <div class="field" style="flex:1">
+                    <label>User Account Id (optional / null)</label>
+                    <input type="text" class="userAccountId" placeholder="null = leave empty" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field" style="flex:1">
+                    <label>Prompt Name (will encode → <code>promptNameBase64</code>)</label>
+                    <input type="text" class="promptName" placeholder="e.g., B1 Battle Droid" />
+                    <div class="hint">Base64: <span class="b64">(auto)</span></div>
+                </div>
+                <div class="field" style="flex:1">
+                    <label>NPC Image Link</label>
+                    <input type="url" class="npcImageLink" placeholder="https://…" />
+                </div>
+            </div>
+
+            <div class="stack">
+                <div class="row" style="justify-content:space-between;align-items:center">
+                    <h3 style="font-size:13px;margin:8px 0">Inventory Items</h3>
+                    <button class="btn small accent" data-action="addItem">+ Add Item</button>
+                </div>
+                <div class="items"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="itemTemplate">
+    <div class="item">
+        <div class="row">
+            <div class="field" style="flex:2">
+                <label>Item Name</label>
+                <input type="text" class="itemName" placeholder="e.g., E-5 blaster rifle" />
+            </div>
+            <div class="field" style="flex:1">
+                <label>Ability Type</label>
+                <input list="abilityTypes" class="abilityType" placeholder="TAKE_HEALTH" />
+            </div>
+            <div class="field" style="max-width:160px">
+                <label>Intensity</label>
+                <input type="number" class="intensity" min="0" step="1" value="0" />
+            </div>
+            <div class="controls">
+                <button class="btn small ghost" data-action="up">↑</button>
+                <button class="btn small ghost" data-action="down">↓</button>
+                <button class="btn small danger" data-action="removeItem">Remove</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<datalist id="abilityTypes">
+    <option value="TAKE_HEALTH"></option>
+    <option value="GIVE_HEALTH"></option>
+    <option value="ARMOR"></option>
+    <option value="DAMAGE_ARMOR"></option>
+    <option value="STUN"></option>
+    <option value="SPEED"></option>
+</datalist>
+
+<script>
+    (function(){
+        // --- Utilities ---
+        const $ = (sel, root=document) => root.querySelector(sel);
+        const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+        const utf8ToB64 = (str) => {
+            if (!str) return "";
+            const bytes = new TextEncoder().encode(str);
+            let bin = "";
+            bytes.forEach(b => bin += String.fromCharCode(b));
+            return btoa(bin);
+        };
+
+        const download = (filename, text) => {
+            const blob = new Blob([text], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename; a.click();
+            setTimeout(()=>URL.revokeObjectURL(url), 2000);
+        };
+
+        const pretty = (obj) => JSON.stringify(obj, null, 2);
+
+        // --- State ---
+        let npcs = [];
+
+        // --- DOM refs ---
+        const npcList = $('#npcList');
+        const npcTemplate = $('#npcTemplate');
+        const itemTemplate = $('#itemTemplate');
+
+        const filenameInput = $('#filename');
+        const jsonPreview = $('#jsonPreview');
+        const npcCount = $('#npcCount');
+
+        // --- Rendering ---
+        function render(){
+            npcList.innerHTML = '';
+            npcs.forEach((npc, idx) => {
+                const node = npcTemplate.content.firstElementChild.cloneNode(true);
+                node.querySelector('.idx').textContent = String(idx+1);
+                node.dataset.index = idx;
+
+                const nameInput = node.querySelector('.promptName');
+                const namePreview = node.querySelector('.namePreview');
+                const b64Span = node.querySelector('.b64');
+
+                // bind values
+                node.querySelector('.isNPC').checked = npc.isNPC ?? true;
+                node.querySelector('.health').value = npc.health ?? 0;
+                node.querySelector('.stamina').value = npc.stamina ?? 0;
+                node.querySelector('.userAccountId').value = npc.userAccountId ?? '';
+                nameInput.value = npc._promptNameRaw ?? '';
+                b64Span.textContent = npc.promptNameBase64 ?? '';
+                namePreview.textContent = npc._promptNameRaw || '(prompt name)';
+                node.querySelector('.npcImageLink').value = npc.npcImageLink ?? '';
+
+                // items
+                const itemsWrap = node.querySelector('.items');
+                const itemsArray = npc._itemsArray || [];
+                itemsArray.forEach((it, iidx) => {
+                    const itNode = itemTemplate.content.firstElementChild.cloneNode(true);
+                    itNode.querySelector('.itemName').value = it.name || '';
+                    itNode.querySelector('.abilityType').value = it.ability?.type || '';
+                    itNode.querySelector('.intensity').value = it.ability?.intensity ?? 0;
+
+                    // item actions
+                    itNode.querySelector('[data-action="removeItem"]').addEventListener('click', ()=>{
+                        itemsArray.splice(iidx,1); updateFromDOM();
+                    });
+                    itNode.querySelector('[data-action="up"]').addEventListener('click', ()=>{
+                        if (iidx>0){ const t=itemsArray[iidx-1]; itemsArray[iidx-1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); }
+                    });
+                    itNode.querySelector('[data-action="down"]').addEventListener('click', ()=>{
+                        if (iidx<itemsArray.length-1){ const t=itemsArray[iidx+1]; itemsArray[iidx+1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); }
+                    });
+
+                    // item change bindings
+                    itNode.querySelector('.itemName').addEventListener('input', e=>{ it.name = e.target.value; updatePreview(); });
+                    itNode.querySelector('.abilityType').addEventListener('input', e=>{ it.ability.type = e.target.value; updatePreview(); });
+                    itNode.querySelector('.intensity').addEventListener('input', e=>{ it.ability.intensity = parseInt(e.target.value||'0',10); updatePreview(); });
+
+                    itemsWrap.appendChild(itNode);
+                });
+
+                node.querySelector('[data-action="addItem"]').addEventListener('click', ()=>{
+                    itemsArray.push({ name:"", ability:{ type:"", intensity:0 } }); updateFromDOM();
+                });
+
+                // remove / duplicate
+                node.querySelector('[data-action="remove"]').addEventListener('click', ()=>{
+                    npcs.splice(idx,1); updateFromDOM();
+                });
+                node.querySelector('[data-action="duplicate"]').addEventListener('click', ()=>{
+                    const clone = JSON.parse(JSON.stringify(npc));
+                    npcs.splice(idx+1,0,clone); updateFromDOM();
+                });
+
+                // collapse toggle
+                const toggleBtn = node.querySelector('.toggleBtn');
+                toggleBtn.addEventListener('click', ()=>{
+                    const collapsed = node.dataset.collapsed === 'true';
+                    node.dataset.collapsed = String(!collapsed);
+                    node.querySelector('.section').style.display = collapsed ? '' : 'none';
+                    toggleBtn.textContent = collapsed ? '▾' : '▸';
+                });
+
+                // input bindings
+                node.querySelector('.isNPC').addEventListener('change', e=>{ npc.isNPC = e.target.checked; updatePreview(); });
+                node.querySelector('.health').addEventListener('input', e=>{ npc.health = parseInt(e.target.value||'0',10); updatePreview(); });
+                node.querySelector('.stamina').addEventListener('input', e=>{ npc.stamina = parseInt(e.target.value||'0',10); updatePreview(); });
+                node.querySelector('.userAccountId').addEventListener('input', e=>{ npc.userAccountId = e.target.value.trim() || null; updatePreview(); });
+                nameInput.addEventListener('input', e=>{ npc._promptNameRaw = e.target.value; npc.promptNameBase64 = utf8ToB64(e.target.value); namePreview.textContent = npc._promptNameRaw || '(prompt name)'; b64Span.textContent = npc.promptNameBase64; updatePreview(); });
+                node.querySelector('.npcImageLink').addEventListener('input', e=>{ npc.npcImageLink = e.target.value; updatePreview(); });
+
+                npcList.appendChild(node);
+            });
+            npcCount.textContent = npcs.length + ' total';
+            updatePreview();
+        }
+
+        function modelToOutput(){
+            // Convert internal model to required shape
+            return npcs.map(n => ({
+                isNPC: n.isNPC ?? true,
+                health: n.health ?? 0,
+                stamina: n.stamina ?? 0,
+                inventory: { items: (function(){
+                        const obj = {}; (n._itemsArray||[]).forEach((it, i)=>{
+                            const idx = String(i+1);
+                            obj[idx] = { name: it.name||"", ability: { type: it.ability?.type||"", intensity: it.ability?.intensity??0 } };
+                        });
+                        return obj;
+                    })()},
+                userAccountId: n.userAccountId ?? null,
+                promptNameBase64: n.promptNameBase64 || utf8ToB64(n._promptNameRaw||""),
+                npcImageLink: n.npcImageLink || ""
+            }));
+        }
+
+        function updatePreview(){
+            jsonPreview.value = pretty(modelToOutput());
+        }
+
+        function updateFromDOM(){
+            render();
+        }
+
+        // --- Actions ---
+        function addNpc(initial){
+            npcs.push(Object.assign({
+                isNPC:true,
+                health:10000,
+                stamina:140,
+                userAccountId:null,
+                _promptNameRaw:"",
+                promptNameBase64:"",
+                npcImageLink:"",
+                _itemsArray:[{name:"", ability:{type:"", intensity:0}}]
+            }, initial||{}));
+            render();
+        }
+
+        // Import JSON -> model
+        function importJson(arr){
+            if (!Array.isArray(arr)) throw new Error('Imported JSON must be an array');
+            npcs = arr.map(n => ({
+                isNPC: !!n.isNPC,
+                health: Number(n.health||0),
+                stamina: Number(n.stamina||0),
+                userAccountId: n.userAccountId ?? null,
+                _promptNameRaw: "", // we can't invert base64 back to original safely w/ encoding; keep empty
+                promptNameBase64: String(n.promptNameBase64||""),
+                npcImageLink: String(n.npcImageLink||""),
+                _itemsArray: Object.entries((n.inventory&&n.inventory.items)||{}).sort((a,b)=>Number(a[0])-Number(b[0])).map(([,v])=>({
+                    name: String(v.name||""),
+                    ability: { type: String(v.ability?.type||""), intensity: Number(v.ability?.intensity||0) }
+                }))
+            }));
+            render();
+        }
+
+        // Buttons
+        $('#addNpc').addEventListener('click', ()=> addNpc());
+        $('#addNpc2').addEventListener('click', ()=> addNpc());
+        $('#resetBtn').addEventListener('click', ()=>{ if (confirm('Clear all NPCs?')){ npcs = []; render(); }});
+
+        $('#downloadBtn').addEventListener('click', ()=>{
+            download((filenameInput.value||'npcs.json').trim(), jsonPreview.value);
+        });
+
+        $('#copyBtn').addEventListener('click', async ()=>{
+            try{ await navigator.clipboard.writeText(jsonPreview.value); alert('Copied JSON to clipboard'); }catch{ alert('Copy failed; select & Ctrl+C'); }
+        });
+
+        $('#importBtn').addEventListener('click', ()=> $('#importFile').click());
+        $('#importFile').addEventListener('change', async (e)=>{
+            const file = e.target.files?.[0]; if (!file) return;
+            const text = await file.text();
+            try{ const json = JSON.parse(text); importJson(json); }
+            catch(err){ alert('Invalid JSON: '+ err.message); }
+            finally{ e.target.value = ''; }
+        });
+
+        $('#expandAll').addEventListener('click', ()=>{
+            $$('.npc').forEach(n=>{ n.dataset.collapsed='false'; n.querySelector('.section').style.display=''; n.querySelector('.toggleBtn').textContent='▾'; });
+        });
+        $('#collapseAll').addEventListener('click', ()=>{
+            $$('.npc').forEach(n=>{ n.dataset.collapsed='true'; n.querySelector('.section').style.display='none'; n.querySelector('.toggleBtn').textContent='▸'; });
+        });
+
+        jsonPreview.addEventListener('keydown', (e)=>{
+            if (e.key==='Enter' && (e.ctrlKey||e.metaKey)){
+                try{ const parsed = JSON.parse(jsonPreview.value); jsonPreview.value = pretty(parsed); }
+                catch(err){ /* ignore */ }
+            }
+        });
+
+        // Seed with one blank NPC for convenience
+        addNpc();
+    })();
+</script>
+</body>
+</html>
