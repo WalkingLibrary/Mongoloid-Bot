@@ -42,7 +42,7 @@
         .sticky-actions{position:sticky;bottom:0;display:flex;gap:8px;justify-content:flex-end;padding:10px;background:linear-gradient(180deg,rgba(11,18,32,0),rgba(11,18,32,.9) 30%,rgba(11,18,32,1));border-top:1px solid #1e293b}
         .divider{height:1px;background:#1f2937;margin:12px 0}
         .kbd{font-family:ui-monospace,monospace;background:#0b1220;border:1px solid #273042;border-bottom-width:2px;border-radius:6px;padding:0 6px;color:#cbd5e1}
-        .error{color:#fecaca}
+        .img-preview{max-width:100px;max-height:100px;border-radius:10px;margin-top:5px;display:none;border:1px solid #1f2937}
     </style>
 </head>
 <body>
@@ -50,7 +50,6 @@
     <h1>NPC JSON Builder <span class="hint">· works offline / single file</span></h1>
 </header>
 <main>
-    <!-- Left: Toolkit -->
     <section class="panel" aria-label="Toolbox">
         <div class="body stack">
             <h2>Project</h2>
@@ -77,7 +76,6 @@
         </div>
     </section>
 
-    <!-- Right: Editor -->
     <section class="panel" aria-label="Editor">
         <div class="body">
             <h2 style="display:flex;align-items:center;gap:10px">NPCs <span id="npcCount" class="badge" aria-live="polite">0 total</span></h2>
@@ -131,6 +129,7 @@
                 <div class="field" style="flex:1">
                     <label>NPC Image Link</label>
                     <input type="url" class="npcImageLink" placeholder="https://…" />
+                    <img class="img-preview" alt="NPC preview" />
                 </div>
             </div>
 
@@ -180,7 +179,6 @@
 
 <script>
     (function(){
-        // --- Utilities ---
         const $ = (sel, root=document) => root.querySelector(sel);
         const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
@@ -202,19 +200,15 @@
 
         const pretty = (obj) => JSON.stringify(obj, null, 2);
 
-        // --- State ---
         let npcs = [];
 
-        // --- DOM refs ---
         const npcList = $('#npcList');
         const npcTemplate = $('#npcTemplate');
         const itemTemplate = $('#itemTemplate');
-
         const filenameInput = $('#filename');
         const jsonPreview = $('#jsonPreview');
         const npcCount = $('#npcCount');
 
-        // --- Rendering ---
         function render(){
             npcList.innerHTML = '';
             npcs.forEach((npc, idx) => {
@@ -225,8 +219,9 @@
                 const nameInput = node.querySelector('.promptName');
                 const namePreview = node.querySelector('.namePreview');
                 const b64Span = node.querySelector('.b64');
+                const imgInput = node.querySelector('.npcImageLink');
+                const imgPreview = node.querySelector('.img-preview');
 
-                // bind values
                 node.querySelector('.isNPC').checked = npc.isNPC ?? true;
                 node.querySelector('.health').value = npc.health ?? 0;
                 node.querySelector('.stamina').value = npc.stamina ?? 0;
@@ -234,9 +229,21 @@
                 nameInput.value = npc._promptNameRaw ?? '';
                 b64Span.textContent = npc.promptNameBase64 ?? '';
                 namePreview.textContent = npc._promptNameRaw || '(prompt name)';
-                node.querySelector('.npcImageLink').value = npc.npcImageLink ?? '';
+                imgInput.value = npc.npcImageLink ?? '';
+                if(npc.npcImageLink){ imgPreview.src = npc.npcImageLink; imgPreview.style.display = 'block'; }
 
-                // items
+                const updatePreviewImage = () => {
+                    const url = imgInput.value.trim();
+                    if(url){ imgPreview.src = url; imgPreview.style.display = 'block'; }
+                    else { imgPreview.style.display = 'none'; }
+                };
+
+                imgInput.addEventListener('input', e=>{
+                    npc.npcImageLink = e.target.value;
+                    updatePreviewImage();
+                    updatePreview();
+                });
+
                 const itemsWrap = node.querySelector('.items');
                 const itemsArray = npc._itemsArray || [];
                 itemsArray.forEach((it, iidx) => {
@@ -245,18 +252,10 @@
                     itNode.querySelector('.abilityType').value = it.ability?.type || '';
                     itNode.querySelector('.intensity').value = it.ability?.intensity ?? 0;
 
-                    // item actions
-                    itNode.querySelector('[data-action="removeItem"]').addEventListener('click', ()=>{
-                        itemsArray.splice(iidx,1); updateFromDOM();
-                    });
-                    itNode.querySelector('[data-action="up"]').addEventListener('click', ()=>{
-                        if (iidx>0){ const t=itemsArray[iidx-1]; itemsArray[iidx-1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); }
-                    });
-                    itNode.querySelector('[data-action="down"]').addEventListener('click', ()=>{
-                        if (iidx<itemsArray.length-1){ const t=itemsArray[iidx+1]; itemsArray[iidx+1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); }
-                    });
+                    itNode.querySelector('[data-action="removeItem"]').addEventListener('click', ()=>{ itemsArray.splice(iidx,1); updateFromDOM(); });
+                    itNode.querySelector('[data-action="up"]').addEventListener('click', ()=>{ if (iidx>0){ const t=itemsArray[iidx-1]; itemsArray[iidx-1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); } });
+                    itNode.querySelector('[data-action="down"]').addEventListener('click', ()=>{ if (iidx<itemsArray.length-1){ const t=itemsArray[iidx+1]; itemsArray[iidx+1]=itemsArray[iidx]; itemsArray[iidx]=t; updateFromDOM(); } });
 
-                    // item change bindings
                     itNode.querySelector('.itemName').addEventListener('input', e=>{ it.name = e.target.value; updatePreview(); });
                     itNode.querySelector('.abilityType').addEventListener('input', e=>{ it.ability.type = e.target.value; updatePreview(); });
                     itNode.querySelector('.intensity').addEventListener('input', e=>{ it.ability.intensity = parseInt(e.target.value||'0',10); updatePreview(); });
@@ -264,20 +263,10 @@
                     itemsWrap.appendChild(itNode);
                 });
 
-                node.querySelector('[data-action="addItem"]').addEventListener('click', ()=>{
-                    itemsArray.push({ name:"", ability:{ type:"", intensity:0 } }); updateFromDOM();
-                });
+                node.querySelector('[data-action="addItem"]').addEventListener('click', ()=>{ itemsArray.push({ name:"", ability:{ type:"", intensity:0 } }); updateFromDOM(); });
+                node.querySelector('[data-action="remove"]').addEventListener('click', ()=>{ npcs.splice(idx,1); updateFromDOM(); });
+                node.querySelector('[data-action="duplicate"]').addEventListener('click', ()=>{ const clone = JSON.parse(JSON.stringify(npc)); npcs.splice(idx+1,0,clone); updateFromDOM(); });
 
-                // remove / duplicate
-                node.querySelector('[data-action="remove"]').addEventListener('click', ()=>{
-                    npcs.splice(idx,1); updateFromDOM();
-                });
-                node.querySelector('[data-action="duplicate"]').addEventListener('click', ()=>{
-                    const clone = JSON.parse(JSON.stringify(npc));
-                    npcs.splice(idx+1,0,clone); updateFromDOM();
-                });
-
-                // collapse toggle
                 const toggleBtn = node.querySelector('.toggleBtn');
                 toggleBtn.addEventListener('click', ()=>{
                     const collapsed = node.dataset.collapsed === 'true';
@@ -286,13 +275,17 @@
                     toggleBtn.textContent = collapsed ? '▾' : '▸';
                 });
 
-                // input bindings
                 node.querySelector('.isNPC').addEventListener('change', e=>{ npc.isNPC = e.target.checked; updatePreview(); });
                 node.querySelector('.health').addEventListener('input', e=>{ npc.health = parseInt(e.target.value||'0',10); updatePreview(); });
                 node.querySelector('.stamina').addEventListener('input', e=>{ npc.stamina = parseInt(e.target.value||'0',10); updatePreview(); });
                 node.querySelector('.userAccountId').addEventListener('input', e=>{ npc.userAccountId = e.target.value.trim() || null; updatePreview(); });
-                nameInput.addEventListener('input', e=>{ npc._promptNameRaw = e.target.value; npc.promptNameBase64 = utf8ToB64(e.target.value); namePreview.textContent = npc._promptNameRaw || '(prompt name)'; b64Span.textContent = npc.promptNameBase64; updatePreview(); });
-                node.querySelector('.npcImageLink').addEventListener('input', e=>{ npc.npcImageLink = e.target.value; updatePreview(); });
+                nameInput.addEventListener('input', e=>{
+                    npc._promptNameRaw = e.target.value;
+                    npc.promptNameBase64 = utf8ToB64(e.target.value);
+                    namePreview.textContent = npc._promptNameRaw || '(prompt name)';
+                    b64Span.textContent = npc.promptNameBase64;
+                    updatePreview();
+                });
 
                 npcList.appendChild(node);
             });
@@ -301,7 +294,6 @@
         }
 
         function modelToOutput(){
-            // Convert internal model to required shape
             return npcs.map(n => ({
                 isNPC: n.isNPC ?? true,
                 health: n.health ?? 0,
@@ -327,7 +319,6 @@
             render();
         }
 
-        // --- Actions ---
         function addNpc(initial){
             npcs.push(Object.assign({
                 isNPC:true,
@@ -342,7 +333,6 @@
             render();
         }
 
-        // Import JSON -> model
         function importJson(arr){
             if (!Array.isArray(arr)) throw new Error('Imported JSON must be an array');
             npcs = arr.map(n => ({
@@ -350,13 +340,15 @@
                 health: Number(n.health||0),
                 stamina: Number(n.stamina||0),
                 userAccountId: n.userAccountId ?? null,
-                _promptNameRaw: "", // we can't invert base64 back to original safely w/ encoding; keep empty
+                _promptNameRaw: "",
                 promptNameBase64: String(n.promptNameBase64||""),
                 npcImageLink: String(n.npcImageLink||""),
-                _itemsArray: Object.entries((n.inventory&&n.inventory.items)||{}).sort((a,b)=>Number(a[0])-Number(b[0])).map(([,v])=>({
-                    name: String(v.name||""),
-                    ability: { type: String(v.ability?.type||""), intensity: Number(v.ability?.intensity||0) }
-                }))
+                _itemsArray: Object.entries((n.inventory&&n.inventory.items)||{})
+                    .sort((a,b)=>Number(a[0])-Number(b[0]))
+                    .map(([,v])=>({
+                        name: String(v.name||""),
+                        ability: { type: String(v.ability?.type||""), intensity: Number(v.ability?.intensity||0) }
+                    }))
             }));
             render();
         }
@@ -397,7 +389,7 @@
             }
         });
 
-        // Seed with one blank NPC for convenience
+        // Seed with one blank NPC
         addNpc();
     })();
 </script>
