@@ -233,6 +233,19 @@ public class TakeShip extends Command implements IDiscordChatEventable
         }
     }
 
+    public static boolean isCurrentCaptainaNPC() throws SQLException
+    {
+        ArrayList<CaptainCandidate> allCandidates = CaptainCandidate.getAllCaptainCandidates();
+        for (CaptainCandidate candidate : allCandidates)
+        {
+            if (candidate.isCaptain())
+            {
+               return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public String getHelpMessage()

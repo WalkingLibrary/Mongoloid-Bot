@@ -48,13 +48,14 @@ public class CaptainNow extends Command implements IDiscordChatEventable
          * 8. Return confirmation message
          * */
 
-        if (TakeShip.isPirateWarActive)
-        {
-            return new MessageResponse("💥 Cannons firing! War’s on deck! No captain promotions while we’re dodging cannonballs! 🏴‍☠️");
-        }
+
 
         try
         {
+            if (TakeShip.isCurrentCaptainaNPC())
+            {
+                return new MessageResponse("💥 Cannons firing! War’s on deck! No captain promotions while we’re dodging cannonballs! 🏴‍☠️");
+            }
             Member member = event.getMember();
             UserAccount accountToUpdate = UserAccount.getUser(member);
             CaptainCandidate thisCandidate = accountToUpdate.getCaptainCandidate(member);
