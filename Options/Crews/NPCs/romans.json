@@ -22,8 +22,8 @@
       }
     },
     "userAccountId": null,
-    "promptNameBase64": "Um9tYW4gU29sZGllcg==",
-    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804355813806141/image.png?ex=6910efd4&is=690f9e54&hm=c5bbf5c9cbc06febb434d23c784d54256c404fbac353e5d4600d3a9c14002bfa&"
+    "promptNameBase64": "U29sZGllcg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436815638097170432/image.png?ex=6910fa56&is=690fa8d6&hm=2f41c2975265e95f521bab387fbb5ca4f471e15071228985e9926a06bd172986&"
   },
   {
     "isNPC": true,
@@ -48,8 +48,8 @@
       }
     },
     "userAccountId": null,
-    "promptNameBase64": "Um9tYW4gQ2VudHVyaW9u",
-    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804403779600465/image.png?ex=6910efe0&is=690f9e60&hm=940295bf588e7a8132d464e836855fca12efa81c06902af14f45096c2416b1c8&"
+    "promptNameBase64": "Q2VudHVyaW9u",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436815670498296048/image.png?ex=6910fa5e&is=690fa8de&hm=1dbb65b48738bb88624d611db62c5e1d3ce9b89bdbb5e5296f4dacd6959dc904&"
   },
   {
     "isNPC": true,
@@ -74,8 +74,8 @@
       }
     },
     "userAccountId": null,
-    "promptNameBase64": "Um9tYW4gTGVnaW9uYXJ5",
-    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804451494137876/image.png?ex=6910efeb&is=690f9e6b&hm=a36d2a428bfc66ed5865f27af6d1530e018dc96b2943539554667013898f02ce&"
+    "promptNameBase64": "TGVnaW9uYXJ5",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436815732028604506/image.png?ex=6910fa6d&is=690fa8ed&hm=58d29339c641b756f3ce40e1e32be7e11f417440fe8b91df008a59940244e2fc&"
   },
   {
     "isNPC": true,
@@ -100,8 +100,8 @@
       }
     },
     "userAccountId": null,
-    "promptNameBase64": "Um9tYW4gUHJhZXRvcmlhbg==",
-    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804484415094908/image.png?ex=6910eff3&is=690f9e73&hm=a046cd71124bdfc7a61ec2218e55506cae6153f62434bcd3c0b0645b7d9a207d&"
+    "promptNameBase64": "UHJhZXRvcmlhbg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436815781806739466/image.png?ex=6910fa79&is=690fa8f9&hm=479c6e6b98c794a7cc046628ef572095cd5731e025afea7a420bdb9f8f029637&"
   },
   {
     "isNPC": true,
