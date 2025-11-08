@@ -12,6 +12,8 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.PlayerInventory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.ItemUntil;
+import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
+import com.jumbodinosaurs.mongoloidbot.models.DiscordANSITextHelper;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 
@@ -44,12 +46,13 @@ public class ExploreTask extends ScheduledTask
         {
 
             /*
-             * Process for Running Explore task
-             * 1. Get all the Players in the Database
-             * 2. Check if they are Exploring
-             * 3. Run Chance to Find Item
-             * 4. Add Item to their Inventory or Pending Slot
-             * */
+         * Process for Running Explore task
+         * 1. Get all the Players in the Database
+         * 2. Check if they are Exploring
+         * 3. Run Chance to Find Item
+         * 4. Add Item to their Inventory or Pending Slot
+         * */
+        StringBuilder foundItemsOutput = new StringBuilder();
             //1. Get all the Players in the Database
             // - Parse the Player
             for (SQLDataBaseObjectHolder objectHolder : SQLDatabaseObjectUtil.loadObjects(
@@ -101,6 +104,10 @@ public class ExploreTask extends ScheduledTask
                     LogManager.consoleLogger.debug(
                             "Updating Pending Slot: " + new Gson().toJson(currentAccountsPlayer));
                     UserAccount.updatePlayer(currentAccountsPlayer);
+                foundItemsOutput.append(currentAccountsPlayer.getPromptName())
+                        .append(" found ")
+                        .append(randomItem.toInventoryDisplay())
+                        .append(" (Pending)\n");
                     continue;
                 }
 
@@ -116,10 +123,18 @@ public class ExploreTask extends ScheduledTask
                         LogManager.consoleLogger.debug(
                                 "Updating Slot " + i + ": " + new Gson().toJson(currentAccountsPlayer));
                         UserAccount.updatePlayer(currentAccountsPlayer);
+                        foundItemsOutput.append(currentAccountsPlayer.getPromptName())
+                            .append(" found ")
+                            .append(randomItem.toInventoryDisplay())
+                            .append("\n");
                         break;
                     }
                 }
             }
+        if (foundItemsOutput.length() > 0)
+        {
+            EventListener.sendMessage("**Exploration Results:**\n" +  DiscordANSITextHelper.finalWrap(foundItemsOutput.toString()));
+        }
             LogManager.consoleLogger.debug("Done Running Exploring");
         }
         catch (Exception e)
