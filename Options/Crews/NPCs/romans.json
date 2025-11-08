@@ -1,0 +1,132 @@
+[
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 500,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Roman Shield",
+          "ability": {
+            "type": "ARMOR",
+            "intensity": 500
+          }
+        },
+        "2": {
+          "name": "Roman Spear",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 400
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Um9tYW4gU29sZGllcg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804355813806141/image.png?ex=6910efd4&is=690f9e54&hm=c5bbf5c9cbc06febb434d23c784d54256c404fbac353e5d4600d3a9c14002bfa&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 500,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Roman Shield",
+          "ability": {
+            "type": "ARMOR",
+            "intensity": 500
+          }
+        },
+        "2": {
+          "name": "Roman Spear",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 400
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Um9tYW4gQ2VudHVyaW9u",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804403779600465/image.png?ex=6910efe0&is=690f9e60&hm=940295bf588e7a8132d464e836855fca12efa81c06902af14f45096c2416b1c8&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 500,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Roman Shield",
+          "ability": {
+            "type": "ARMOR",
+            "intensity": 500
+          }
+        },
+        "2": {
+          "name": "Roman Bow",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 700
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Um9tYW4gTGVnaW9uYXJ5",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804451494137876/image.png?ex=6910efeb&is=690f9e6b&hm=a36d2a428bfc66ed5865f27af6d1530e018dc96b2943539554667013898f02ce&"
+  },
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 500,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Roman Shield",
+          "ability": {
+            "type": "ARMOR",
+            "intensity": 500
+          }
+        },
+        "2": {
+          "name": "Roman Spear",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 400
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Um9tYW4gUHJhZXRvcmlhbg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436804484415094908/image.png?ex=6910eff3&is=690f9e73&hm=a046cd71124bdfc7a61ec2218e55506cae6153f62434bcd3c0b0645b7d9a207d&"
+  },
+  {
+    "isNPC": true,
+    "health": 200000,
+    "stamina": 500,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Roman Sword",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 600
+          }
+        },
+        "2": {
+          "name": "Roman Shield",
+          "ability": {
+            "type": "ARMOR",
+            "intensity": 500
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "Um9tYW4gVmV0ZXJhbg==",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1436805745944432721/image.png?ex=6910f120&is=690f9fa0&hm=09dbc3572ac0c4186139fd96ff6b5b79cc495e7fbba5d13ec1c86633d9bfc196&"
+  }
+]

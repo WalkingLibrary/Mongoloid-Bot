@@ -6,6 +6,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.NPCUtil;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
@@ -22,10 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TakeShip extends Command implements IDiscordChatEventable
@@ -194,8 +192,12 @@ public class TakeShip extends Command implements IDiscordChatEventable
                         !currentDefender.getInventory().getItems().isEmpty() &&
                         currentDefender.getInventory().getItems().get(1) != null) {
 
-
-                    currentAttacker.setPendingItem(currentDefender.getInventory().getItems().get(1));
+                    HashMap<Integer, Item> items = currentDefender.getInventory().getItems();
+                    if (!items.isEmpty()) {
+                        List<Item> itemList = new ArrayList<>(items.values());
+                        Item randomItem = itemList.get(new Random().nextInt(itemList.size()));
+                        currentAttacker.setPendingItem(randomItem);
+                    }
                     //Yes they will lose their other useable item stats but fair trade
                     UserAccount.updatePlayer(currentAttacker);
                 }
