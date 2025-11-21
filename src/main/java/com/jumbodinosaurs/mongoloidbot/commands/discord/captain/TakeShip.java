@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,10 +73,17 @@ public class TakeShip extends Command implements IDiscordChatEventable
             LocalDateTime retakeTime = GetNextRetakeDateTime(captainCandidate);
             if (retakeTime.isAfter(LocalDateTime.now()))
             {
+                Duration remaining = Duration.between(LocalDateTime.now(), retakeTime);
+
+                long hours = remaining.toHours();
+                long minutes = remaining.toMinutes() % 60;
+                long seconds = remaining.getSeconds() % 60;
+
                 stringBuilder.append("⏰ You cannot attempt to take the ship yet.\n");
-                stringBuilder.append("You may try again **at " + retakeTime.toString() + "**.");
+                stringBuilder.append("Time remaining: **" + hours + "h " + minutes + "m " + seconds + "s**.\n");
                 return new MessageResponse(stringBuilder.toString());
             }
+
 
             stringBuilder.append("⚓ **" + member.getEffectiveName() + " attempts to take the ship!** ⚓\n");
 
