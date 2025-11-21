@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>CIS Crew Discord Webhook Tool</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            background: #050711;
+            color: #f5f5f5;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #c3c3c3;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #101322, #0a0c16);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(160, 200, 255, 0.06);
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+            color: #d6e3ff;
+        }
+
+        input[type="file"],
+        input[type="text"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.4rem 0.55rem;
+            border-radius: 8px;
+            border: 1px solid rgba(150, 190, 255, 0.2);
+            background: rgba(7, 10, 20, 0.9);
+            color: #f5f5f5;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            max-height: 220px;
+        }
+
+        input[type="file"] {
+            padding: 0.25rem 0.1rem;
+            background: transparent;
+            border: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #4f8cff;
+            box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.4);
+        }
+
+        .row {
+            margin-bottom: 0.75rem;
+        }
+
+        .small {
+            font-size: 0.8rem;
+            color: #a6b4d4;
+        }
+
+        .npc-preview {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .npc-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(200, 230, 255, 0.2);
+            background: #11141f;
+        }
+
+        .npc-meta {
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+
+        .npc-meta strong {
+            font-size: 0.9rem;
+        }
+
+        .npc-stat-pill {
+            display: inline-block;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid rgba(190, 220, 255, 0.2);
+            font-size: 0.75rem;
+            margin-right: 0.35rem;
+        }
+
+        .inventory-list {
+            list-style: none;
+            padding-left: 1rem;
+            margin: 0.3rem 0 0;
+            font-size: 0.8rem;
+        }
+
+        .inventory-list li::marker {
+            color: #4f8cff;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.9rem;
+            border-radius: 999px;
+            border: 1px solid rgba(108, 178, 255, 0.6);
+            background: radial-gradient(circle at top left, #3c6fff, #10152a);
+            color: #fdfdfd;
+            cursor: pointer;
+            transition: transform 0.06s ease-out, box-shadow 0.06s ease-out, background 0.15s ease-out;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4) inset;
+        }
+
+        button.secondary {
+            border-color: rgba(140, 150, 190, 0.7);
+            background: #141827;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .status {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .status.ok {
+            color: #8be58c;
+        }
+
+        .status.error {
+            color: #ff8a8a;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid rgba(200, 230, 255, 0.25);
+            font-size: 0.78rem;
+            margin-top: 0.25rem;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.78rem;
+            padding: 0.1rem 0.2rem;
+            background: rgba(10, 12, 22, 0.9);
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>CIS Crew → Discord Webhook</h1>
+<div class="subtitle">
+    Load your crew JSON files, pick an NPC, type a message, and send it through a Discord webhook as that NPC.
+</div>
+
+<div class="grid">
+    <!-- LEFT: File loading & NPC selection -->
+    <div class="card">
+        <h2>1. Load Crew Config & NPCs</h2>
+
+        <div class="row">
+            <label for="crewConfigFile">Crew Config JSON (e.g. <code>cisdroids-config.json</code>)</label>
+            <input type="file" id="crewConfigFile" accept=".json,application/json" />
+            <div id="crewInfo" class="small"></div>
+        </div>
+
+        <div class="row">
+            <label for="npcFile">NPCs JSON (array) (e.g. <code>cisdroids.json</code>)</label>
+            <input type="file" id="npcFile" accept=".json,application/json" />
+            <div id="npcInfo" class="small"></div>
+        </div>
+
+        <h2>2. Select NPC</h2>
+        <div class="row">
+            <label for="npcSelect">NPC</label>
+            <select id="npcSelect" disabled>
+                <option value="">Load NPC JSON first…</option>
+            </select>
+            <div class="small">
+                Uses <code>promptNameBase64</code> and <code>npcImageLink</code> from your NPC file.
+            </div>
+        </div>
+
+        <div id="npcPreview" class="npc-preview" style="display:none;">
+            <img id="npcAvatar" class="npc-avatar" alt="NPC avatar" />
+            <div class="npc-meta">
+                <div><strong id="npcNameLabel"></strong></div>
+                <div style="margin-top: 0.2rem;">
+                    <span class="npc-stat-pill" id="npcHealth"></span>
+                    <span class="npc-stat-pill" id="npcStamina"></span>
+                </div>
+                <div id="inventoryLabel" style="margin-top:0.3rem;">Inventory:</div>
+                <ul id="inventoryList" class="inventory-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Webhook & message -->
+    <div class="card">
+        <h2>3. Webhook & Message</h2>
+
+        <div class="row">
+            <label for="webhookUrl">Discord Webhook URL</label>
+            <input type="url" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..." />
+            <div class="small">
+                Keep this secret. Anyone with this URL can send messages to that channel.
+            </div>
+        </div>
+
+        <div class="row">
+            <label for="messageInput">Message to send as the NPC</label>
+            <textarea id="messageInput" placeholder="Type your taunt, order, or message here..."></textarea>
+            <div class="small">
+                This becomes the Discord <code>content</code> field.
+            </div>
+        </div>
+
+        <div class="row">
+            <label>Optional crew prompt reference</label>
+            <div id="promptMessagePreview" class="small" style="white-space: pre-wrap;"></div>
+        </div>
+
+        <div class="button-row">
+            <button id="sendButton">Send to Discord as NPC</button>
+            <button id="fillPromptButton" type="button" class="secondary">Insert crew prompt as template</button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div style="margin-top:0.75rem;" class="small">
+            <span class="pill">Payload format</span>
+            <div style="margin-top:0.25rem;">
+                Sends:
+                <code>{ "username": "&lt;npcName&gt;", "avatar_url": "&lt;npcImageLink&gt;", "content": "&lt;yourMessage&gt;" }</code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let crewConfig = null;
+    let npcArray = null;
+    let currentNpcIndex = -1;
+
+    const crewConfigInput = document.getElementById('crewConfigFile');
+    const npcFileInput = document.getElementById('npcFile');
+    const crewInfoDiv = document.getElementById('crewInfo');
+    const npcInfoDiv = document.getElementById('npcInfo');
+    const npcSelect = document.getElementById('npcSelect');
+
+    const npcPreview = document.getElementById('npcPreview');
+    const npcAvatar = document.getElementById('npcAvatar');
+    const npcNameLabel = document.getElementById('npcNameLabel');
+    const npcHealth = document.getElementById('npcHealth');
+    const npcStamina = document.getElementById('npcStamina');
+    const inventoryList = document.getElementById('inventoryList');
+
+    const webhookUrlInput = document.getElementById('webhookUrl');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const fillPromptButton = document.getElementById('fillPromptButton');
+    const statusDiv = document.getElementById('status');
+    const promptMessagePreview = document.getElementById('promptMessagePreview');
+
+    function decodeBase64OrNull(b64) {
+        if (!b64 || typeof b64 !== 'string') return null;
+        try {
+            return atob(b64);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function readJsonFromFileInput(fileInput, callback) {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const json = JSON.parse(e.target.result);
+                callback(null, json);
+            } catch (err) {
+                callback(err, null);
+            }
+        };
+        reader.onerror = () => callback(reader.error || new Error("Failed to read file"), null);
+        reader.readAsText(file);
+    }
+
+    // Handle crew config file load
+    crewConfigInput.addEventListener('change', () => {
+        crewConfig = null;
+        crewInfoDiv.textContent = "";
+        promptMessagePreview.textContent = "";
+
+        if (!crewConfigInput.files.length) return;
+
+        readJsonFromFileInput(crewConfigInput, (err, json) => {
+            if (err) {
+                crewInfoDiv.textContent = "Error parsing JSON: " + err.message;
+                return;
+            }
+            crewConfig = json;
+            let text = "Loaded crew config.";
+            if (crewConfig.crewNPCsFileName) {
+                text += " NPC file: " + crewConfig.crewNPCsFileName;
+            }
+            crewInfoDiv.textContent = text;
+
+            if (crewConfig.promptMessage) {
+                promptMessagePreview.textContent = crewConfig.promptMessage;
+            }
+        });
+    });
+
+    // Handle NPC file load
+    npcFileInput.addEventListener('change', () => {
+        npcArray = null;
+        currentNpcIndex = -1;
+        npcSelect.innerHTML = "<option value=''>Parsing NPC JSON…</option>";
+        npcSelect.disabled = true;
+        npcInfoDiv.textContent = "";
+        npcPreview.style.display = "none";
+
+        if (!npcFileInput.files.length) return;
+
+        readJsonFromFileInput(npcFileInput, (err, json) => {
+            if (err) {
+                npcInfoDiv.textContent = "Error parsing JSON: " + err.message;
+                npcSelect.innerHTML = "<option value=''>Error loading NPCs</option>";
+                return;
+            }
+
+            if (!Array.isArray(json)) {
+                npcInfoDiv.textContent = "NPC JSON must be an array of NPC objects.";
+                npcSelect.innerHTML = "<option value=''>Invalid NPC JSON</option>";
+                return;
+            }
+
+            npcArray = json;
+            npcInfoDiv.textContent = "Loaded " + npcArray.length + " NPCs.";
+            populateNpcSelect();
+        });
+    });
+
+    function populateNpcSelect() {
+        npcSelect.innerHTML = "";
+        if (!npcArray || npcArray.length === 0) {
+            npcSelect.innerHTML = "<option value=''>No NPCs loaded</option>";
+            npcSelect.disabled = true;
+            return;
+        }
+
+        npcArray.forEach((npc, idx) => {
+            const decodedName = decodeBase64OrNull(npc.promptNameBase64) || ("NPC " + (idx + 1));
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = decodedName;
+            npcSelect.appendChild(opt);
+        });
+
+        npcSelect.disabled = false;
+        npcSelect.selectedIndex = 0;
+        currentNpcIndex = 0;
+        updateNpcPreview();
+    }
+
+    npcSelect.addEventListener('change', () => {
+        const value = npcSelect.value;
+        if (value === "") {
+            currentNpcIndex = -1;
+            npcPreview.style.display = "none";
+            return;
+        }
+        currentNpcIndex = parseInt(value, 10);
+        updateNpcPreview();
+    });
+
+    function updateNpcPreview() {
+        if (!npcArray || currentNpcIndex < 0 || currentNpcIndex >= npcArray.length) {
+            npcPreview.style.display = "none";
+            return;
+        }
+
+        const npc = npcArray[currentNpcIndex];
+        const decodedName = decodeBase64OrNull(npc.promptNameBase64) || "Unknown NPC";
+
+        npcNameLabel.textContent = decodedName;
+        npcHealth.textContent = "Health: " + (npc.health ?? "N/A");
+        npcStamina.textContent = "Stamina: " + (npc.stamina ?? "N/A");
+
+        if (npc.npcImageLink) {
+            npcAvatar.src = npc.npcImageLink;
+            npcAvatar.style.visibility = "visible";
+        } else {
+            npcAvatar.removeAttribute('src');
+            npcAvatar.style.visibility = "hidden";
+        }
+
+        // Inventory
+        inventoryList.innerHTML = "";
+        const itemsObj =
+            npc.inventory &&
+            npc.inventory.items &&
+            typeof npc.inventory.items === "object"
+                ? npc.inventory.items
+                : null;
+
+        if (itemsObj) {
+            Object.keys(itemsObj)
+                .sort((a, b) => Number(a) - Number(b))
+                .forEach(key => {
+                    const it = itemsObj[key];
+                    const li = document.createElement('li');
+                    const ability = it.ability || {};
+                    li.textContent = (it.name || "Unknown item") +
+                        (ability.type
+                            ? " [" + ability.type + (ability.intensity != null ? " " + ability.intensity : "") + "]"
+                            : "");
+                    inventoryList.appendChild(li);
+                });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = "No inventory data.";
+            inventoryList.appendChild(li);
+        }
+
+        npcPreview.style.display = "flex";
+    }
+
+    // Insert crew prompt as template
+    fillPromptButton.addEventListener('click', () => {
+        if (!crewConfig || !crewConfig.promptMessage) {
+            statusMessage("No promptMessage in crew config to insert.", true);
+            return;
+        }
+        const npcName = getCurrentNpcName() || "{npcName}";
+        const tmpl = crewConfig.promptMessage.replace("{npcName}", npcName);
+        messageInput.value = tmpl;
+        statusMessage("Inserted crew prompt template into message box.", false);
+    });
+
+    function getCurrentNpcName() {
+        if (!npcArray || currentNpcIndex < 0 || currentNpcIndex >= npcArray.length) {
+            return null;
+        }
+        return decodeBase64OrNull(npcArray[currentNpcIndex].promptNameBase64);
+    }
+
+    // Send to Discord webhook
+    sendButton.addEventListener('click', async () => {
+        statusMessage("", false);
+
+        if (!npcArray || currentNpcIndex < 0 || currentNpcIndex >= npcArray.length) {
+            statusMessage("Select an NPC first.", true);
+            return;
+        }
+
+        const webhookUrl = webhookUrlInput.value.trim();
+        if (!webhookUrl) {
+            statusMessage("Enter a Discord webhook URL.", true);
+            return;
+        }
+
+        const message = messageInput.value;
+        if (!message.trim()) {
+            statusMessage("Enter a message to send.", true);
+            return;
+        }
+
+        const npc = npcArray[currentNpcIndex];
+        const username = getCurrentNpcName() || "CIS NPC";
+        const avatarUrl = npc.npcImageLink || undefined;
+
+        const payload = {
+            username: username,
+            avatar_url: avatarUrl,
+            content: message
+        };
+
+        try {
+            statusMessage("Sending message…", false);
+            const res = await fetch(webhookUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => "");
+                throw new Error("HTTP " + res.status + (text ? " – " + text : ""));
+            }
+
+            statusMessage("Message sent successfully.", false, true);
+        } catch (err) {
+            // Common side-effect: CORS blocked in browser
+            let extra = "";
+            if (err instanceof TypeError) {
+                extra =
+                    " (Your browser may be blocking cross-origin requests to Discord webhooks. " +
+                    "Try serving this file via a local web server instead of opening it directly.)";
+            }
+            statusMessage("Error sending message: " + err.message + extra, true);
+        }
+    });
+
+    function statusMessage(msg, isError, isOkStrong) {
+        statusDiv.textContent = msg || "";
+        statusDiv.classList.remove("ok", "error");
+        if (!msg) return;
+        statusDiv.classList.add(isError ? "error" : "ok");
+    }
+</script>
+</body>
+</html>
