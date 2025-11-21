@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Rally extends Command implements IDiscordChatEventable
@@ -50,11 +51,18 @@ public class Rally extends Command implements IDiscordChatEventable
 
             // Show when they can retake the ship
             LocalDateTime retakeDateTime = TakeShip.GetNextRetakeDateTime(captainCandidate);
-            String retakeTimeDisplay = retakeDateTime.isBefore(LocalDateTime.now())
-                    ? "You can attempt to take over the ship **now!**"
-                    : "You can next attempt to take over the ship **at " + retakeDateTime.toString() + "**.";
+            Duration remaining = Duration.between(LocalDateTime.now(), retakeDateTime);
 
-            stringBuilder.append(retakeTimeDisplay + "\n");
+            long hours = remaining.toHours();
+            long minutes = remaining.toMinutes() % 60;
+            long seconds = remaining.getSeconds() % 60;
+
+
+            if(!retakeDateTime.isBefore(LocalDateTime.now()))
+            {
+                stringBuilder.append("⏰ You cannot attempt to take the ship yet.\n");
+                stringBuilder.append("Time remaining: **" + hours + "h " + minutes + "m " + seconds + "s**.\n");
+            }
 
             return new MessageResponse(stringBuilder.toString());
         }

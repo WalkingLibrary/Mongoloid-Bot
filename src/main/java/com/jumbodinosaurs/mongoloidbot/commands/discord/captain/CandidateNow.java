@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
@@ -47,12 +48,18 @@ public class CandidateNow extends Command implements IDiscordChatEventable
             stringBuilder.append("You have " + captainCandidate.getSupportersLongIds().size() + " Supporters\n");
 
             LocalDateTime retakeDateTime = TakeShip.GetNextRetakeDateTime(captainCandidate);
-            String reTakeTime = "at " + retakeDateTime.toString();
-            if(retakeDateTime.isBefore(LocalDateTime.now()))
+            Duration remaining = Duration.between(LocalDateTime.now(), retakeDateTime);
+
+            long hours = remaining.toHours();
+            long minutes = remaining.toMinutes() % 60;
+            long seconds = remaining.getSeconds() % 60;
+
+
+            if(!retakeDateTime.isBefore(LocalDateTime.now()))
             {
-                reTakeTime = "now!";
+                stringBuilder.append("⏰ You cannot attempt to take the ship yet.\n");
+                stringBuilder.append("Time remaining: **" + hours + "h " + minutes + "m " + seconds + "s**.\n");
             }
-            stringBuilder.append("You can attempt to take the ship over " + reTakeTime + "\n");
             UserAccount.updateCaptainCandidate(captainCandidate);
             return new MessageResponse(stringBuilder.toString());
         }
