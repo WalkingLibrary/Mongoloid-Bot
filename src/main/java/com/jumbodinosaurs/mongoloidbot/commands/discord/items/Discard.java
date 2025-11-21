@@ -11,6 +11,7 @@ import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class Discard extends CommandWithParameters implements IDiscordChatEventable
@@ -55,6 +56,21 @@ public class Discard extends CommandWithParameters implements IDiscordChatEventa
 
             }
 
+            if (slotParameter.startsWith("s"))
+            {
+                if (currentUsersPlayer.getItemForSale() == null)
+                {
+                    return new MessageResponse("You don't have an Item for Sale!");
+                }
+
+                Item removedItem = currentUsersPlayer.getPendingItem();
+                currentUsersPlayer.setItemForSale(null);
+                currentUsersPlayer.setItemSellPrice(new BigDecimal(0));
+                UserAccount.updatePlayer(currentUsersPlayer);
+                return new MessageResponse(removedItem.getName() + " has been Discarded!!");
+
+            }
+
             int slot = Integer.parseInt(getParameters().get(0).getParameter());
             if (slot <= 0 || slot > Inventory.maxInventoryAmount)
             {
@@ -81,8 +97,8 @@ public class Discard extends CommandWithParameters implements IDiscordChatEventa
     @Override
     public String getHelpMessage()
     {
-        return "Allows the User to Discard an Item from their Inventory\nUsage: ~" + this.getClass()
-                .getSimpleName() + " [P or Slot Number]";
+        return "Allows the User to Discard an Item from their Inventory\nSaying P will discard your pending item\nSaying S will discard your item for Sale\nUsage: ~" + this.getClass()
+                .getSimpleName() + " [P, S, or Slot Number]";
     }
 
     @Override

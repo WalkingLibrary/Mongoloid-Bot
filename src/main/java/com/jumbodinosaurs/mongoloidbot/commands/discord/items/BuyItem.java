@@ -66,27 +66,12 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
                         "You don't Have Enough to buy " + playerToBuyFrom.getItemForSale().getName());
             }
 
-            int slotToPutIn = -1;
-            for (int i = 1; i < Inventory.maxInventoryAmount; i++)
-            {
-                if (!playersInventory.getItems().containsKey(i))
-                {
-                    slotToPutIn = i;
-                    break;
-                }
-            }
-
-            if (slotToPutIn == -1)
-            {
-                return new MessageResponse("You don't have enough Space in Your Inventory");
-            }
-
             Item boughtItem = playerToBuyFrom.getItemForSale();
             playerToBuyFrom.setItemForSale(null);
             currentUser.setBalance(currentUser.getBalance().subtract(playerToBuyFrom.getItemSellPrice()));
             userAccountToBuyFrom.setBalance(userAccountToBuyFrom.getBalance().add(playerToBuyFrom.getItemSellPrice()));
             playerToBuyFrom.setItemSellPrice(new BigDecimal("0"));
-            playersInventory.getItems().put(slotToPutIn, boughtItem);
+            currentUsersPlayer.setPendingItem(boughtItem);
 
 
             //Update All Four Objects
@@ -111,7 +96,7 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
     @Override
     public String getHelpMessage()
     {
-        return "Allows the User to sell an Item\nUsage:~" + this.getClass().getSimpleName() + " [Slot To Sell] [Price]";
+        return "Allows the User to buy an Item from another player\nThe New Item Replaces Your Pending Item\nUsage:~" + this.getClass().getSimpleName() + " [MetionUser]";
     }
 
     @Override
