@@ -1,0 +1,21 @@
+[
+  {
+    "isNPC": true,
+    "health": 100000,
+    "stamina": 140,
+    "inventory": {
+      "items": {
+        "1": {
+          "name": "Vine Branch",
+          "ability": {
+            "type": "TAKE_HEALTH",
+            "intensity": 2000
+          }
+        }
+      }
+    },
+    "userAccountId": null,
+    "promptNameBase64": "VGhlIFZpbmU=",
+    "npcImageLink": "https://cdn.discordapp.com/attachments/480122702888435734/1460700219749695682/image.png?ex=6967de96&is=69668d16&hm=9b5f50aa868e0331f6f63b7b97ea3bf072c9f2031662d61c92b15cbdc3fd4315&"
+  }
+]
