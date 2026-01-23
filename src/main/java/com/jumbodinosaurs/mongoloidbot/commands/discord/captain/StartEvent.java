@@ -8,12 +8,14 @@ import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.devlib.json.GsonUtil;
 import com.jumbodinosaurs.devlib.log.LogManager;
+import com.jumbodinosaurs.devlib.options.OptionsManager;
 import com.jumbodinosaurs.devlib.util.GeneralUtil;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.util.NPCUtil;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.models.CaptainCandidate;
 import com.jumbodinosaurs.mongoloidbot.models.Crew;
 import com.jumbodinosaurs.mongoloidbot.models.NPCMessage;
@@ -29,10 +31,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartEvent extends CommandWithParameters implements IAdminCommand, IDiscordChatEventable
+public class StartEvent extends CommandWithParameters implements IOwnerCommand, IDiscordChatEventable
 {
     private GuildMessageReceivedEvent event;
-
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
