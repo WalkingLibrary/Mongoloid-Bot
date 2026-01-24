@@ -7,22 +7,33 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Item;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.ToggleJoinVoiceChats;
+import com.jumbodinosaurs.mongoloidbot.models.DiscordANSITextHelper;
+import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
+import com.jumbodinosaurs.mongoloidbot.tasks.captain.ActiveDrop;
+import com.jumbodinosaurs.mongoloidbot.tasks.captain.ItemDropManager;
+import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+import javax.annotation.Nonnull;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Random;
 
 public class EventListener extends ListenerAdapter
@@ -46,7 +57,43 @@ public class EventListener extends ListenerAdapter
                 .complete();
     }
 
+    public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event)
+    {
+        /* Item Drop Check Process
+         * 1. Check that they are the first person
+         * 2. If first Person then Give Item Drop
+         */
+        ActiveDrop messageDrop = ItemDropManager.get(event.getMessageId());
+        if(!messageDrop.IsClaimed().get())
+        {
 
+            try
+            {
+                UserAccount user = UserAccount.getUser(event.getMember());
+                Player player = user.getPlayer(event.getMember());
+                player.setPendingItem(messageDrop.item);
+                UserAccount.updatePlayer(player);
+                StringBuilder message = new StringBuilder();
+                message.append(event.getMember().getEffectiveName() + " has Claimed:");
+                message.append(DiscordANSITextHelper.ansiOpen);
+                message.append(messageDrop.item.toInventoryDisplay());
+                message.append(DiscordANSITextHelper.ansiClose);
+
+                sendMessage(message.toString(), Main.BOT_CHANNEL_ID);
+            }
+            catch (SQLException e)
+            {
+                LogManager.consoleLogger.error(e.getMessage(), e);
+            }
+            catch (UserQueryException e)
+            {
+                LogManager.consoleLogger.error(e.getMessage(), e);
+            }
+        }
+
+
+
+    }
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
@@ -162,6 +209,7 @@ public class EventListener extends ListenerAdapter
 
                 if (command instanceof IOwnerCommand)
                 {
+                    //todo Move to App settings
                     if (!event.getMember().getId().equals("230481636565843969"))
                     {
                         event.getChannel()
