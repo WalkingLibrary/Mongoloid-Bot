@@ -73,13 +73,16 @@ public class EventListener extends ListenerAdapter
                 Player player = user.getPlayer(event.getMember());
                 player.setPendingItem(messageDrop.item);
                 UserAccount.updatePlayer(player);
-                StringBuilder message = new StringBuilder();
-                message.append(event.getMember().getEffectiveName() + " has Claimed:");
-                message.append(DiscordANSITextHelper.ansiOpen);
-                message.append(messageDrop.item.toInventoryDisplay());
-                message.append(DiscordANSITextHelper.ansiClose);
+                if(messageDrop.tryClaim())
+                {
+                    StringBuilder message = new StringBuilder();
+                    message.append(event.getMember().getEffectiveName() + " has Claimed:");
+                    message.append(DiscordANSITextHelper.ansiOpen);
+                    message.append(messageDrop.item.toInventoryDisplay());
+                    message.append(DiscordANSITextHelper.ansiClose);
+                    sendMessage(message.toString(), Main.BOT_CHANNEL_ID);
+                }
 
-                sendMessage(message.toString(), Main.BOT_CHANNEL_ID);
             }
             catch (SQLException e)
             {
