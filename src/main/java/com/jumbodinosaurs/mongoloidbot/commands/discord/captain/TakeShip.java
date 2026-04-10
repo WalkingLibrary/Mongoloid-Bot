@@ -3,6 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.captain;
 import com.jumbodinosaurs.devlib.commands.Command;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
+import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.AppSettingsManager;
 import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.items.Inventory;
@@ -38,11 +39,25 @@ public class TakeShip extends Command implements IDiscordChatEventable
 
     public static LocalDateTime GetNextRetakeDateTime(CaptainCandidate captainCandidate)
     {
-        if(captainCandidate.isWasLastTakeOverAttemptMutiny())
+        LogManager.consoleLogger.info("isMutiny = " + captainCandidate.isWasLastTakeOverAttemptMutiny());
+        LogManager.consoleLogger.info("lastTakeOverAttempt = " + captainCandidate.getLastTakeOverAttempt());
+        LogManager.consoleLogger.info("intervalHoursForMutiny = " + intervalHoursForMutiny);
+        LogManager.consoleLogger.info("intervalHoursForReTakeShip = " + intervalHoursForReTakeShip);
+
+        LocalDateTime result;
+        if (captainCandidate.isWasLastTakeOverAttemptMutiny())
         {
-            return captainCandidate.getLastTakeOverAttempt().minusHours(-intervalHoursForMutiny);
+            result = captainCandidate.getLastTakeOverAttempt().minusHours(-intervalHoursForMutiny);
         }
-        return captainCandidate.getLastTakeOverAttempt().minusHours(-intervalHoursForReTakeShip);
+        else
+        {
+            result = captainCandidate.getLastTakeOverAttempt().minusHours(-intervalHoursForReTakeShip);
+        }
+
+        LogManager.consoleLogger.info("nextRetakeDateTime = " + result);
+        LogManager.consoleLogger.info("now = " + LocalDateTime.now());
+
+        return result;
     }
 
     @Override
