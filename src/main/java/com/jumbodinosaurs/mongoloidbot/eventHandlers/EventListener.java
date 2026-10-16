@@ -12,6 +12,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.items.models.Player;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
+import com.jumbodinosaurs.mongoloidbot.commands.discord.util.SummarizeHistory;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.ToggleJoinVoiceChats;
 import com.jumbodinosaurs.mongoloidbot.models.DiscordANSITextHelper;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
@@ -185,7 +186,11 @@ public class EventListener extends ListenerAdapter
             return;
         }
 
-        if (event.getChannel().getName().equals(allowedChannelName))
+        // Most bot commands are restricted to the bot channel. SummarizeHistory
+        // is intentionally available in any guild text channel so it can review
+        // the conversation where it was requested.
+        if (event.getChannel().getName().equals(allowedChannelName)
+                || command instanceof SummarizeHistory)
         {
             LogManager.consoleLogger.info("Command: " + message);
             if (command instanceof IDiscordChatEventable)
