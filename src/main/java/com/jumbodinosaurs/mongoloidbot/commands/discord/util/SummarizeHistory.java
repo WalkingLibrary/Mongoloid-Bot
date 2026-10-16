@@ -3,7 +3,7 @@ package com.jumbodinosaurs.mongoloidbot.commands.discord.util;
 import com.jumbodinosaurs.devlib.commands.CommandWithParameters;
 import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
-import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
+import com.jumbodinosaurs.mongoloidbot.brains.OpenAIController;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -50,11 +50,6 @@ public class SummarizeHistory extends CommandWithParameters implements IDiscordC
         final String limitNotice = requestedAmount > MAX_MESSAGES
                 ? "Only summarizing the most recent 250 messages.\n"
                 : "";
-
-        if (BrainsController.brainsOptions == null)
-        {
-            return new MessageResponse("The summary service is not available right now.");
-        }
 
         String userId = event.getAuthor().getId();
         long now = System.currentTimeMillis();
@@ -160,7 +155,7 @@ public class SummarizeHistory extends CommandWithParameters implements IDiscordC
 
         final String notice = limitNotice;
         event.getChannel().sendTyping().queue();
-        BrainsController.generateResponse(prompt.toString(), summary -> sendSummary(notice, summary));
+        OpenAIController.generateResponse(prompt.toString(), summary -> sendSummary(notice, summary));
     }
 
     private void sendSummary(String limitNotice, String summary)
