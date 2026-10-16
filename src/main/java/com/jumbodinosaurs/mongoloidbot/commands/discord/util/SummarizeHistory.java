@@ -5,6 +5,7 @@ import com.jumbodinosaurs.devlib.commands.MessageResponse;
 import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException;
 import com.jumbodinosaurs.mongoloidbot.brains.BrainsController;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.time.format.DateTimeFormatter;
@@ -75,12 +76,32 @@ public class SummarizeHistory extends CommandWithParameters implements IDiscordC
         }
 
         // Include the command message in the fetch so that the requested number of
-        // messages can still be collected after it is removed below.
-        event.getChannel().getHistory().retrievePast(amount + 1).queue(
-                messages -> requestSummary(messages, amount, limitNotice),
-                failure -> event.getChannel().sendMessage("I couldn't read this channel's message history.").queue());
+        // messages can still be collected after it is removed below. Discord/JDA
+        // limits each history request to 100 messages, so retrieve in batches.
+        retrieveHistory(event.getChannel().getHistory(), amount + 1, new ArrayList<>(), amount, limitNotice);
 
         return new MessageResponse(limitNotice + "Collecting the last " + amount + " messages and preparing a summary...");
+    }
+
+    private void retrieveHistory(MessageHistory history, int remaining, List<Message> collected,
+                                  int amount, String limitNotice)
+    {
+        int batchSize = Math.min(100, remaining);
+        history.retrievePast(batchSize).queue(
+                messages ->
+                {
+                    collected.addAll(messages);
+                    int stillNeeded = remaining - messages.size();
+                    if (stillNeeded > 0 && !messages.isEmpty())
+                    {
+                        retrieveHistory(history, stillNeeded, collected, amount, limitNotice);
+                    }
+                    else
+                    {
+                        requestSummary(collected, amount, limitNotice);
+                    }
+                },
+                failure -> event.getChannel().sendMessage("I couldn't read this channel's message history.").queue());
     }
 
     private void requestSummary(List<Message> fetchedMessages, int amount, String limitNotice)
