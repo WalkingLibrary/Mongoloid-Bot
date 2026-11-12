@@ -40,7 +40,7 @@ public final class MaxVoice {
                 return "Connecting to " + target.getName() + ". Use ~Max start to enable AI conversation.";
             case "start":
                 if (guild == null) return "Use ~Max join first.";
-                if (!guild.getAudioManager().isConnected()) return "Voice audio is not ready: " + guild.getAudioManager().getConnectionStatus() + ". Check the voice connection logs.";
+                if (guild.getAudioManager().getConnectionStatus() != net.dv8tion.jda.api.audio.hooks.ConnectionStatus.CONNECTED) return "Voice audio is not ready: " + guild.getAudioManager().getConnectionStatus() + ". Check the voice connection logs.";
                 if (audio != null) return "AI conversation is already active.";
                 VoiceServices.validate();
                 guild.getVoiceChannelById(channel.getId()).sendMessage(NOTICE).complete();

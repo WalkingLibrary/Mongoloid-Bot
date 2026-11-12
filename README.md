@@ -75,3 +75,8 @@ service contracts. Live Discord connections and paid API requests require your
 credentials and must be tested separately. To smoke-test live: join, start,
 speak from two accounts, confirm transcription/response/TTS/playback log events,
 confirm an audible reply and a second turn, then stop/leave during a request.
+
+Discord voice also needs outbound TCP to the host **and port** supplied by the
+voice gateway (observed port 2053), plus bidirectional voice UDP through the
+network firewall/NAT. Allowing only outbound HTTPS on port 443 is insufficient.
+`~Max start` requires the audio connection status to be `CONNECTED`.
