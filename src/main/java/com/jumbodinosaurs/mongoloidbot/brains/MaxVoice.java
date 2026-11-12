@@ -28,13 +28,19 @@ public final class MaxVoice {
                 if (!event.getGuild().getSelfMember().hasPermission(target, net.dv8tion.jda.api.Permission.VOICE_CONNECT, net.dv8tion.jda.api.Permission.VOICE_SPEAK)) return "I need Connect and Speak permissions in that voice channel.";
                 target.getGuild().getVoiceChannelById(target.getId()).sendMessage(NOTICE).complete();
                 guild = event.getGuild(); channel = target;
+                guild.getAudioManager().setConnectionListener(new net.dv8tion.jda.api.audio.hooks.ConnectionListener() {
+                    @Override public void onStatusChange(net.dv8tion.jda.api.audio.hooks.ConnectionStatus status) {
+                        LogManager.consoleLogger.info("[VOICE] Audio connection status: " + status);
+                    }
+                });
                 guild.getAudioManager().setSelfDeafened(false);
                 guild.getAudioManager().setSelfMuted(false);
                 try { guild.getAudioManager().openAudioConnection(target); }
                 catch (RuntimeException failure) { guild = null; channel = null; throw failure; }
                 return "Connecting to " + target.getName() + ". Use ~Max start to enable AI conversation.";
             case "start":
-                if (guild == null || !guild.getAudioManager().isConnected()) return "Use ~Max join and wait for the voice connection first.";
+                if (guild == null) return "Use ~Max join first.";
+                if (!guild.getAudioManager().isConnected()) return "Voice audio is not ready: " + guild.getAudioManager().getConnectionStatus() + ". Check the voice connection logs.";
                 if (audio != null) return "AI conversation is already active.";
                 VoiceServices.validate();
                 guild.getVoiceChannelById(channel.getId()).sendMessage(NOTICE).complete();

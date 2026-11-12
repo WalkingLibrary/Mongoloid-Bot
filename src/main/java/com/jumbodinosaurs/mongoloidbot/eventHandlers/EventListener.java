@@ -268,7 +268,7 @@ public class EventListener extends ListenerAdapter
     public void onGuildVoiceUpdate(net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent event) {
         if (event.getMember().equals(event.getGuild().getSelfMember())) {
             if (event.getChannelJoined() != null) {
-                LogManager.consoleLogger.info("[VOICE] Connected");
+                LogManager.consoleLogger.info("[VOICE] Voice channel joined; audio readiness is reported separately");
                 com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.connected(event);
                 try {
                     event.getGuild().getSelfMember().modifyNickname("replacement_tonight_").queue(

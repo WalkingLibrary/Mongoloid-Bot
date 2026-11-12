@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
+PrivateTmp=true
 User=mongoloidbot-019
 WorkingDirectory=/home/mongoloidbot-019/Mongoloid-Bot/
 # Ensure the path is correctly typed and quotes are used if there are spaces:

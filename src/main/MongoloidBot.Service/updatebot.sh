@@ -38,6 +38,10 @@ restore_settings
 bash ./gradlew test renameJar
 [[ -s build/libs/mongoloidbot.jar ]]
 if [[ -f mongoloidbot.jar ]]; then cp -p mongoloidbot.jar "$backup/previous.jar"; fi
+# Native-library caches created by root-run tests must not shadow the service user's cache.
+install -d -m 755 /etc/systemd/system/mongoloidbot.service.d
+printf '[Service]\nPrivateTmp=true\n' > /etc/systemd/system/mongoloidbot.service.d/voice.conf
+systemctl daemon-reload
 systemctl stop mongoloidbot.service
 install -m 644 build/libs/mongoloidbot.jar mongoloidbot.jar
 systemctl start mongoloidbot.service
