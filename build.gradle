@@ -36,17 +36,22 @@ dependencies {
     // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
     implementation 'com.sun.mail:javax.mail:1.6.1'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.29'
 
     //https://mvnrepository.com/artifact/com.fazecast/jSerialComm/2.7.0
     implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.7.0'
 
+    implementation 'moe.kyokobot.libdave:adapter-jda:181fdecfa'
+    implementation 'moe.kyokobot.libdave:impl-jni:181fdecfa'
+    runtimeOnly 'moe.kyokobot.libdave:natives-win-x86-64:181fdecfa'
+    runtimeOnly 'moe.kyokobot.libdave:natives-linux-x86-64:181fdecfa'
+    runtimeOnly 'moe.kyokobot.libdave:natives-linux-aarch64:181fdecfa'
     //Discord Lib
-    implementation "net.dv8tion:JDA:4.4.0_350"
+    implementation "net.dv8tion:JDA:6.7.0"
 
     // Apache Commons Codec for MD5 hashing
     implementation 'commons-codec:commons-codec:1.15'
@@ -60,13 +65,14 @@ allprojects {
     group 'com.jumbodinosaurs'
     apply plugin: "com.zoltu.git-versioning"
     archivesBaseName = "Mongoloid Bot"
-    sourceCompatibility = 1.8
+    sourceCompatibility = 17
     def versionInfo = ZoltuGitVersioning.versionInfo
     sourceSets.main.java.srcDir "src/main/Java"
     sourceSets.main.resources.srcDir "src/resources"
 
     repositories {
         mavenCentral()
+        maven { url 'https://maven.lavalink.dev/snapshots' }
         maven {
             name = "m2-dv8tion"
             url = "https://m2.dv8tion.net/releases"
@@ -127,4 +133,8 @@ task renameJar(type: Copy) {
 
 
 
-        
+
+
+tasks.withType(JavaCompile).configureEach { options.encoding = "UTF-8" }
+
+shadowJar { mergeServiceFiles(); exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA" }

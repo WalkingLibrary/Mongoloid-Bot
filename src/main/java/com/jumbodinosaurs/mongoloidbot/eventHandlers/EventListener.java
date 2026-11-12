@@ -23,16 +23,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Random;
@@ -58,7 +53,7 @@ public class EventListener extends ListenerAdapter
                 .complete();
     }
 
-    public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event)
+    public void onMessageReactionAdd(MessageReactionAddEvent event)
     {
         /* Item Drop Check Process
          * 1. Check that they are the first person
@@ -100,8 +95,9 @@ public class EventListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event)
+    public void onMessageReceived(MessageReceivedEvent event)
     {
+        if (!event.isFromGuild() || event.getAuthor().isBot()) return;
         String message = event.getMessage().getContentRaw();
 
         if (message == null || message.length() <= 0)
@@ -140,7 +136,7 @@ public class EventListener extends ListenerAdapter
 
             boolean botIsMentioned = false;
             for (Member mentionMember :
-                    event.getMessage().getMentionedMembers())
+                    event.getMessage().getMentions().getMembers())
             {
                 if (mentionMember.getUser().isBot() && mentionMember.getUser().equals(event.getJDA().getSelfUser()))
                 {
@@ -171,7 +167,7 @@ public class EventListener extends ListenerAdapter
             }
 
 
-            if (!botIsMentioned && !event.getMessage()
+            if (!botIsMentioned && event.getMessage().getReferencedMessage() != null && !event.getMessage()
                     .getReferencedMessage()
                     .getAuthor()
                     .isBot())
@@ -189,13 +185,13 @@ public class EventListener extends ListenerAdapter
         // Most bot commands are restricted to the bot channel. SummarizeHistory
         // is intentionally available in any guild text channel so it can review
         // the conversation where it was requested.
-        if (event.getChannel().getName().equals(allowedChannelName)
+        if (event.getChannel().asGuildMessageChannel().getName().equals(allowedChannelName)
                 || command instanceof SummarizeHistory)
         {
             LogManager.consoleLogger.info("Command: " + message);
             if (command instanceof IDiscordChatEventable)
             {
-                ((IDiscordChatEventable) command).setGuildMessageReceivedEvent(event);
+                ((IDiscordChatEventable) command).setMessageReceivedEvent(event);
             }
 
             if (event.getMember() == null)
@@ -246,13 +242,13 @@ public class EventListener extends ListenerAdapter
             }
 
             //check file size
-            if (response.getAttachments() != null)
+            if (response != null && response.getAttachments() != null)
             {
                     for (File file : response.getAttachments())
                     {
                         if (file.length() < 8000000)
                         {
-                            event.getChannel().sendFile(file).complete();
+                            event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).complete();
                         }
                         else
                         {
@@ -269,68 +265,37 @@ public class EventListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildVoiceJoin(GuildVoiceJoinEvent event)
-    {
-        try {
-            VoiceChannel voiceChannelJoined = event.getChannelJoined();
-            LogManager.consoleLogger.info("Voice Channel Joined: " + voiceChannelJoined.getName());
-
-            Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-            event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-            LogManager.consoleLogger.info("Non Bot User Joined");
-
-            if(ToggleJoinVoiceChats.joinVoiceChats && (joinedVC == null || !joinedVC.isConnected()))
-            {
-                LogManager.consoleLogger.info("Joining Voice Chat: " + voiceChannelJoined.getName());
+    public void onGuildVoiceUpdate(net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent event) {
+        if (event.getMember().equals(event.getGuild().getSelfMember())) {
+            if (event.getChannelJoined() != null) {
+                LogManager.consoleLogger.info("[VOICE] Connected");
+                com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.connected(event);
+                try {
+                    event.getGuild().getSelfMember().modifyNickname("replacement_tonight_").queue(
+                        ignored -> {}, failure -> LogManager.consoleLogger.warn("[VOICE] Nickname change failed: " + failure.getClass().getSimpleName()));
+                } catch (Exception failure) { LogManager.consoleLogger.warn("[VOICE] Nickname change failed: " + failure.getClass().getSimpleName()); }
+            } else { com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.disconnected(event.getGuild()); }
+            return;
+        }
+        java.util.List<Role> ashtray = event.getGuild().getRolesByName("ashtray", true);
+        if (!ashtray.isEmpty()) {
+            if (event.getChannelJoined() != null) event.getGuild().addRoleToMember(event.getMember(), ashtray.get(0)).queue(null,
+                failure -> LogManager.consoleLogger.warn("Voice role update failed"));
+            else event.getGuild().removeRoleFromMember(event.getMember(), ashtray.get(0)).queue(null,
+                failure -> LogManager.consoleLogger.warn("Voice role update failed"));
+        }
+        if (event.getChannelLeft() != null && !com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.hasSession()
+            && joinedVC != null && joinedVC.isConnected() && event.getChannelLeft().equals(joinedVC.getConnectedChannel())
+            && event.getChannelLeft().getMembers().size() <= 1) {
+            joinedVC.setAutoReconnect(false); joinedVC.closeAudioConnection();
+        }
+        if (event.getChannelJoined() != null) {
+            com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.arrived(event);
+            if (ToggleJoinVoiceChats.joinVoiceChats && !com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.hasSession()
+                    && (joinedVC == null || !joinedVC.isConnected())) {
                 joinedVC = event.getGuild().getAudioManager();
-                joinedVC.setAutoReconnect(true);
-                joinedVC.setConnectTimeout(1000000);
-                joinedVC.openAudioConnection(voiceChannelJoined);
-
-            }
-            super.onGuildVoiceJoin(event);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    @Override
-    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event)
-    {
-        VoiceChannel voiceChannelLeft = event.getChannelLeft();
-        LogManager.consoleLogger.info("Voice Channel Left: " + voiceChannelLeft.getName());
-
-        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-        event.getGuild().removeRoleFromMember(event.getMember(), ashTrayRole).complete();
-
-        if(joinedVC != null && joinedVC.isConnected())
-        {
-            if(voiceChannelLeft.getMembers().size() <= 1)
-            {
-                joinedVC.setAutoReconnect(false);
-                joinedVC.closeAudioConnection();
+                joinedVC.openAudioConnection(event.getChannelJoined());
             }
         }
-
-        super.onGuildVoiceLeave(event);
     }
-
-    @Override
-    public void onGuildVoiceMove(GuildVoiceMoveEvent event)
-    {
-        VoiceChannel voiceChannelJoined = event.getChannelJoined();
-        VoiceChannel voiceChannelLeft = event.getChannelLeft();
-        LogManager.consoleLogger.info(
-                "User Moved from " + voiceChannelLeft.getName() + " to " + voiceChannelJoined.getName());
-
-        Role ashTrayRole = event.getGuild().getRolesByName("ashtray", true).get(0);
-        event.getGuild().addRoleToMember(event.getMember(), ashTrayRole).complete();
-
-        super.onGuildVoiceMove(event);
-    }
-    
 }

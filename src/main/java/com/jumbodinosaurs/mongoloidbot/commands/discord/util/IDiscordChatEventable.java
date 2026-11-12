@@ -1,10 +1,10 @@
 package com.jumbodinosaurs.mongoloidbot.commands.discord.util;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public interface IDiscordChatEventable
 {
-    GuildMessageReceivedEvent getGuildMessageReceivedEvent();
+    MessageReceivedEvent getMessageReceivedEvent();
     
-    void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event);
+    void setMessageReceivedEvent(MessageReceivedEvent event);
 }

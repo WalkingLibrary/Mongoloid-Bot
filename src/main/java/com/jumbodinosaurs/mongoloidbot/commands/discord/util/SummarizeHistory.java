@@ -6,7 +6,7 @@ import com.jumbodinosaurs.devlib.commands.exceptions.WaveringParametersException
 import com.jumbodinosaurs.mongoloidbot.brains.OpenAIController;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class SummarizeHistory extends CommandWithParameters implements IDiscordC
     private static final int MAX_MESSAGES = 250;
     private static final long COOLDOWN_MILLIS = 30L * 60L * 1000L;
     private static final Map<String, Long> LAST_REQUEST_BY_USER = new ConcurrentHashMap<>();
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
@@ -183,13 +183,13 @@ public class SummarizeHistory extends CommandWithParameters implements IDiscordC
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

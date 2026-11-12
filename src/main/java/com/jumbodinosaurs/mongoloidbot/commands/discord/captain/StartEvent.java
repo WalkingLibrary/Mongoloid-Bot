@@ -23,7 +23,7 @@ import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.captain.TauntTask;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class StartEvent extends CommandWithParameters implements IOwnerCommand, IDiscordChatEventable
 {
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
     {
@@ -137,13 +137,13 @@ public class StartEvent extends CommandWithParameters implements IOwnerCommand, 
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

@@ -7,8 +7,8 @@ import com.jumbodinosaurs.mongoloidbot.Main;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class DeleteMessage extends CommandWithParameters implements IDiscordChatEventable, IAdminCommand
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
@@ -108,13 +108,13 @@ public class DeleteMessage extends CommandWithParameters implements IDiscordChat
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

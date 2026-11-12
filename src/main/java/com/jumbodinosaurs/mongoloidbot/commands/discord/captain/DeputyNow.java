@@ -10,7 +10,7 @@ import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
 
@@ -18,7 +18,7 @@ public class DeputyNow extends Command implements IDiscordChatEventable
 {
 
     public static final String deputyID = AppSettingsManager.getStringValue("deputyID");
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public String getCategory()
@@ -54,12 +54,12 @@ public class DeputyNow extends Command implements IDiscordChatEventable
             }
 
             //2. Get User
-            if (event.getMessage().getMentionedMembers().size() <= 0)
+            if (event.getMessage().getMentions().getMembers().size() <= 0)
             {
                 return new MessageResponse("You Didn't Tell me who to make the Deputy");
             }
 
-            Member deputy = event.getMessage().getMentionedMembers().get(0);
+            Member deputy = event.getMessage().getMentions().getMembers().get(0);
 
             //3. Check to make sure they are not the Captain
 
@@ -105,13 +105,13 @@ public class DeputyNow extends Command implements IDiscordChatEventable
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

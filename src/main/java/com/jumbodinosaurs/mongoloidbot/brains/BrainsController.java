@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.jumbodinosaurs.devlib.log.LogManager;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.net.ssl.*;
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ public class BrainsController
     }
 
 
-    public static void respond(GuildMessageReceivedEvent event, String message)
+    public static void respond(MessageReceivedEvent event, String message)
     {
         // Send the POST request and get the requestId
         try
@@ -70,7 +70,7 @@ public class BrainsController
 
 
     // Poll the status every 2 seconds
-    public static void pollStatus(GuildMessageReceivedEvent event, String requestId)
+    public static void pollStatus(MessageReceivedEvent event, String requestId)
     {
         Timer timer = new Timer();
         TimerTask task = new TimerTask()

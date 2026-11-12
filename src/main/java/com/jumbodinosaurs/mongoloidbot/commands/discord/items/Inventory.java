@@ -12,7 +12,7 @@ import com.jumbodinosaurs.mongoloidbot.models.DiscordANSITextHelper;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class Inventory extends Command implements IDiscordChatEventable
 {
 
     public static int maxInventoryAmount = 5;
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
 
     @Override
@@ -117,13 +117,13 @@ public class Inventory extends Command implements IDiscordChatEventable
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

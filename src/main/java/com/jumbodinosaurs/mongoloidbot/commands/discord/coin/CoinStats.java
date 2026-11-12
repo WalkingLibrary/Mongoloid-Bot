@@ -12,7 +12,7 @@ import com.jumbodinosaurs.devlib.log.LogManager;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -28,7 +28,7 @@ public class CoinStats extends Command implements IDiscordChatEventable
         return "Coin";
     }
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage()
@@ -82,13 +82,13 @@ public class CoinStats extends Command implements IDiscordChatEventable
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return this.event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

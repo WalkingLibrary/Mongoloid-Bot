@@ -10,7 +10,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class BuyItem extends CommandWithParameters implements IDiscordChatEventable
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
 
     @Override
@@ -35,7 +35,7 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
 
         try
         {
-            if (getParameters().size() < 1 || event.getMessage().getMentionedMembers().size() <= 0)
+            if (getParameters().size() < 1 || event.getMessage().getMentions().getMembers().size() <= 0)
             {
                 return new MessageResponse("You did not Tell me who to buy from!");
             }
@@ -44,7 +44,7 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
             Player currentUsersPlayer = currentUser.getPlayer(memberBuying);
             PlayerInventory playersInventory = currentUsersPlayer.getInventory();
 
-            Member memberToBuyFrom = event.getMessage().getMentionedMembers().get(0);
+            Member memberToBuyFrom = event.getMessage().getMentions().getMembers().get(0);
             UserAccount userAccountToBuyFrom = UserAccount.getUser(memberToBuyFrom);
             Player playerToBuyFrom = userAccountToBuyFrom.getPlayer(memberToBuyFrom);
 
@@ -100,13 +100,13 @@ public class BuyItem extends CommandWithParameters implements IDiscordChatEventa
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

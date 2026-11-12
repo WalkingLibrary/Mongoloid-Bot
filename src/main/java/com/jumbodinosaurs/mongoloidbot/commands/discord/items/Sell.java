@@ -11,7 +11,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class Sell extends CommandWithParameters implements IDiscordChatEventable
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
 
     @Override
@@ -88,7 +88,7 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
             UserAccount.updatePlayer(currentUsersPlayer);
             return new MessageResponse(
                     itemToSell.getName() + " is now for sale for " + priceToSellString + " " + event.getGuild()
-                            .getEmoteById(AppSettingsManager.getStringValue("emoteId"))
+                            .getEmojiById(AppSettingsManager.getStringValue("emoteId"))
                             .getAsMention());
         }
         catch (SQLException e)
@@ -110,13 +110,13 @@ public class Sell extends CommandWithParameters implements IDiscordChatEventable
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

@@ -7,7 +7,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
         return "Coin";
     }
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage()
@@ -100,13 +100,13 @@ public class Lottery extends CommandWithParameters implements IDiscordChatEventa
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

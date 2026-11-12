@@ -1,63 +1,53 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Navigating to the project directory (the directory containing this script)
-cd "$(dirname "$0")"
-
-# Ensuring script is run as root
-if [ "$(id -u)" != "0" ]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
-
-# Step 1: Pull the latest changes from Git
-echo "Pulling latest changes from Git repository..."
-git pull origin master
-echo "Update complete."
-
-# Step 2: Build the project using the custom Gradle task
-echo "Building the project using custom task..."
-./gradlew renameJar
-if [ $? -ne 0 ]; then
-    echo "Build failed, stopping script."
+if [[ $(id -u) != 0 ]]; then
+    echo "Run this script with sudo." >&2
     exit 1
 fi
-echo "Build successful."
-
-# Step 3: Stop the currently running service
-echo "Stopping the current service..."
-sudo systemctl stop mongoloidbot.service
-sudo systemctl daemon-reload
-if [ $? -ne 0 ]; then
-    echo "Failed to stop the service, stopping script."
+repo=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
+cd "$repo"
+command -v ffmpeg >/dev/null || { echo "Install FFmpeg before deploying: apt-get install ffmpeg" >&2; exit 1; }
+backup=$(mktemp -d)
+chmod 700 "$backup"
+settings=(Options/appsettings.json Options/dev.appsettings.json)
+restore_settings() {
+    for name in "${settings[@]}"; do
+        if [[ -f "$backup/$name" ]]; then
+            cp -p "$backup/$name" "$name"
+        fi
+    done
+}
+finish() {
+    restore_settings
+    rm -rf -- "$backup"
+}
+trap finish EXIT
+for name in "${settings[@]}"; do
+    if [[ -f "$name" ]]; then
+        mkdir -p "$backup/$(dirname "$name")"
+        cp -p "$name" "$backup/$name"
+    fi
+    if git ls-files --error-unmatch "$name" >/dev/null 2>&1; then
+        git restore --source=HEAD --worktree -- "$name"
+    fi
+done
+# Keep server-local settings out of merges. Restore exact bytes even if pull fails.
+git pull --ff-only origin master
+restore_settings
+bash ./gradlew test renameJar
+[[ -s build/libs/mongoloidbot.jar ]]
+if [[ -f mongoloidbot.jar ]]; then cp -p mongoloidbot.jar "$backup/previous.jar"; fi
+systemctl stop mongoloidbot.service
+install -m 644 build/libs/mongoloidbot.jar mongoloidbot.jar
+systemctl start mongoloidbot.service
+sleep 5
+if ! systemctl is-active --quiet mongoloidbot.service; then
+    if [[ -f "$backup/previous.jar" ]]; then
+        cp -p "$backup/previous.jar" mongoloidbot.jar
+        systemctl restart mongoloidbot.service
+    fi
+    echo "Updated service failed its startup check; previous JAR restored." >&2
     exit 1
 fi
-echo "Service stopped."
-
-# Step 4: Remove the old jar (now unnecessary as renameJar handles it)
-# This step is kept just in case of unexpected failures in the delete operation in Gradle
-echo "Ensuring old JAR file is removed..."
-mv build/libs/mongoloidbot.jar ./
-if [ $? -ne 0 ]; then
-    echo "Failed to ensure the old JAR file is removed."
-    exit 1
-fi
-echo "Old JAR file confirmed removed."
-
-# Step 5: Move the new jar to the root of the dir (handled by renameJar, validate only)
-echo "Validating new JAR file in place..."
-if [ ! -f "mongoloidbot.jar" ]; then
-    echo "New JAR file is missing, failed to move."
-    exit 1
-fi
-echo "New JAR file is correctly in place."
-
-# Step 6: Restart the service
-echo "Restarting the service..."
-sudo systemctl start mongoloidbot.service
-if [ $? -ne 0 ]; then
-    echo "Failed to start the service."
-    exit 1
-fi
-echo "Service restarted successfully."
-
-echo "Deployment completed successfully."
+echo "Deployment complete: $(git rev-parse --short HEAD)"

@@ -13,7 +13,7 @@ import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.SaleTask;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class CaptainNow extends Command implements IDiscordChatEventable
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
     public static final String captainID = AppSettingsManager.getStringValue("captainID");
 
     @Override
@@ -141,13 +141,13 @@ public class CaptainNow extends Command implements IDiscordChatEventable
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

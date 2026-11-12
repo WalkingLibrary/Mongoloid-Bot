@@ -8,8 +8,8 @@ import com.jumbodinosaurs.mongoloidbot.eventHandlers.EventListener;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class ToggleJoinVoiceChats extends CommandWithParameters implements IDiscordChatEventable, IAdminCommand
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
     public static boolean joinVoiceChats = false;
 
     @Override
@@ -28,7 +28,7 @@ public class ToggleJoinVoiceChats extends CommandWithParameters implements IDisc
         joinVoiceChats = !joinVoiceChats;
 
 
-        if(!joinVoiceChats && EventListener.joinedVC != null)
+        if(!joinVoiceChats && EventListener.joinedVC != null && !com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.hasSession())
         {
             EventListener.joinedVC.setAutoReconnect(false);
             EventListener.joinedVC.closeAudioConnection();
@@ -45,13 +45,13 @@ public class ToggleJoinVoiceChats extends CommandWithParameters implements IDisc
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

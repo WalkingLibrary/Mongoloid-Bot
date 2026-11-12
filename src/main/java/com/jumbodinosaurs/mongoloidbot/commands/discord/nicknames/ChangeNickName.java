@@ -9,7 +9,7 @@ import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.lottery.LotteryTask;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
@@ -21,7 +21,7 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
 {
 
     private static final BigDecimal nickNameChangeCost = new BigDecimal("5000");
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public String getCategory()
@@ -82,7 +82,7 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
             
             //3. Change @Member's NickName
             
-            List<Member> mentionedMembers = event.getMessage().getMentionedMembers();
+            List<Member> mentionedMembers = event.getMessage().getMentions().getMembers();
             if(mentionedMembers.size() <= 0)
             {
                 return new MessageResponse("You Didn't Tell me Who To Change");
@@ -148,13 +148,13 @@ public class ChangeNickName extends CommandWithParameters implements IDiscordCha
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

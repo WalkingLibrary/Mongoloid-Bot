@@ -10,7 +10,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -26,7 +26,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
         return "Coin";
     }
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage()
@@ -68,7 +68,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
             
             // Check the Amount of Money in the Users Account
             ///Pay the Money to the Specified Account
-            List<Member> mentionedMembers = event.getMessage().getMentionedMembers();
+            List<Member> mentionedMembers = event.getMessage().getMentions().getMembers();
             if(mentionedMembers.size() <= 0)
             {
                 return new MessageResponse("You Didn't Tell me Who To Pay");
@@ -93,7 +93,7 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
 
             return new MessageResponse("Paid " +
                     amountToPay +
-                    event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention() +
+                    event.getGuild().getEmojiById(AppSettingsManager.getStringValue("emoteId")).getAsMention() +
                     " to " +
                     memberToBePaid.getUser().getName());
         }
@@ -112,13 +112,13 @@ public class Give extends CommandWithParameters implements IDiscordChatEventable
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

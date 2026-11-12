@@ -8,7 +8,7 @@ import com.jumbodinosaurs.mongoloidbot.models.CaptainCandidate;
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CastLot extends CommandWithParameters implements IDiscordChatEventable
 {
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage() throws WaveringParametersException
@@ -31,7 +31,7 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
             }
 
             // Pay the Money to the Specified Account
-            List<Member> mentionedMembers = event.getMessage().getMentionedMembers();
+            List<Member> mentionedMembers = event.getMessage().getMentions().getMembers();
             if (mentionedMembers.size() <= 0)
             {
                 return new MessageResponse("You didn't tell me who to support");
@@ -114,13 +114,13 @@ public class CastLot extends CommandWithParameters implements IDiscordChatEventa
 
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

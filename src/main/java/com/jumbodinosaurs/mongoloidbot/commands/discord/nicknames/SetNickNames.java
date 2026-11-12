@@ -9,7 +9,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IAdminCommand;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
@@ -21,7 +21,7 @@ public class SetNickNames extends CommandWithParameters implements IDiscordChatE
         IAdminCommand
 {
     private static final File nickNamesDir = GeneralUtil.checkFor(GeneralUtil.userDir, "NickNameLists", true);
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
 
     @Override
@@ -123,13 +123,13 @@ public class SetNickNames extends CommandWithParameters implements IDiscordChatE
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

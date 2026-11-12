@@ -8,7 +8,7 @@ import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventab
 import com.jumbodinosaurs.mongoloidbot.models.UserAccount;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
 import java.util.Base64;
@@ -21,7 +21,7 @@ public class Balance extends Command implements IDiscordChatEventable
         return "Coin";
     }
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public MessageResponse getExecutedMessage()
@@ -40,7 +40,7 @@ public class Balance extends Command implements IDiscordChatEventable
                                        "'s Balance: " +
                                        currentUser.getBalance().toString() +
                                        " " +
-                                       event.getGuild().getEmoteById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
+                                       event.getGuild().getEmojiById(AppSettingsManager.getStringValue("emoteId")).getAsMention());
         }
         catch(SQLException e)
         {
@@ -61,13 +61,13 @@ public class Balance extends Command implements IDiscordChatEventable
     }
     
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
     
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

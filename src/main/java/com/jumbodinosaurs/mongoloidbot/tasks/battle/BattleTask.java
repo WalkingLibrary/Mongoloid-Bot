@@ -383,7 +383,7 @@ public class BattleTask extends ScheduledTask
                         .getGuildById(Main.GUILD_ID)
                         .getTextChannelById(Main.BATTLE_STEPPE_ID)
                         .sendMessage("Battle Report Part " + (i + 1) + " of " + chunkCount + ":")
-                        .addFile(chunkFile, chunkFile.getName())
+                        .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(chunkFile))
                         .complete();
             }
         }
@@ -441,7 +441,7 @@ public class BattleTask extends ScheduledTask
                         .getGuildById(Main.GUILD_ID)
                         .getTextChannelById(channelId)
                         .sendMessage("Battle Report Part " + (i + 1) + " of " + chunkCount + ":")
-                        .addFile(chunkFile, chunkFile.getName())
+                        .addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(chunkFile))
                         .complete();
             }
         }
@@ -604,7 +604,7 @@ public class BattleTask extends ScheduledTask
                                 Main.jdaController.getJda()
                                         .getGuildById(Main.GUILD_ID)
                                         .getTextChannelById(Main.BATTLE_STEPPE_ID)
-                                        .sendMessage(response + ": ").addFile(battleImage, battleImage.getName())
+                                        .sendMessage(response + ": ").addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(battleImage))
                                         .complete();
                             }
                             catch (Exception e)

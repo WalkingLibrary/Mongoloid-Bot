@@ -10,12 +10,12 @@ import com.jumbodinosaurs.mongoloidbot.brains.BrainsOptions;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IDiscordChatEventable;
 import com.jumbodinosaurs.mongoloidbot.commands.discord.util.IOwnerCommand;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.ConnectBrain;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ToggleBrains extends Command implements IDiscordChatEventable, IOwnerCommand
 {
 
-    private GuildMessageReceivedEvent event;
+    private MessageReceivedEvent event;
 
     @Override
     public String getCategory()
@@ -45,13 +45,13 @@ public class ToggleBrains extends Command implements IDiscordChatEventable, IOwn
     }
 
     @Override
-    public GuildMessageReceivedEvent getGuildMessageReceivedEvent()
+    public MessageReceivedEvent getMessageReceivedEvent()
     {
         return event;
     }
 
     @Override
-    public void setGuildMessageReceivedEvent(GuildMessageReceivedEvent event)
+    public void setMessageReceivedEvent(MessageReceivedEvent event)
     {
         this.event = event;
     }

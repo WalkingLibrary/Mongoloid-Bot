@@ -10,7 +10,7 @@ import com.jumbodinosaurs.mongoloidbot.tasks.battle.BattleTask;
 import com.jumbodinosaurs.mongoloidbot.tasks.exceptions.UserQueryException;
 import com.jumbodinosaurs.mongoloidbot.tasks.startup.SetupDatabaseConnection;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;

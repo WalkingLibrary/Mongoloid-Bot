@@ -24,7 +24,9 @@ public class JDAController
             this.jda = JDABuilder.createDefault(token)
                                  .setChunkingFilter(ChunkingFilter.ALL) // enable member chunking for all guilds
                                  .setMemberCachePolicy(MemberCachePolicy.ALL) // ignored if chunking enabled
-                                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                                 .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT)
+                                 .setAudioModuleConfig(new net.dv8tion.jda.api.audio.AudioModuleConfig()
+                                     .withDaveSessionFactory(new moe.kyokobot.libdave.jda.LDJDADaveSessionFactory(new moe.kyokobot.libdave.NativeDaveFactory())))
                                  .build();
             jda.awaitReady();
         }
