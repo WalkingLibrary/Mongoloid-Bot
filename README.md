@@ -50,7 +50,7 @@ Administrators issue these commands in `#mongoloid-bot`:
 
 The bot sets its server nickname to `replacement_tonight_` when joining voice,
 including automatic joins. A nickname permission failure is logged and does
-not stop voice. The nickname stays in place after leaving.
+not stop voice. The server nickname is cleared when the bot leaves voice and on application startup.
 
 Only one AI session can exist across the bot. Audio is combined across the
 channel, with no speaker identification. Capture ends after about one second

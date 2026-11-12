@@ -270,11 +270,11 @@ public class EventListener extends ListenerAdapter
             if (event.getChannelJoined() != null) {
                 LogManager.consoleLogger.info("[VOICE] Voice channel joined; audio readiness is reported separately");
                 com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.connected(event);
-                try {
-                    event.getGuild().getSelfMember().modifyNickname("replacement_tonight_").queue(
-                        ignored -> {}, failure -> LogManager.consoleLogger.warn("[VOICE] Nickname change failed: " + failure.getClass().getSimpleName()));
-                } catch (Exception failure) { LogManager.consoleLogger.warn("[VOICE] Nickname change failed: " + failure.getClass().getSimpleName()); }
-            } else { com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.disconnected(event.getGuild()); }
+                com.jumbodinosaurs.mongoloidbot.brains.VoiceNickname.update(event.getGuild(), true);
+            } else {
+                com.jumbodinosaurs.mongoloidbot.brains.VoiceNickname.update(event.getGuild(), false);
+                com.jumbodinosaurs.mongoloidbot.brains.MaxVoice.disconnected(event.getGuild());
+            }
             return;
         }
         java.util.List<Role> ashtray = event.getGuild().getRolesByName("ashtray", true);

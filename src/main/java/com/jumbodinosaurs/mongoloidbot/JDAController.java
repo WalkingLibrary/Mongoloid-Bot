@@ -29,6 +29,9 @@ public class JDAController
                                      .withDaveSessionFactory(new moe.kyokobot.libdave.jda.LDJDADaveSessionFactory(new moe.kyokobot.libdave.NativeDaveFactory())))
                                  .build();
             jda.awaitReady();
+            for (net.dv8tion.jda.api.entities.Guild guild : jda.getGuilds()) {
+                com.jumbodinosaurs.mongoloidbot.brains.VoiceNickname.update(guild, false);
+            }
         }
         catch(Exception e)
         {
